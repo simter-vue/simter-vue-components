@@ -3,19 +3,19 @@ import babel from 'rollup-plugin-babel';
 import vue from 'rollup-plugin-vue';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from 'rollup-plugin-node-resolve';
 
+const input = "src/components.js";
 export default [
+  // UMD build for Browser
   {
     external: ['vue'],
-    input: { 'components': 'src/components.js' },
+    input: input,
     output: {
       format: 'umd',
       name: pkg.name,
       globals: { 'vue': 'Vue' },
-      dir: 'dist',
-      entryFileNames: 'simter/vue/[name].js',
-      chunkFileNames: 'simter/vue/vue-[name]-[hash].js'
+      file: pkg.browser,
     },
     plugins: [
       json(),
@@ -27,6 +27,23 @@ export default [
         babelrc: false,
         presets: [["@babel/env", { "modules": false }]]
       })
+    ]
+  },
+
+  // CommonJS build for Node.
+  // And ES module build for bundlers.
+  {
+    external: ['vue', 'simter-vue-colgroup', 'simter-vue-thead'],
+    input: input,
+    output: [
+      { file: pkg.main, format: 'cjs' },
+      { file: pkg.module, format: 'es' }
+    ],
+    plugins: [
+      json(),
+      commonjs(),
+      vue(),
+      babel({ exclude: 'node_modules/**' })
     ]
   }
 ];
