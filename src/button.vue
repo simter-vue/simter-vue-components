@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { get, concatClasses } from "../utils";
+import { get, concatClasses } from "./utils";
 
 const DEFAULT_TAG = get("simter.button.tag", "button");
 const DEFAULT_CLASSES = get("simter.button.classes", {

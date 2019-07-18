@@ -34,9 +34,9 @@
 
 <script>
 import stGrid from "../src/grid.vue";
-import stPagebar from "../src/pagebar/pagebar.vue";
-import stButton from "../src/button/button.vue";
-import stButtonGroup from "../src/button/button-group.vue";
+import stPagebar from "../src/pagebar.vue";
+import stButton from "../src/button.vue";
+import stButtonGroup from "../src/button-group.vue";
 export default {
   components: { stGrid, stPagebar, stButton, stButtonGroup },
   data() {

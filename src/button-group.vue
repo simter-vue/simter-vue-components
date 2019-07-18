@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { get, concatClasses } from "../utils";
+import { get, concatClasses } from "./utils";
 import stButton from "./button.vue";
 
 const DEFAULT_CLASSES = get("simter.buttonGroup.classes", {

@@ -5,8 +5,8 @@ import { version } from '../package.json'
 import stColgroup from 'simter-vue-colgroup'
 import stThead from 'simter-vue-thead'
 
-import stButton from "./components/button.vue"
-import stButtonGroup from "./components/button-group.vue"
+import stButton from "./button.vue"
+import stButtonGroup from "./button-group.vue"
 
 // global register all components
 const components = {

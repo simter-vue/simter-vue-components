@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { get } from "../utils";
+import { get } from "./utils";
 import stButton from "./button.vue";
 
 const DEFAULT_PAGE_SIZE = get("simter.pagebar.pageSize", 25);
