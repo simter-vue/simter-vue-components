@@ -37,8 +37,8 @@
 <script>
 import { flatten } from "./utils";
 import stRow from "./row/row";
-import stColgroup from "simter-vue-colgroup";
-import stThead from "simter-vue-thead";
+import stColgroup from "./colgroup";
+import stThead from "./thead";
 
 export default {
   components: { stColgroup, stThead, stRow },
