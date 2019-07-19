@@ -17,12 +17,7 @@ $ yarn start
 $ yarn build
 ```
 
-### Build to AMD
-
-1. global register all simter-vue components.
-2. Build each component to AMD.
-3. Use RequireJs combine all AMD component to a single file.
-4. The vue dependency in RequireJs should be configuable.
+> Build to `'dist'` directory by [Rollup].
 
 
 [Vue]: https://vuejs.org

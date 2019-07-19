@@ -37,7 +37,7 @@ export default [
     input: input,
     output: [
       { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' }
+      { file: pkg.module, format: 'esm' }
     ],
     plugins: [
       json(),
