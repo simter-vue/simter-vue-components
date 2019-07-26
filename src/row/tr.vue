@@ -1,5 +1,10 @@
 <template>
-  <tr :class="['st-row', classes.root]" :style="styles.root">
+  <tr
+    :class="rootClass"
+    :style="styles.root"
+    @mouseover="hover = true"
+    @mouseout="hover = false"
+  >
     <td
       v-for="(cell, index) in cells"
       :class="$_getTdClass(cell)"
@@ -59,6 +64,18 @@ export default {
       default() {
         return {};
       }
+    }
+  },
+  data() {
+    return { hover: false };
+  },
+  computed: {
+    rootClass() {
+      return concatClasses(
+        "st-row", // always
+        this.classes.root, // custom
+        this.hover ? this.classes.hover || "hover" : undefined, // custom or default
+      );
     }
   },
   methods: {
