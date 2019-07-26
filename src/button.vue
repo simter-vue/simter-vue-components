@@ -1,52 +1,50 @@
 <template>
   <component
     :is="tag"
-    :class="containerClass"
+    :class="rootClass"
+    type="button"
     @mouseover="hover = true"
     @mouseout="hover = false"
     @focus="active = true"
     @blur="active = false"
   >
-    <span v-if="enableIcon" :class="classes.icon"></span>
-    <span v-if="enableText" :class="classes.text">
-      {{text}}
+    <i v-if="icon" :class="classes.icon"></i>
+    <span v-if="$slots.default" :class="classes.text">
       <slot></slot>
     </span>
   </component>
 </template>
 
 <script>
+/**
+ * Events: none
+ */
 import { get, concatClasses } from "./utils";
-
-const DEFAULT_TAG = get("simter.button.tag", "button");
-const DEFAULT_CLASSES = get("simter.button.classes", {
-  class: "st-button",
-  hoverClass: "hover",
-  focusClass: "focus"
-});
-
 export default {
   props: {
-    tag: { type: String, required: false, default: DEFAULT_TAG },
-    text: { type: String, required: false, default: "" },
-    enableIcon: { type: Boolean, required: false, default: true },
-    enableText: { type: Boolean, required: false, default: true },
-    // all dom elements class
+    tag: {
+      type: String,
+      required: false,
+      default: () => get("simter.button.tag", "button")
+    },
+    icon: { type: String, required: false },
+    // All dom element class
     classes: {
       type: Object,
       required: false,
-      default: () => DEFAULT_CLASSES
+      default: () => get("simter.button.classes", {})
     }
   },
   data() {
     return { hover: false, active: false };
   },
   computed: {
-    containerClass() {
+    rootClass() {
       return concatClasses(
-        this.classes.class,
-        this.hover ? this.classes.hoverClass : undefined,
-        this.active ? this.classes.focusClass : undefined
+        "st-button", // always
+        this.classes.root, // custom
+        this.hover ? this.classes.hover || "hover" : undefined, // custom or default
+        this.active ? this.classes.active || "active" : undefined // custom or default
       );
     }
   }
@@ -54,9 +52,7 @@ export default {
 </script>
 
 <style>
-/* default button style */
 .st-button {
-  position: relative;
-  display: inline-block;
+  cursor: pointer;
 }
 </style>
