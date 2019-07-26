@@ -1,5 +1,5 @@
 <template>
-  <span>{{value}}</span>
+  <span :class="classes.root" :style="styles.root">{{value}}</span>
 </template>
 
 <script>

@@ -1,4 +1,4 @@
-// A functional component for renderer tr element.
+// A functional component for renderer multiple tr element.
 import tr from './tr.vue';
 
 /**
@@ -21,6 +21,12 @@ function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
       ? [row[column.pid][subRowIndex], subRowIndex, row[column.pid][subRowIndex][column.id]]
       : [undefined, undefined, undefined])
     : [row, mainRowIndex, row[column.id]]
+}
+
+function addClassesAndStyles(props, classes, styles) {
+  if (classes) props.classes = classes
+  if (styles) props.styles = styles
+  return props
 }
 
 export default {
@@ -46,7 +52,9 @@ export default {
       required: false,
       type: Array,
       default: function () { return []; }
-    }
+    },
+    // All dom element class
+    classes: { type: Object, required: false }
   },
   render(createElement, context) {
     let row = context.props.row
@@ -54,7 +62,7 @@ export default {
 
     // main tr
     trs.push(createElement(tr, {
-      props: {
+      props: addClassesAndStyles({
         row: row,
         index: context.props.index,
         cells: context.props.columns.map(column => {
@@ -67,14 +75,14 @@ export default {
             rowIndex: rowIndex
           }
         })
-      }
+      }, context.props.classes, context.props.styles)
     }))
 
     // sub trs
     let len = row.rowspan || 1
     for (let i = 1; i < len; i++) {
       trs.push(createElement(tr, {
-        props: {
+        props: addClassesAndStyles({
           row: row,
           index: context.props.index,
           cells: context.props.subColumns.map(column => {
@@ -86,7 +94,7 @@ export default {
               rowIndex: rowIndex
             }
           })
-        }
+        }, context.props.classes, context.props.styles)
       }))
     }
 

@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isHtml" v-html="content"></div>
-  <span v-else>{{content}}</span>
+  <div v-if="isHtml" v-html="content" :class="classes.root " :style="styles.root"></div>
+  <span v-else :class="classes.root" :style="styles.root">{{content}}</span>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <div v-html="value"></div>
+  <div :class="classes.root" :style="styles.root" v-html="value"></div>
 </template>
 
 <script>

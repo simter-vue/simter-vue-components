@@ -1,19 +1,19 @@
 <template>
-  <div class="st-grid">
-    <div class="top" v-if="$slots.top && $slots.top.length > 0">
+  <div :class="['st-grid', classes.root]">
+    <div :class="classes.top" v-if="$slots.top && $slots.top.length > 0">
       <slot name="top"></slot>
     </div>
-    <div class="header">
-      <table
-        border="1"
-        :style="{left: v.scrollLeft + 'px', width: 'calc(100% - ' + v.scrollBarWidth + 'px)'}"
-      >
+    <div :class="['header', classes.header]">
+      <table border="1" :class="classes.headerTable" :style="headerTableStyle">
         <st-colgroup :columns="columns"></st-colgroup>
         <st-thead :columns="columns"></st-thead>
       </table>
     </div>
-    <div class="content" @scroll="v.scrollLeft = -1 * $event.target.scrollLeft">
-      <table border="1">
+    <div
+      :class="['content', classes.content]"
+      @scroll="v.scrollLeft = -1 * $event.target.scrollLeft"
+    >
+      <table border="1" :class="classes.contentTable" :style="styles.contentTable">
         <st-colgroup :columns="columns"></st-colgroup>
         <tbody>
           <template v-for="(row, index) in rows">
@@ -23,19 +23,21 @@
               :index="index"
               :columns="flattenColumns"
               :sub-columns="subColumns"
+              :classes="classes.contentRow || {}"
+              :styles="styles.contentRow || {}"
             ></st-row>
           </template>
         </tbody>
       </table>
     </div>
-    <div class="bottom" v-if="$slots.bottom && $slots.bottom.length > 0">
+    <div :class="['bottom', classes.bottom]" v-if="$slots.bottom && $slots.bottom.length > 0">
       <slot name="bottom"></slot>
     </div>
   </div>
 </template>
 
 <script>
-import { flatten } from "./utils";
+import { get, flatten, concatClasses } from "./utils";
 import stRow from "./row/row";
 import stColgroup from "./colgroup";
 import stThead from "./thead";
@@ -50,6 +52,18 @@ export default {
       default() {
         return [];
       }
+    },
+    // All dom element class
+    classes: {
+      type: Object,
+      required: false,
+      default: () => get("simter.grid.classes", {})
+    },
+    // All dom element style
+    styles: {
+      type: Object,
+      required: false,
+      default: () => get("simter.grid.styles", {})
     }
   },
   data: function() {
@@ -70,6 +84,12 @@ export default {
     },
     subColumns() {
       return this.flattenColumns.filter(c => c.pid);
+    },
+    headerTableStyle() {
+      return concatClasses(this.styles.headerTable, {
+        left: this.v.scrollLeft + "px",
+        width: "calc(100% - " + this.v.scrollBarWidth + "px)"
+      });
     }
   },
   created() {
@@ -115,15 +135,9 @@ export default {
 </script>
 
 <style>
-/* default grid style */
 .st-grid {
   display: flex;
   flex-direction: column;
-  position: relative;
-}
-.st-grid > * {
-  flex: none;
-  position: relative;
 }
 .st-grid > .content {
   flex: 1 1 0%;
@@ -131,6 +145,7 @@ export default {
 }
 .st-grid > .header {
   overflow: hidden;
+  position: relative;
 }
 .st-grid > .header > table {
   position: relative;
@@ -143,15 +158,26 @@ export default {
 }
 .st-grid > .header > table > thead > tr > th,
 .st-grid > .content > table > tbody > tr > td {
-  padding: 0 0.4em;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .st-grid > .header > table > thead > tr,
 .st-grid > .content > table > tbody > tr {
-  height: 2em;
+  min-height: 2em;
 }
-.st-grid > .bottom > * {
-  display: inline-block;
+.st-grid > .bottom {
+  display: flex;
+  flex-direction: row;
+}
+.st-grid > .bottom > .st-button,
+.st-grid > .bottom > .st-button-group,
+.st-grid > .bottom > .st-pagebar {
+  margin: 0.25rem 0 0.25rem 0.25rem;
+}
+.st-cell {
+  padding: 0.25rem;
+}
+.st-cell.number {
+  text-align: right;
 }
 </style>

@@ -25,6 +25,18 @@ export default {
     rowIndex: {
       required: false,
       type: Number
+    },
+    // All dom element class
+    classes: {
+      type: Object,
+      required: false,
+      default() { return {}; }
+    },
+    // All dom element style
+    styles: {
+      type: Object,
+      required: false,
+      default() { return {}; }
     }
   },
   computed: {

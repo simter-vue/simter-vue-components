@@ -1,12 +1,25 @@
 <template>
-  <tr>
-    <td v-for="(cell, index) in cells" :key="index" :rowspan="cell.rowspan" :colspan="cell.colspan">
-      <component :is="$_getCellComponent(cell.column)" v-bind="$_getCellBind(cell)"></component>
+  <tr :class="['st-row', classes.root]" :style="styles.root">
+    <td
+      v-for="(cell, index) in cells"
+      :class="$_getTdClass(cell)"
+      :style="$_getTdStyle(cell)"
+      :key="index"
+      :rowspan="cell.rowspan"
+      :colspan="cell.colspan"
+    >
+      <component
+        :class="classes.cell"
+        :style="styles.cell"
+        :is="$_getCellComponent(cell.column)"
+        v-bind="$_getCellBind(cell)"
+      ></component>
     </td>
   </tr>
 </template>
 
 <script>
+import { concatClasses } from "../utils";
 // inner cell components
 import stCellIndex from "../cell/index.vue";
 import stCellSn from "../cell/sn.vue";
@@ -30,9 +43,35 @@ export default {
     cells: {
       required: true,
       type: Array
+    },
+    // All dom element class
+    classes: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      }
+    },
+    // All dom element style
+    styles: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      }
     }
   },
   methods: {
+    $_getTdClass(cell) {
+      return concatClasses(
+        "st-cell", // always
+        this.classes.cell, // custom
+        cell.column.class || "text" // column-define or default
+      );
+    },
+    $_getTdStyle(cell) {
+      return concatClasses(this.styles.cell, cell.column.style);
+    },
     $_getCellComponent(column) {
       return column.cell
         ? column.cell.component
