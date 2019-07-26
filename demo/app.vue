@@ -21,10 +21,23 @@
       :columns="columns"
       :rows="rows"
     >
+      <template #top>
+        <st-toolbar>
+          <st-button>New</st-button>
+          <st-button>Edit</st-button>
+          <st-button>Delete</st-button>
+          <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
+          <template #right>
+            <st-search :value.sync="fuzzyValue" @search="doSearch" @change="doChange"></st-search>
+          </template>
+        </st-toolbar>
+      </template>
       <template #bottom>
-        <st-button @click.native="refresh">Refresh</st-button>
-        <st-pagebar :page-no="pageNo" :page-size="pageSize" :total="total" @change="changePagebar"></st-pagebar>
-        <st-button-group :items="items" :active-item="activeItem" @change="changeItem"></st-button-group>
+        <st-button @click.native="doRefresh">Refresh</st-button>
+        <st-pagebar :page-no.sync="pageNo" :total="total" @change="changePageNo"></st-pagebar>
+        <st-button-group :value.sync="pageSize" :items="pageSizes" @change="changePageSize"></st-button-group>
+        <st-button @click.native="doExport">Export</st-button>
+        <st-button @click.native="doImport">Import</st-button>
       </template>
     </st-grid>
 
@@ -37,8 +50,17 @@ import stGrid from "../src/grid.vue";
 import stPagebar from "../src/pagebar.vue";
 import stButton from "../src/button.vue";
 import stButtonGroup from "../src/button-group.vue";
+import stSearch from "../src/search.vue";
+import stToolbar from "../src/toolbar.vue";
 export default {
-  components: { stGrid, stPagebar, stButton, stButtonGroup },
+  components: {
+    stGrid,
+    stPagebar,
+    stButton,
+    stButtonGroup,
+    stToolbar,
+    stSearch
+  },
   data() {
     return {
       unit: "em",
@@ -46,14 +68,28 @@ export default {
       widthValue: 44,
       customHeight: true,
       heightValue: 15,
+
+      // pagebar
       pageNo: 1,
       pageSize: 25,
       total: 101,
-      items: ["A", "B", "C"],
-      activeItem: "B",
+      // pagebar:pageSizes
+      pageSizes: [25, 50, 100],
+
+      // toolbar
+      statuses: ["Enabled", "Disabled", "All"],
+      status: "All",
+      fuzzyValue: "test",
+
+      // grid columns
       columns: [
-        { label: "SN", cell: "st-cell-sn", width: "2.5em" }, // test st-cell-sn (global)
-        { label: "Index", cell: "st-cell-index", width: "4em" }, // test st-cell-index
+        { label: "SN", cell: "st-cell-sn", width: "2.5em", class: "number" }, // test st-cell-sn (global)
+        {
+          label: "Index",
+          cell: "st-cell-index",
+          width: "4em",
+          class: "number"
+        }, // test st-cell-index
         { id: "id", label: "ID", width: "5em" }, // test st-cell-text (default)
         { id: "name", label: "Name", width: "7em" }, // test st-cell-text (default)
         { id: "website", label: "Website", width: "auto" }, // test st-cell-text (default),
@@ -135,23 +171,30 @@ export default {
     }
   },
   methods: {
-    refresh() {
-      console.log("Refresh");
+    changeStatus(status, index) {
+      console.log("changeStatus: status=%s, index=%s, this.status=%s", status, index, this.status);
     },
-    changePagebar(type, pageNo, pageSize) {
-      console.log("changePagebar: type=%s, pageNo=%s, pageSize=%s", type, pageNo, pageSize);
-      this.pageNo = pageNo;
-      this.pageSize = pageSize;
+    doSearch(value) {
+      console.log("doSearch: value=%s, fuzzy=%s", value, this.fuzzyValue);
     },
-    changeItem(item, index) {
-      console.log("changeItem: index=%s, item=%s", index, item);
+    doChange(value) {
+      console.log("doChange: value=%s, fuzzy=%s", value, this.fuzzyValue);
+    },
+    changePageNo(pageNo) {
+      console.log("changePageNo: pageNo=%s, this.pageNo=%s", pageNo, this.pageNo);
+    },
+    changePageSize(pageSize) {
+      console.log("changePageSize: pageSize=%s, this.pageSize=%s", pageSize, this.pageSize);
+    },
+    doRefresh() {
+      console.log("doRefresh");
+    },
+    doExport() {
+      console.log("doExport");
+    },
+    doImport() {
+      console.log("doImport");
     }
   }
 };
 </script>
-<style>
-input {
-  background-color: inherit;
-  color: inherit;
-}
-</style>
