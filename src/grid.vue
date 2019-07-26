@@ -174,6 +174,9 @@ export default {
 .st-grid > .bottom > .st-pagebar {
   margin: 0.25rem 0 0.25rem 0.25rem;
 }
+.st-row {
+  cursor: default;
+}
 .st-cell {
   padding: 0.25rem;
 }
