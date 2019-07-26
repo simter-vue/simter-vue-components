@@ -54,7 +54,8 @@ export default {
       default: function () { return []; }
     },
     // All dom element class
-    classes: { type: Object, required: false }
+    classes: { type: Object, required: false },
+    styles: { type: Object, required: false }
   },
   render(createElement, context) {
     let row = context.props.row

@@ -1,10 +1,5 @@
 <template>
-  <tr
-    :class="rootClass"
-    :style="styles.root"
-    @mouseover="hover = true"
-    @mouseout="hover = false"
-  >
+  <tr :class="rootClass" :style="rootStyle" @mouseover="hover = true" @mouseout="hover = false">
     <td
       v-for="(cell, index) in cells"
       :class="$_getTdClass(cell)"
@@ -33,6 +28,8 @@ import stCellHtml from "../cell/html.vue";
 import stCellFn from "../cell/fn.vue";
 
 export default {
+  // register all inner cell components
+  components: { stCellIndex, stCellSn, stCellText, stCellHtml, stCellFn },
   props: {
     /** The row's data */
     row: {
@@ -76,6 +73,12 @@ export default {
         this.classes.root, // custom
         this.hover ? this.classes.hover || "hover" : undefined, // custom or default
       );
+    },
+    rootStyle() {
+      return concatClasses(
+        this.styles.root, // custom
+        this.hover ? this.styles.hover : undefined, // custom or default
+      );
     }
   },
   methods: {
@@ -108,8 +111,6 @@ export default {
         ? Object.assign({}, cell.column.cell, main)
         : main;
     }
-  },
-  // register all inner cell components
-  components: { stCellIndex, stCellSn, stCellText, stCellHtml, stCellFn }
+  }
 };
 </script>
