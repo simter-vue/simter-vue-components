@@ -2,6 +2,7 @@
   <component
     :is="tag"
     :class="rootClass"
+    :style="rootStyle"
     type="button"
     @mouseover="hover = true"
     @mouseout="hover = false"
@@ -33,6 +34,11 @@ export default {
       type: Object,
       required: false,
       default: () => get("simter.button.classes", {})
+    },
+    styles: {
+      type: Object,
+      required: false,
+      default: () => get("simter.button.styles", {})
     }
   },
   data() {
@@ -46,6 +52,13 @@ export default {
         this.hover ? this.classes.hover || "hover" : undefined, // custom or default
         this.active ? this.classes.active || "active" : undefined // custom or default
       );
+    },
+    rootStyle() {
+      return concatClasses(
+        this.styles.root, // custom
+        this.hover ? this.styles.hover : undefined, // custom or default
+        this.active ? this.styles.active : undefined // custom or default
+      );
     }
   }
 };
@@ -54,5 +67,11 @@ export default {
 <style>
 .st-button {
   cursor: pointer;
+}
+.st-button.active {
+  color: blue;
+}
+.st-button.hover {
+  text-decoration: underline;
 }
 </style>
