@@ -25,6 +25,7 @@
               :sub-columns="subColumns"
               :classes="classes.contentRow || {}"
               :styles="styles.contentRow || {}"
+              v-on="rowAndCellEventListeners"
             ></st-row>
           </template>
         </tbody>
@@ -90,6 +91,16 @@ export default {
         left: this.v.scrollLeft + "px",
         width: "calc(100% - " + this.v.scrollBarWidth + "px)"
       });
+    },
+    /** row and cell events to transfer */
+    rowAndCellEventListeners() {
+      const events = {};
+      Object.keys(this.$listeners)
+        .filter(key => key.startsWith("row-") || key.startsWith("cell-"))
+        .forEach(key => {
+          events[key] = this.$listeners[key];
+        });
+      return events;
     }
   },
   created() {

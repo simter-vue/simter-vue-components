@@ -76,7 +76,8 @@ export default {
             rowIndex: rowIndex
           }
         })
-      }, context.props.classes, context.props.styles)
+      }, context.props.classes, context.props.styles),
+      on: context.listeners
     }))
 
     // sub trs
@@ -95,7 +96,8 @@ export default {
               rowIndex: rowIndex
             }
           })
-        }, context.props.classes, context.props.styles)
+        }, context.props.classes, context.props.styles),
+        on: context.listeners
       }))
     }
 
