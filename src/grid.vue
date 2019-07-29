@@ -39,8 +39,8 @@
 <script>
 import { get, flatten, concatClasses } from "./utils";
 import stRow from "./row/row";
-import stColgroup from "./colgroup";
-import stThead from "./thead";
+import stColgroup from "./colgroup.vue";
+import stThead from "./thead.vue";
 
 export default {
   components: { stColgroup, stThead, stRow },
