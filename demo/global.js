@@ -8,14 +8,18 @@ window.simter = {
       bottom: "my-bottom",
       contentRow: {
         root: "my-row",
-        cell: "my-cell",
         hover: "my-hover",
         active: "my-active",
+        td: "my-cell",
       }
     },
     styles: {
       headerTable: { border: "1px solid gray" },
-      contentTable: { border: "1px solid gray" }
+      contentTable: { border: "1px solid gray" },
+      contentRow: {
+        hover: { "background-color": "#222" },
+        active: { "background-color": "#444" }
+      }
     }
   }
 }

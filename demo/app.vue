@@ -20,6 +20,8 @@
       :style="{width: width, height: height, border: '1px solid #666'}"
       :columns="columns"
       :rows="rows"
+      @row-click="clickRow"
+      @row-dblclick="dblclickRow"
     >
       <template #top>
         <st-toolbar>
@@ -66,7 +68,7 @@ export default {
       unit: "em",
       customWidth: true,
       widthValue: 44,
-      customHeight: true,
+      customHeight: false,
       heightValue: 15,
 
       // pagebar
@@ -83,7 +85,12 @@ export default {
 
       // grid columns
       columns: [
-        { label: "SN", cell: "st-cell-sn", width: "2.5em", class: "number" }, // test st-cell-sn (global)
+        {
+          label: "SN",
+          cell: "st-cell-sn-selectable",
+          width: "2.5em",
+          class: "number"
+        }, // test st-cell-sn (global)
         {
           label: "Index",
           cell: "st-cell-index",
@@ -94,29 +101,34 @@ export default {
         { id: "name", label: "Name", width: "7em" }, // test st-cell-text (default)
         { id: "website", label: "Website", width: "auto" }, // test st-cell-text (default),
         {
-          // test st-cell-fn
+          // test render html
           label: "Link",
           width: "3em",
-          cell: {
-            component: "st-cell-fn",
-            fn(row, rowIndex) {
-              return row.website
+          cell(row, index) {
+            return {
+              component: "st-cell-html",
+              value: row.website
                 ? `<a href="https://${row.website}">Go</a>`
-                : "";
-            },
-            isHtml: true
+                : "",
+              click({ target, row, value }) {
+                console.log("click cell: value=%s", value);
+              }
+            };
           }
         },
         {
           label: "Partners",
           children: [
-            { label: "GSN", cell: "st-cell-sn", width: "3.5em" }, // test st-cell-sn (global)
+            // test global sn
+            { label: "GSN", cell: "st-cell-sn", width: "3.5em" },
+            // test local selectable sn
             {
               pid: "partners",
               label: "SN",
-              cell: "st-cell-sn",
+              cell: "st-cell-sn-selectable",
               width: "2.5em"
-            }, // test st-cell-sn (local)
+            },
+            // test local sn
             { pid: "partners", id: "name", label: "Name", width: "4em" }
           ]
         },
@@ -126,7 +138,7 @@ export default {
             {
               pid: "commiters",
               label: "SN",
-              cell: "st-cell-sn",
+              cell: "st-cell-sn-selectable",
               width: "2.5em"
             },
             { pid: "commiters", id: "name", label: "Name", width: "4em" }
@@ -172,7 +184,12 @@ export default {
   },
   methods: {
     changeStatus(status, index) {
-      console.log("changeStatus: status=%s, index=%s, this.status=%s", status, index, this.status);
+      console.log(
+        "changeStatus: status=%s, index=%s, this.status=%s",
+        status,
+        index,
+        this.status
+      );
     },
     doSearch(value) {
       console.log("doSearch: value=%s, fuzzy=%s", value, this.fuzzyValue);
@@ -181,10 +198,18 @@ export default {
       console.log("doChange: value=%s, fuzzy=%s", value, this.fuzzyValue);
     },
     changePageNo(pageNo) {
-      console.log("changePageNo: pageNo=%s, this.pageNo=%s", pageNo, this.pageNo);
+      console.log(
+        "changePageNo: pageNo=%s, this.pageNo=%s",
+        pageNo,
+        this.pageNo
+      );
     },
     changePageSize(pageSize) {
-      console.log("changePageSize: pageSize=%s, this.pageSize=%s", pageSize, this.pageSize);
+      console.log(
+        "changePageSize: pageSize=%s, this.pageSize=%s",
+        pageSize,
+        this.pageSize
+      );
     },
     doRefresh() {
       console.log("doRefresh");
@@ -194,6 +219,18 @@ export default {
     },
     doImport() {
       console.log("doImport");
+    },
+    clickRow($event) {
+      console.log("clickRow: $event", JSON.stringify($event));
+    },
+    dblclickRow($event) {
+      console.log("dblclickRow: $event=%s", JSON.stringify($event));
+    },
+    changeRowSelected($event) {
+      console.log("changeRowSelected: $event=%s", JSON.stringify($event));
+    },
+    changeCellSelected($event) {
+      console.log("changeCellSelected: $event=%s", JSON.stringify($event));
     }
   }
 };
