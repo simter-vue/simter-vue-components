@@ -16,18 +16,12 @@
       <table border="1" :class="classes.contentTable" :style="styles.contentTable">
         <st-colgroup :columns="columns"></st-colgroup>
         <tbody>
-          <template v-for="(row, index) in rows">
-            <st-row
-              :key="index"
-              :row="row"
-              :index="index"
-              :columns="flattenColumns"
-              :sub-columns="subColumns"
-              :classes="classes.contentRow || {}"
-              :styles="styles.contentRow || {}"
-              v-on="rowAndCellEventListeners"
-            ></st-row>
-          </template>
+          <st-data-row
+            v-for="(row, index) in rows"
+            :key="index"
+            v-bind="dataRowProps(row, index)"
+            v-on="dataRowListeners"
+          ></st-data-row>
         </tbody>
       </table>
     </div>
@@ -39,12 +33,31 @@
 
 <script>
 import { get, flatten, concatClasses } from "./utils";
-import stRow from "./row/row";
+import stDataRow from "./row/data-row";
 import stColgroup from "./colgroup.vue";
 import stThead from "./thead.vue";
+import tableRowVue from "./row/table-row.vue";
+
+/**
+ * [localRow, rowIndex, cellValue].
+ *
+ * If column has a pid, then:
+ *   1. return `[row[column.pid][subRowIndex], subRowIndex, row[column.pid][subRowIndex][column.id]]`
+ *      if row[column.pid].length > subRowIndex,
+ *   2. or return [undefined, undefined, undefined]
+ *      if row[column.pid].length <= subRowIndex.
+ * Otherwise return `[row, mainRowIndex, row[column.id]]`.
+ */
+function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
+  return column.pid
+    ? row[column.pid] && row[column.pid].length > subRowIndex
+      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell
+      : { empty: true } // empty cell
+    : { empty: false, value: row[column.id] }; // top cell
+}
 
 export default {
-  components: { stColgroup, stThead, stRow },
+  components: { stColgroup, stThead, stDataRow },
   props: {
     columns: { type: Array, required: true },
     rows: {
@@ -76,7 +89,9 @@ export default {
         timer: null,
         contentEl: null,
         lastColumnIsAutoWidth: false
-      }
+      },
+      // all selected rows
+      selection: []
     };
   },
   computed: {
@@ -92,15 +107,32 @@ export default {
         width: "calc(100% - " + this.v.scrollBarWidth + "px)"
       });
     },
-    /** row and cell events to transfer */
-    rowAndCellEventListeners() {
+    /** DataRow listeners to transfer */
+    dataRowListeners() {
       const events = {};
       Object.keys(this.$listeners)
         .filter(key => key.startsWith("row-") || key.startsWith("cell-"))
         .forEach(key => {
           events[key] = this.$listeners[key];
         });
+      console.log("dataRowListeners=%s", JSON.stringify(events));
       return events;
+    },
+    // [[tableRows], ...], index follow rows
+    tableRows() {
+      // DataRow OneToMany TableRow
+      let all = [];
+      let preTableRowCount = 0;
+      this.rows.forEach((dataRow, dataRowIndex) => {
+        let subTableRows = this.dataRowToTableRow(
+          dataRow,
+          dataRowIndex,
+          preTableRowCount
+        );
+        all.push(subTableRows);
+        preTableRowCount += subTableRows.length;
+      });
+      return all;
     }
   },
   created() {
@@ -131,6 +163,63 @@ export default {
     if (!this.v.lastColumnIsAutoWidth) clearInterval(this.v.timer);
   },
   methods: {
+    // DataRow OneToMany TableRow
+    // TableRow: {index, cells, classes, styles}
+    // TableCell: {rowspan, colspan, value, classes, styles}
+    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {
+      let tableRows = [];
+
+      // main TableRow
+      let nestedIndex = 0;
+      tableRows.push({
+        tableRowIndex: preTableRowCount,
+        dataRowIndex: dataRowIndex,
+        index: nestedIndex++,
+        row: dataRow,
+        classes: this.classes.contentRow,
+        styles: this.styles.contentRow,
+        cells: this.flattenColumns.map(column => {
+          let { empty, value } = getCellConfigInfo(
+            dataRow,
+            column,
+            0,
+            dataRowIndex
+          );
+          let c = { column: column, empty: empty };
+          if (!empty) c.value = value;
+          let rowspan = column.pid ? 1 : dataRow.rowspan;
+          if (rowspan > 1) c.rowspan = rowspan;
+          return c;
+        })
+      });
+
+      // sub TableRows
+      let len = dataRow.rowspan || 1;
+      for (let i = 1; i < len; i++) {
+        tableRows.push({
+          tableRowIndex: preTableRowCount + nestedIndex,
+          dataRowIndex: dataRowIndex,
+          index: nestedIndex++,
+          row: dataRow,
+          classes: this.classes.contentRow,
+          styles: this.styles.contentRow,
+          cells: this.subColumns.map(column => {
+            let { empty, value } = getCellConfigInfo(dataRow, column, i);
+            let c = { column: column, empty: empty };
+            if (!empty) c.value = value;
+            return c;
+          })
+        });
+      }
+      return tableRows;
+    },
+    /** DataRow props to transfer */
+    dataRowProps(row, index) {
+      let props = {
+        tableRows: this.tableRows[index]
+      };
+      return props;
+    },
     $_watchHorizonScrollBarSize() {
       let t;
       this.v.timer = setInterval(() => {
@@ -140,6 +229,9 @@ export default {
           this.v.scrollBarWidth = t;
         }
       }, 100);
+    },
+    selectRow($event) {
+      console.log("selectRow: $event=%s", JSON.stringify($event));
     }
   }
 };

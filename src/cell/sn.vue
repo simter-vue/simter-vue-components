@@ -1,5 +1,5 @@
 <template>
-  <span :class="classes.root" :style="styles.root">{{rowIndex >= 0 ? rowIndex + 1 : ""}}</span>
+  <span :class="classes.root" :style="styles.root">{{dataRowIndex >= 0 ? dataRowIndex + 1 : ""}}</span>
 </template>
 
 <script>

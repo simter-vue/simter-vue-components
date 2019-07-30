@@ -1,31 +1,11 @@
 export default {
   props: {
-    /** The backend value */
-    value: { required: true },
-    /** The origin column option */
+    // Whether is a empty cell
+    empty: { required: false, default: false },
+    // Cell value
+    value: { required: false },
+    // Column option
     column: { type: Object, required: false },
-    /** 
-     * The row's data.
-     * 
-     * If this cell is a nested array cell, this row is the nested array item data,
-     * not the parent component's row data. If want to use the parent component's row data,
-     * call this.$parent.row.
-     */
-    row: {
-      required: false,
-      type: Object
-    },
-    /** 
-     * The row's index.
-     * 
-     * If this cell is a nested array cell, this index is the nested array item index,
-     * not the parent component's row index. If want to use the parent component's row index,
-     * call this.$parent.index.
-     */
-    rowIndex: {
-      required: false,
-      type: Number
-    },
     // All dom element class
     classes: {
       type: Object,
@@ -40,17 +20,21 @@ export default {
     }
   },
   computed: {
-    /** The parent component's row data */
-    parentRow() {
-      return this.$parent.row
+    // DataRow.value
+    row() {
+      return this.$parent.dataRowValue
     },
-    /** The parent component's row index */
-    parentRowIndex() {
+    // TableRow.index
+    index() {
       return this.$parent.index
     },
-    /** Whether this cell is a nested array item cell */
-    isNested() {
-      return this.$parent.row !== this.row
+    // TableRow.tableRowIndex
+    tableRowIndex() {
+      return this.$parent.tableRowIndex
+    },
+    // TableRow.dataRowIndex
+    dataRowIndex() {
+      return this.$parent.dataRowIndex
     }
   }
 }
