@@ -9,7 +9,7 @@ window.simter = {
       contentRow: {
         root: "my-row",
         hover: "my-hover",
-        active: "my-active",
+        selected: "my-selected",
         td: "my-cell",
       }
     },
@@ -18,7 +18,7 @@ window.simter = {
       contentTable: { border: "1px solid gray" },
       contentRow: {
         hover: { "background-color": "#222" },
-        active: { "background-color": "#444" }
+        selected: { "background-color": "#444" }
       }
     }
   }
