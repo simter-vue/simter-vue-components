@@ -1,6 +1,6 @@
 <template>
   <div :class="['st-grid', classes.root]">
-    <div :class="classes.top" v-if="$slots.top && $slots.top.length > 0">
+    <div :class="['top', classes.top]" v-if="$slots.top && $slots.top.length > 0">
       <slot name="top"></slot>
     </div>
     <div :class="['header', classes.header]">
@@ -39,14 +39,14 @@ import stThead from "./thead.vue";
 import tableRowVue from "./row/table-row.vue";
 
 /**
- * [localRow, rowIndex, cellValue].
+ * { empty, value }.
  *
  * If column has a pid, then:
- *   1. return `[row[column.pid][subRowIndex], subRowIndex, row[column.pid][subRowIndex][column.id]]`
+ *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`
  *      if row[column.pid].length > subRowIndex,
- *   2. or return [undefined, undefined, undefined]
+ *   2. or return { empty: true }
  *      if row[column.pid].length <= subRowIndex.
- * Otherwise return `[row, mainRowIndex, row[column.id]]`.
+ * Otherwise return `{ empty: false, value: row[column.id] }`.
  */
 function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
   return column.pid
