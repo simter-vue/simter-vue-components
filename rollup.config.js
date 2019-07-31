@@ -4,7 +4,6 @@ import vue from 'rollup-plugin-vue';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
-import builtins from 'rollup-plugin-node-builtins';
 
 const banner = `/*!
 * ${pkg.name} v${pkg.version}
@@ -27,7 +26,6 @@ export default [
       banner: banner
     },
     plugins: [
-      builtins(),
       json(),
       resolve({ modulesOnly: true, only: [/^simter-vue-.*$/] }),
       commonjs(),
@@ -50,7 +48,6 @@ export default [
       { file: pkg.module, format: 'esm', banner: banner }
     ],
     plugins: [
-      builtins(),
       json(),
       commonjs(),
       vue(),
