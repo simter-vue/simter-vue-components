@@ -228,8 +228,12 @@ export default {
       }, 100);
     },
     selectRow(row, selected) {
-      if (selected) this.selection.push(row);
-      else this.selection.splice(this.selection.indexOf(row), 1);
+      let index = this.selection.indexOf(row);
+      if (selected) {
+        if (index === -1) this.selection.push(row);
+      } else {
+        if (index !== -1) this.selection.splice(index, 1);
+      }
     }
   }
 };
