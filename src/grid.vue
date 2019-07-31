@@ -112,10 +112,7 @@ export default {
       const events = {};
       Object.keys(this.$listeners)
         .filter(key => key.startsWith("row-") || key.startsWith("cell-"))
-        .forEach(key => {
-          events[key] = this.$listeners[key];
-        });
-      console.log("dataRowListeners=%s", JSON.stringify(events));
+        .forEach(key => (events[key] = this.$listeners[key]));
       return events;
     },
     // [[tableRows], ...], index follow rows
@@ -139,7 +136,7 @@ export default {
     // 1.1. find pid from columns config
     let pids = this.subColumns.map(c => c.pid);
 
-    // 2.2. auto set row.rowspan = max(row[pid].length) if row.rowspan not exists
+    // 1.2. auto set row.rowspan = max(row[pid].length) if row.rowspan not exists
     this.rows.forEach(row => {
       let maxSize = Math.max(
         ...pids.map(pid => (row[pid] ? row[pid].length : 1))
@@ -230,8 +227,9 @@ export default {
         }
       }, 100);
     },
-    selectRow($event) {
-      console.log("selectRow: $event=%s", JSON.stringify($event));
+    selectRow(row, selected) {
+      if (selected) this.selection.push(row);
+      else this.selection.splice(this.selection.indexOf(row), 1);
     }
   }
 };

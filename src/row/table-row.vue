@@ -157,9 +157,13 @@ export default {
         }
 
         // 1. do actual work for click
+        this.v.selected = !this.v.selected;
+
+        // 1.0. modify grid.selection
+        if (typeof this.$parent.selectRow === "function")
+          this.$parent.selectRow(this.row, this.v.selected);
 
         // 1.1. emit status change event
-        this.v.selected = !this.v.selected;
         this.$emit("update:selected", this.v.selected);
 
         // 1.2. invoke column.cell.on.click function
