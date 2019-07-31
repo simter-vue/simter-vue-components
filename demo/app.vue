@@ -17,6 +17,7 @@
       {{heightValue}} {{unit}}
     </div>
     <st-grid
+      ref="grid"
       :style="{width: width, height: height, border: '1px solid #666'}"
       :columns="columns"
       :rows="rows"
@@ -221,7 +222,8 @@ export default {
       console.log("doImport");
     },
     clickRow($event) {
-      console.log("clickRow: $event", JSON.stringify($event));
+      console.log("clickRow: $event=%s", JSON.stringify($event));
+      console.log("clickRow: selection=%s", JSON.stringify(this.$refs.grid.selection));
     },
     dblclickRow($event) {
       console.log("dblclickRow: $event=%s", JSON.stringify($event));
