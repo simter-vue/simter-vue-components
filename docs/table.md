@@ -13,21 +13,19 @@ Props/columns:
     cell: "st-cell-sn",       // String > component name, default st-cell
     cell: {                   // {}
       component: "st-cell-sn",  // component name or config
-      text: "test",             // innerText
-      html: "<b>test</b>",       // innerHTML
+      value: "test",            // custom value
       click({target, row, value}){
         console.log("click by column.cell.on.click config")
       }
     },
     cell(row, index) { // function > content by st-cell component
-      return "test"             // innerText
+      return "st-cell-x"        // component name
       return {          
-        html: "<b>test</b>"     // innerHTML
+        value: "<b>test</b>"     / custom value
       }
       return {                  // full {}
-        component: "st-cell-sn",
-        text: "",
-        html: "<b>test</b>"
+        component: "st-cell-x",
+        value: "<b>test</b>"
       }
     },
     class: "test",
