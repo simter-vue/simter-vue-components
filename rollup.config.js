@@ -6,6 +6,13 @@ import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
 import builtins from 'rollup-plugin-node-builtins';
 
+const banner = `/*!
+* ${pkg.name} v${pkg.version}
+* ${pkg.repository} 
+* @author RJ.Hwang <rongjihuang@gmail.com>
+* @license MIT
+*/`
+
 const input = "src/components.js";
 export default [
   // UMD build for Browser
@@ -17,6 +24,7 @@ export default [
       name: pkg.name,
       globals: { 'vue': 'Vue' },
       file: pkg.browser,
+      banner: banner
     },
     plugins: [
       builtins(),
@@ -38,8 +46,8 @@ export default [
     external: ['vue', 'simter-vue-colgroup', 'simter-vue-thead'],
     input: input,
     output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'esm' }
+      { file: pkg.main, format: 'cjs', banner: banner },
+      { file: pkg.module, format: 'esm', banner: banner }
     ],
     plugins: [
       builtins(),
