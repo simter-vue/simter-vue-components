@@ -4,7 +4,7 @@
       <slot name="top"></slot>
     </div>
     <div :class="['header', classes.header]">
-      <table border="1" :class="classes.headerTable" :style="headerTableStyle">
+      <table :class="classes.headerTable" :style="headerTableStyle">
         <st-colgroup :columns="columns"></st-colgroup>
         <st-thead :columns="columns"></st-thead>
       </table>
@@ -13,7 +13,7 @@
       :class="['content', classes.content]"
       @scroll="v.scrollLeft = -1 * $event.target.scrollLeft"
     >
-      <table border="1" :class="classes.contentTable" :style="styles.contentTable">
+      <table :class="classes.contentTable" :style="styles.contentTable">
         <st-colgroup :columns="columns"></st-colgroup>
         <tbody>
           <st-data-row
