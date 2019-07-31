@@ -16,7 +16,6 @@ import stCellSn from "./cell/sn.vue";
 import stCellSnSelectable from "./cell/sn-selectable.vue";
 import stCellText from "./cell/text.vue";
 import stCellHtml from "./cell/html.vue";
-import stCellFn from "./cell/fn.vue";
 // grid:pagebar
 import stPagebar from "./pagebar.vue";
 
@@ -40,8 +39,6 @@ const components = {
   "st-cell-sn-selectable": [version, stCellSnSelectable],
   "st-cell-text": [version, stCellText],
   "st-cell-html": [version, stCellHtml],
-  "st-cell-fn": [version, stCellFn],
-  "st-cell-index": [version, stCellIndex],
 
   "st-pagebar": [version, stPagebar],
 

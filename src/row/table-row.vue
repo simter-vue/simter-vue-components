@@ -33,7 +33,6 @@ import stCellSn from "../cell/sn.vue";
 import stCellSnSelectable from "../cell/sn-selectable.vue";
 import stCellText from "../cell/text.vue";
 import stCellHtml from "../cell/html.vue";
-import stCellFn from "../cell/fn.vue";
 import { setTimeout, clearTimeout } from "timers";
 const DEFAULT_CELL_COMPONENT = "st-cell-text";
 
@@ -44,8 +43,7 @@ export default {
     stCellSn,
     stCellSnSelectable,
     stCellText,
-    stCellHtml,
-    stCellFn
+    stCellHtml
   },
   props: {
     // DataRow.value
