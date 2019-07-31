@@ -7,9 +7,9 @@
         :key="'cell-' + cellIndex"
         :colspan="cell.colspan"
         :rowspan="cell.rowspan"
-        :class="[$_classes.cell, cell.headerClass]"
+        :class="['st-cell', $_classes.cell, cell.headerClass]"
         :style="[$_styles.cell, cell.headerStyle]"
-        >{{cell.label || cell}}</th>
+        >{{cell.hasOwnProperty("label") ? cell.label : cell}}</th>
   </tr>
 </thead>
 </template>

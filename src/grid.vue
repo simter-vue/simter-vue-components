@@ -6,7 +6,7 @@
     <div :class="['header', classes.header]">
       <table :class="classes.headerTable" :style="headerTableStyle">
         <st-colgroup :columns="columns"></st-colgroup>
-        <st-thead :columns="columns"></st-thead>
+        <st-thead :columns="columns" :classes="classes.thead" :styles="styles.thead"></st-thead>
       </table>
     </div>
     <div
