@@ -26,14 +26,13 @@
 </template>
 
 <script>
-import { concatClasses } from "../utils";
+import { g, concatClasses } from "../utils";
 // inner cell components
 import stCellIndex from "../cell/index.vue";
 import stCellSn from "../cell/sn.vue";
 import stCellSnSelectable from "../cell/sn-selectable.vue";
 import stCellText from "../cell/text.vue";
 import stCellHtml from "../cell/html.vue";
-import { setTimeout, clearTimeout } from "timers";
 const DEFAULT_CELL_COMPONENT = "st-cell-text";
 
 export default {
@@ -140,8 +139,8 @@ export default {
     },
     clickRow(targetEl) {
       // delay click event for dblclick event to clear it
-      if (this.v.clickTimer) clearTimeout(this.v.clickTimer);
-      this.v.clickTimer = setTimeout(() => {
+      if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
+      this.v.clickTimer = g.setTimeout(() => {
         // find cell
         let td = targetEl.closest("td");
         if (!td) {
@@ -186,7 +185,7 @@ export default {
     },
     dblclickRow() {
       // clear click event
-      if (this.v.clickTimer) clearTimeout(this.v.clickTimer);
+      if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
 
       // 1. do actual work for dblclick
       let old = this.v.selected;

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { get, flatten, concatClasses } from "./utils";
+import { g, get, flatten, concatClasses } from "./utils";
 import stDataRow from "./row/data-row";
 import stColgroup from "./colgroup.vue";
 import stThead from "./thead.vue";
@@ -157,7 +157,7 @@ export default {
     }
   },
   destroyed() {
-    if (!this.v.lastColumnIsAutoWidth) clearInterval(this.v.timer);
+    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
   },
   methods: {
     // DataRow OneToMany TableRow
@@ -219,7 +219,7 @@ export default {
     },
     $_watchHorizonScrollBarSize() {
       let t;
-      this.v.timer = setInterval(() => {
+      this.v.timer = g.setInterval(() => {
         t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;
         if (t != this.v.scrollBarWidth) {
           // console.log("scrollBarWidth: %s > %s", this.v.scrollBarWidth, t);
