@@ -36,7 +36,9 @@
     "build": "yarn clean && rollup -c && yarn min-js",
     "dev": "rollup -c -w",
     "test": "ava",
-    "min-js": "uglifyjs --comments /^!/ dist/simter-vue-components.umd.js -o dist/simter-vue-components.umd.min.js --source-map=url"
+    "min-js": "yarn min-amd && yarn min-umd",
+    "min-amd": "uglifyjs --comments /^!/ dist/simter-vue-components.amd.js -o dist/simter-vue-components.amd.min.js --source-map=url",
+    "min-umd": "uglifyjs --comments /^!/ dist/simter-vue-components.umd.js -o dist/simter-vue-components.umd.min.js --source-map=url"
   },
   "ava": {
     "require": [

@@ -18,13 +18,10 @@ export default [
   {
     external: ['vue'],
     input: input,
-    output: {
-      format: 'umd',
-      name: pkg.name,
-      globals: { 'vue': 'Vue' },
-      file: pkg.browser,
-      banner: banner
-    },
+    output: [
+      { file: pkg.browser, format: 'umd', banner: banner, globals: { 'vue': 'Vue' }, name: pkg.name },
+      { file: pkg["browser-amd"], format: 'amd', banner: banner, globals: { 'vue': 'Vue' } }
+    ],
     plugins: [
       json(),
       resolve({ modulesOnly: true, only: [/^simter-vue-.*$/] }),
