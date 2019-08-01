@@ -1,0 +1,32 @@
+body {
+  background-color: #000;
+  color: #ccc;
+  margin: 1em
+}
+
+a {
+  color: #888
+}
+
+h2 {
+  color: #eee;
+  margin: 1rem 0 .1rem 0
+}
+
+p {
+  margin: 0 0 1rem 0
+}
+
+h3, b, .template {
+  color: #bbb
+}
+
+.block {
+  margin: 1em 0
+}
+
+.icon-create {
+  width: 16px;
+  height: 16px;
+  background-color: #ccc;
+}

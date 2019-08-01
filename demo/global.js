@@ -21,5 +21,12 @@ window.simter = {
         rowSelected: { "background-color": "#444" }
       }
     }
+  },
+  button: {
+    styles:{
+      root: { "cursor": "pointer" },
+      hover: { "text-decoration": "underline" },
+      selected: { "color": "blue" }
+    }
   }
 }
