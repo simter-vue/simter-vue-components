@@ -1,7 +1,7 @@
 <template>
   <tr
-    :class="rootClass"
-    :style="rootStyle"
+    :class="rowClass"
+    :style="rowStyle"
     @mouseover="v.hover = true"
     @mouseout="v.hover = false"
     @click.stop="clickRow($event.target)"
@@ -10,16 +10,16 @@
     <td
       v-for="(cell, index) in cells"
       :key="index"
-      :class="tdClass(cell)"
-      :style="tdStyle(cell)"
+      :class="cellClass(cell)"
+      :style="cellStyle(cell)"
       :rowspan="cell.rowspan"
       :colspan="cell.colspan"
     >
       <component
-        :class="classes.cell"
-        :style="styles.cell"
+        :class="classes.cellComponent"
+        :style="styles.cellComponent"
         :is="columnCellRefactors[index].component"
-        v-bind="cellProps(cell, index)"
+        v-bind="cellComponentProps(cell, index)"
       ></component>
     </td>
   </tr>
@@ -77,19 +77,19 @@ export default {
     return { v: { hover: false, selected: false, clickTimer: null } };
   },
   computed: {
-    rootClass() {
+    rowClass() {
       return concatClasses(
         "st-row", // always
-        this.classes.root, // custom
-        this.v.hover ? this.classes.hover || "hover" : undefined, // custom or default
-        this.v.selected ? this.classes.selected || "selected" : undefined // custom or default
+        this.classes.row, // custom
+        this.v.hover ? this.classes.rowHover || "hover" : undefined, // custom or default
+        this.v.selected ? this.classes.rowSelected || "selected" : undefined // custom or default
       );
     },
-    rootStyle() {
+    rowStyle() {
       return concatClasses(
-        this.styles.root, // custom
-        this.v.hover ? this.styles.hover : undefined, // custom or default
-        this.v.selected ? this.styles.selected : undefined // custom or default
+        this.styles.row, // custom
+        this.v.hover ? this.styles.rowHover : undefined, // custom or default
+        this.v.selected ? this.styles.rowSelected : undefined // custom or default
       );
     },
     // refactor column.cell (String|{}|Function) to standard structure ({})
@@ -114,17 +114,17 @@ export default {
     }
   },
   methods: {
-    tdClass(cell) {
+    cellClass(cell) {
       return concatClasses(
         "st-cell", // always
-        this.classes.td, // define in Grid.classes.contentRow
+        this.classes.cell, // define in Grid.classes.contentRow
         (cell.column && cell.column.class) || "text" // define in Grid.columns[index].class
       );
     },
-    tdStyle(cell) {
-      return concatClasses(this.styles.td, cell.column && cell.column.style);
+    cellStyle(cell) {
+      return concatClasses(this.styles.cell, cell.column && cell.column.style);
     },
-    cellProps(cell, index) {
+    cellComponentProps(cell, index) {
       // { empty, column, value, classes, styles }
       let t = this.columnCellRefactors[index];
       let main = {

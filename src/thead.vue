@@ -1,15 +1,15 @@
 <template>
-<thead :class="$_classes.thead" :style="$_styles.thead">
+<thead >
   <tr v-for="(row, rowIndex) in rows" :key="'row-' + rowIndex"
-      :class="$_classes.row"
-      :style="$_styles.row">
-    <th v-for="(cell, cellIndex) in row"
-        :key="'cell-' + cellIndex"
+      :class="['st-row', classes.row]"
+      :style="styles.row">
+    <td v-for="(cell, index) in row"
+        :key="index"
         :colspan="cell.colspan"
         :rowspan="cell.rowspan"
-        :class="['st-cell', $_classes.cell, cell.headerClass]"
-        :style="[$_styles.cell, cell.headerStyle]"
-        >{{cell.hasOwnProperty("label") ? cell.label : cell}}</th>
+        :class="['st-cell text', classes.cell]"
+        :style="styles.cell"
+        >{{cell.hasOwnProperty("label") ? cell.label : cell}}</td>
   </tr>
 </thead>
 </template>
@@ -20,17 +20,17 @@ const component = {
   props: {
     // The column's 'label' config array, like ['Column1', 'Column2', ...]
     columns: { type: Array, required: true },
-    // element class: {thead: ..., tr: ..., th: ...}
+    // element class: { row, cell }
     classes: {
-      type: String | Object | Array,
+      type: Object,
       required: false,
       default() {
-        return [];
+        return {};
       }
     },
-    // element style: {thead: ..., tr: ..., th: ...}
+    // element style: { row, cell }
     styles: {
-      type: String | Object | Array,
+      type: Object,
       required: false,
       default() {
         return {};
@@ -43,24 +43,6 @@ const component = {
      */
     rows() {
       return transform(deepClone(this.columns));
-    },
-    /**
-     * Convert String | Array to Object {table: ...}
-     */
-    $_classes() {
-      if (typeof this.classes === "string" || Array.isArray(this.classes))
-        return { thead: this.classes };
-      else if (typeof this.classes === "object") return this.classes;
-      else return {};
-    },
-    /**
-     * Convert String | Array to Object {table: ...}
-     */
-    $_styles() {
-      if (typeof this.styles === "string" || Array.isArray(this.styles))
-        return { thead: this.styles };
-      else if (typeof this.styles === "object") return this.styles;
-      else return {};
     }
   }
 };

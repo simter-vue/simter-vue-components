@@ -52,9 +52,15 @@ Props:
 | classes | false    | {}        | -            |             |
 | styles  | false    | {}        | -            |             |
 
-- classes: { ..., contentRow, contentCell }
-- styles: { ..., contentRow, contentCell }
-- contentRow: { ..., cell }
+The structure of classes or styles:
+
+```
+{
+  root, top, bottom,
+  header,  headerTable,  headerRow:  { row,                        cell, cellComponent: { root, ...} },
+  content, contentTable, contentRow: { row, rowHover, rowSelected, cell, cellComponent: { root, ...} }
+}
+```
 
 Events:
 
