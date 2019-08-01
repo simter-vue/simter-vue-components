@@ -35,7 +35,11 @@ function get(key, defaultValue) {
   return typeof value === "undefined" ? defaultValue : value
 }
 
-/** concat all class */
+/** 
+ * concat all class.
+ * 
+ * each class is String, Array or undefined.
+ */
 function concatClasses(...classes) {
   return classes.reduce((a, b) => {
     if (typeof b === "undefined") return a
@@ -46,4 +50,16 @@ function concatClasses(...classes) {
   }, [])
 }
 
-export { g, get, flatten, concatClasses }
+/** 
+ * concat all style.
+ * 
+ * each style is Json-Object or undefined.
+ */
+function concatStyles(...styles) {
+  return styles.reduce((a, b) => {
+    if (typeof b === "undefined") return a
+    else return Object.assign(a, b)
+  }, {})
+}
+
+export { g, get, flatten, concatClasses, concatStyles }

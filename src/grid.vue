@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { g, get, flatten, concatClasses } from "./utils";
+import { g, get, flatten, concatStyles } from "./utils";
 import stDataRow from "./row/data-row";
 import stColgroup from "./colgroup.vue";
 import stThead from "./thead.vue";
@@ -102,7 +102,7 @@ export default {
       return this.flattenColumns.filter(c => c.pid);
     },
     headerTableStyle() {
-      return concatClasses(this.styles.headerTable, {
+      return concatStyles(this.styles.headerTable, {
         left: this.v.scrollLeft + "px",
         width: "calc(100% - " + this.v.scrollBarWidth + "px)"
       });
@@ -274,9 +274,7 @@ export default {
   display: flex;
   flex-direction: row;
 }
-.st-grid > .bottom > .st-button,
-.st-grid > .bottom > .st-button-group,
-.st-grid > .bottom > .st-pagebar {
+.st-grid > .bottom > * {
   margin: 0.25rem 0 0.25rem 0.25rem;
 }
 .st-row {

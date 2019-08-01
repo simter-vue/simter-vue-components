@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { g, concatClasses } from "../utils";
+import { g, concatClasses, concatStyles } from "../utils";
 // inner cell components
 import stCellIndex from "../cell/index.vue";
 import stCellSn from "../cell/sn.vue";
@@ -86,7 +86,7 @@ export default {
       );
     },
     rowStyle() {
-      return concatClasses(
+      return concatStyles(
         this.styles.row, // custom
         this.v.hover ? this.styles.rowHover : undefined, // custom or default
         this.v.selected ? this.styles.rowSelected : undefined // custom or default
@@ -122,7 +122,7 @@ export default {
       );
     },
     cellStyle(cell) {
-      return concatClasses(this.styles.cell, cell.column && cell.column.style);
+      return concatStyles(this.styles.cell, cell.column && cell.column.style);
     },
     cellComponentProps(cell, index) {
       // { empty, column, value, classes, styles }

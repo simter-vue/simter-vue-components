@@ -13,7 +13,7 @@
 /**
  * Events: change(newValue, newIndex)
  */
-import { get, concatClasses } from "./utils";
+import { get, concatClasses, concatStyles } from "./utils";
 import stButton from "./button.vue";
 export default {
   components: { stButton },
@@ -33,6 +33,12 @@ export default {
           last: "last",
           active: "active"
         })
+    },
+    // all dom elements class
+    styles: {
+      type: Object,
+      required: false,
+      default: () => get("simter.buttonGroup.styles", {})
     }
   },
   data() {
@@ -53,6 +59,14 @@ export default {
         item == this.v.value ? this.classes.active : undefined,
         index === 0 ? this.classes.first : undefined,
         index === this.items.length - 1 ? this.classes.last : undefined
+      );
+    },
+    /** auto judge whether to add first, last or active style to the relative button */
+    itemStyle(item, index) {
+      return concatStyles(
+        item == this.v.value ? this.styles.active : undefined,
+        index === 0 ? this.styles.first : undefined,
+        index === this.items.length - 1 ? this.styles.last : undefined
       );
     },
     clickItem(item, index) {
