@@ -48,10 +48,11 @@ const components = {
   "st-search": [version, stSearch],
 }
 const keyVersions = {}
-Object.entries(components).forEach(([key, value]) => {
+let value
+for (let key in components) {
+  value = components[key]
   Vue.component(key, value[1])
   keyVersions[key] = value[0]
-});
-console.log(`global register all components: %o`, keyVersions)
+}
 
 export default { version, components: keyVersions }
