@@ -1,10 +1,15 @@
 <template>
-  <span :class="classes.root">
+  <span :class="['st-button-group', classes.root]">
     <st-button
       v-for="(item, index) in items"
       :key="index"
+      :classes="classes.button"
+      :styles="styles.button"
       :class="itemClass(item, index)"
-      @click.native="clickItem(item, index)"
+      :style="itemStyle(item, index)"
+      :selectable="true"
+      :selected="item === value"
+      @click="clickItem(item, index)"
     >{{typeof item === "string" ? item : (typeof item === "object" ? item.text || item.value : item)}}</st-button>
   </span>
 </template>

@@ -4,12 +4,11 @@
     :class="rootClass"
     :style="rootStyle"
     type="button"
-    @mouseover="hover = true"
-    @mouseout="hover = false"
-    @focus="active = true"
-    @blur="active = false"
+    @mouseover="ui.hover = true"
+    @mouseout="ui.hover = false"
+    @click.stop.prevent="clickMe($event)"
   >
-    <i v-if="icon" :class="classes.icon"></i>
+    <i v-if="iconClass" :class="[iconClass, classes.icon]"></i>
     <span v-if="$slots.default" :class="classes.text">
       <slot></slot>
     </span>
@@ -18,9 +17,11 @@
 
 <script>
 /**
- * Events: none
+ * Events:
+ * 1. click($event)
+ * 2. "update:selected"(selected) < if selectable === true
  */
-import { get, concatClasses } from "./utils";
+import { get, concatClasses, concatStyles } from "./utils";
 export default {
   props: {
     tag: {
@@ -28,13 +29,17 @@ export default {
       required: false,
       default: () => get("simter.button.tag", "button")
     },
-    icon: { type: String, required: false },
-    // All dom element class
+    iconClass: { type: String, required: false },
+    selectable: { type: Boolean, required: false, default: false },
+    // only use when selectable === true
+    selected: { type: Boolean, required: false, default: false },
+    // element class: { root, hover, selected, iconContainer, icon, text }
     classes: {
-      type: Object,
+      type: [Array, Object],
       required: false,
       default: () => get("simter.button.classes", {})
     },
+    // element style: { root, hover, selected, iconContainer, icon, text }
     styles: {
       type: Object,
       required: false,
@@ -42,23 +47,44 @@ export default {
     }
   },
   data() {
-    return { hover: false, active: false };
+    return { ui: { hover: false, selected: false } };
   },
   computed: {
     rootClass() {
       return concatClasses(
-        "st-button", // always
-        this.classes.root, // custom
-        this.hover ? this.classes.hover || "hover" : undefined, // custom or default
-        this.active ? this.classes.active || "active" : undefined // custom or default
+        "st-button",
+        this.classes.root,
+        this.ui.hover ? this.classes.hover || "hover" : undefined,
+        this.ui.selected ? this.classes.selected || "selected" : undefined
       );
     },
     rootStyle() {
-      return concatClasses(
-        this.styles.root, // custom
-        this.hover ? this.styles.hover : undefined, // custom or default
-        this.active ? this.styles.active : undefined // custom or default
+      return concatStyles(
+        this.styles.root,
+        this.ui.hover ? this.styles.hover : undefined,
+        this.selectable && this.ui.selected ? this.styles.selected : undefined
       );
+    }
+  },
+  created() {
+    if (this.selectable) {
+      this.$watch(
+        "selected",
+        (newVal, _) => {
+          if (this.ui.selected !== newVal) this.ui.selected = newVal;
+        },
+        { immediate: true }
+      );
+    }
+  },
+  methods: {
+    clickMe($event) {
+      if (this.selectable && this.ui.selected !== true) {
+        console.log("update:selected");
+        this.ui.selected = true;
+        this.$emit("update:selected", true);
+      }
+      this.$emit("click", $event);
     }
   }
 };
@@ -66,12 +92,8 @@ export default {
 
 <style>
 .st-button {
-  cursor: pointer;
-}
-.st-button.active {
-  color: blue;
-}
-.st-button.hover {
-  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8em;
 }
 </style>
