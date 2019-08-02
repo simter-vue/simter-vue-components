@@ -1,18 +1,19 @@
 <template>
-  <div :class="rootClass">
+  <div :class="['st-search', classes.root]" :style="styles.root">
     <input
       type="search"
-      :class="['st-text', classes.input]"
+      :class="['text', classes.text]"
       :placeholder="placeholder"
-      v-model="v.value"
+      v-model="ui.value"
       @keyup.enter.stop="doSearch"
       @change="doChange"
-      @mouseover="hover = true"
-      @mouseout="hover = false"
-      @focus="active = true"
-      @blur="active = false"
     />
-    <st-button @click.native.prevent.stop="doSearch">Go</st-button>
+    <st-button
+      :class="'search'"
+      :classes="classes.search"
+      :styles="styles.search"
+      @click.native.prevent.stop="doSearch"
+    >{{searchButtonText}}</st-button>
   </div>
 </template>
 
@@ -20,49 +21,56 @@
 /**
  * Events: search(value)
  */
-import { get, concatClasses } from "./utils";
+import { get } from "./utils";
 import stButton from "./button.vue";
 
 export default {
   components: { stButton },
   props: {
-    placeholder: { type: String, required: false },
+    placeholder: {
+      type: String,
+      required: false,
+      default: () => get("simter.search.placeholder")
+    },
     value: { required: false },
+    searchButtonText: {
+      type: String,
+      required: false,
+      default: () => get("simter.search.searchButtonText", "Go")
+    },
     // all dom elements class
     classes: {
       type: Object,
       required: false,
       default: () => get("simter.search.classes", {})
+    },
+    // all dom elements class
+    styles: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      }
     }
   },
   data() {
-    return { v: { value: undefined }, hover: false, active: false };
-  },
-  computed: {
-    rootClass() {
-      return concatClasses(
-        "st-search", // always
-        this.classes.root, // custom
-        this.hover ? this.classes.hover || "hover" : undefined, // custom or default
-        this.active ? this.classes.active || "active" : undefined // custom or default
-      );
-    }
+    return { ui: { value: undefined } };
   },
   watch: {
     value: {
       immediate: true,
       handler(value) {
-        if (value !== this.v.value) this.v.value = value;
+        if (value !== this.ui.value) this.ui.value = value;
       }
     }
   },
   methods: {
     doSearch() {
-      this.$emit("search", this.v.value);
+      this.$emit("search", this.ui.value);
     },
     doChange() {
-      this.$emit("update:value", this.v.value);
-      this.$emit("change", this.v.value);
+      this.$emit("update:value", this.ui.value);
+      this.$emit("change", this.ui.value);
     }
   }
 };
@@ -72,8 +80,5 @@ export default {
 .st-search {
   position: relative;
   display: inline-flex;
-}
-.st-search > input[type="search"] {
-  margin-right: -1px;
 }
 </style>
