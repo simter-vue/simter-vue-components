@@ -251,6 +251,7 @@ export default {
 .st-grid > .header {
   overflow: hidden;
   position: relative;
+  text-align: center;
 }
 .st-grid > .header > table {
   position: relative;
