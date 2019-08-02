@@ -8,7 +8,7 @@
     @mouseout="ui.hover = false"
     @click.stop.prevent="clickMe($event)"
   >
-    <i v-if="iconClass" :class="[iconClass, classes.icon]"></i>
+    <i v-if="iconClass || classes.icon" :class="[iconClass, classes.icon]"></i>
     <span v-if="$slots.default" :class="classes.text">
       <slot></slot>
     </span>
@@ -80,7 +80,6 @@ export default {
   methods: {
     clickMe($event) {
       if (this.selectable && this.ui.selected !== true) {
-        console.log("update:selected");
         this.ui.selected = true;
         this.$emit("update:selected", true);
       }
