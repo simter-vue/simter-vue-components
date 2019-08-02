@@ -18,6 +18,7 @@ import stCellText from "./cell/text.vue";
 import stCellHtml from "./cell/html.vue";
 // grid:pagebar
 import stPagebar from "./pagebar.vue";
+import stPagebarSizes from "./pagebar-sizes.vue";
 
 // others
 import stToolbar from "./toolbar.vue";
@@ -41,6 +42,7 @@ const components = {
   "st-cell-html": [version, stCellHtml],
 
   "st-pagebar": [version, stPagebar],
+  "st-pagebar-sizes": [version, stPagebarSizes],
 
   "st-toolbar": [version, stToolbar],
   "st-button": [version, stButton],
