@@ -31,14 +31,14 @@
           <st-button>Delete</st-button>
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
           <template #right>
-            <st-search :value.sync="fuzzyValue" @search="doSearch" @change="doChange"></st-search>
+            <st-search :value.sync="fuzzyValue" @search="doSearch" @change="doSearchChange"></st-search>
           </template>
         </st-toolbar>
       </template>
       <template #bottom>
         <st-button icon-class="icon-refresh" @click="doRefresh">Refresh</st-button>
         <st-pagebar :page-no.sync="pageNo" :total="total" @change="changePageNo"></st-pagebar>
-        <st-button-group :value.sync="pageSize" :items="pageSizes" @change="changePageSize"></st-button-group>
+        <st-pagebar-sizes :value.sync="pageSize" @change="changePageSize"></st-pagebar-sizes>
         <st-button @click="doExport($event)">Export</st-button>
         <st-button @click="doImport">Import</st-button>
       </template>
@@ -51,6 +51,7 @@
 <script>
 import stGrid from "../src/grid.vue";
 import stPagebar from "../src/pagebar.vue";
+import stPagebarSizes from "../src/pagebar-sizes.vue";
 import stButton from "../src/button.vue";
 import stButtonGroup from "../src/button-group.vue";
 import stSearch from "../src/search.vue";
@@ -59,6 +60,7 @@ export default {
   components: {
     stGrid,
     stPagebar,
+    stPagebarSizes,
     stButton,
     stButtonGroup,
     stToolbar,
@@ -195,22 +197,14 @@ export default {
     doSearch(value) {
       console.log("doSearch: value=%s, fuzzy=%s", value, this.fuzzyValue);
     },
-    doChange(value) {
+    doSearchChange(value) {
       console.log("doChange: value=%s, fuzzy=%s", value, this.fuzzyValue);
     },
     changePageNo(pageNo) {
-      console.log(
-        "changePageNo: pageNo=%s, this.pageNo=%s",
-        pageNo,
-        this.pageNo
-      );
+      console.log("changePageNo: pageNo=%s", pageNo);
     },
     changePageSize(pageSize) {
-      console.log(
-        "changePageSize: pageSize=%s, this.pageSize=%s",
-        pageSize,
-        this.pageSize
-      );
+      console.log("changePageSize: pageSize=%s", pageSize);
     },
     doRefresh() {
       console.log("doRefresh");
@@ -223,7 +217,10 @@ export default {
     },
     clickRow($event) {
       console.log("clickRow: $event=%s", JSON.stringify($event));
-      console.log("clickRow: selection=%s", JSON.stringify(this.$refs.grid.selection));
+      console.log(
+        "clickRow: selection=%s",
+        JSON.stringify(this.$refs.grid.selection)
+      );
     },
     dblclickRow($event) {
       console.log("dblclickRow: $event=%s", JSON.stringify($event));
