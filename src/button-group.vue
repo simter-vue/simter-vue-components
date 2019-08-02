@@ -1,5 +1,5 @@
 <template>
-  <span :class="['st-button-group', classes.root]">
+  <span :class="[rootClass, classes.root]">
     <st-button
       v-for="(item, index) in items"
       :key="index"
@@ -23,6 +23,7 @@ import stButton from "./button.vue";
 export default {
   components: { stButton },
   props: {
+    rootClass: { type: String, required: false, default: "st-button-group" },
     /** buttons: [String|{text, value, ...}] */
     items: { type: Array, required: true },
     /** current value */
@@ -33,10 +34,8 @@ export default {
       required: false,
       default: () =>
         get("simter.buttonGroup.classes", {
-          root: "st-button-group",
           first: "first",
-          last: "last",
-          active: "active"
+          last: "last"
         })
     },
     // all dom elements class
@@ -58,18 +57,18 @@ export default {
     }
   },
   methods: {
-    /** auto judge whether to add first, last or active class to the relative button */
+    /** auto judge whether to add first, last or selected class to the relative button */
     itemClass(item, index) {
       return concatClasses(
-        item == this.v.value ? this.classes.active : undefined,
+        item == this.v.value ? this.classes.selected : undefined,
         index === 0 ? this.classes.first : undefined,
         index === this.items.length - 1 ? this.classes.last : undefined
       );
     },
-    /** auto judge whether to add first, last or active style to the relative button */
+    /** auto judge whether to add first, last or selected style to the relative button */
     itemStyle(item, index) {
       return concatStyles(
-        item == this.v.value ? this.styles.active : undefined,
+        item == this.v.value ? this.styles.selected : undefined,
         index === 0 ? this.styles.first : undefined,
         index === this.items.length - 1 ? this.styles.last : undefined
       );
