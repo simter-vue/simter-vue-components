@@ -1,17 +1,31 @@
 <template>
-  <span :class="classes.root">
-    <st-button :class="classes.first" @click.native.prevent.stop="toPage(1)">First</st-button>
+  <span :class="['st-pagebar', classes.root]">
     <st-button
-      :class="classes.previous"
+      :class="'first'"
+      :classes="classes.first"
+      :styles="styles.first"
+      @click.native.prevent.stop="toPage(1)"
+    >{{text.first}}</st-button>
+    <st-button
+      :class="'previous'"
+      :classes="classes.previous"
+      :styles="styles.previous"
       @click.native.prevent.stop="toPage(Math.max(v.pageNo - 1, 1))"
-    >Previous</st-button>
-    <span :class="classes.text" v-if="total > 0">{{v.pageNo}}/{{pageCount}}({{total}})</span>
-    <span :class="classes.text" v-else>0</span>
+    >{{text.previous}}</st-button>
+    <span :class="['text', classes.text]" v-if="total > 0">{{v.pageNo}}/{{pageCount}}({{total}})</span>
+    <span :class="['text', classes.text]" v-else>0</span>
     <st-button
-      :class="classes.next"
+      :class="'next'"
+      :classes="classes.next"
+      :styles="styles.next"
       @click.native.prevent.stop="toPage(Math.min(v.pageNo + 1, pageCount))"
-    >Next</st-button>
-    <st-button :class="classes.last" @click.native.prevent.stop="toPage(pageCount)">Last</st-button>
+    >{{text.next}}</st-button>
+    <st-button
+      :class="'last'"
+      :classes="classes.last"
+      :styles="styles.last"
+      @click.native.prevent.stop="toPage(pageCount)"
+    >{{text.last}}</st-button>
   </span>
 </template>
 
@@ -24,6 +38,17 @@ import stButton from "./button.vue";
 export default {
   components: { stButton },
   props: {
+    text: {
+      type: Object,
+      required: false,
+      default: () =>
+        get("simter.pagebar.text", {
+          first: "First",
+          previous: "Previous",
+          next: "Next",
+          last: "Last"
+        })
+    },
     /** The current 1-base page number */
     pageNo: { type: Number, required: false, default: 0 },
     /** The maximal elements count of one page */
@@ -32,27 +57,19 @@ export default {
       required: false,
       default: () => get("simter.pagebar.pageSize", 25)
     },
-    /** The candidate page-size */
-    pageSizes: {
-      type: Array,
-      required: false,
-      default: () => get("simter.pagebar.pageSizes", [25, 50, 100])
-    },
     /** The total elements count */
     total: { type: Number, required: true },
     // All dom element class
     classes: {
       type: Object,
       required: false,
-      default: () =>
-        get("simter.pagebar.classes", {
-          root: "st-pagebar",
-          first: "icon first",
-          previous: "icon previous",
-          text: "text",
-          next: "icon next",
-          last: "icon last"
-        })
+      default: () => get("simter.pagebar.classes", {})
+    },
+    // All dom element style
+    styles: {
+      type: Object,
+      required: false,
+      default: () => get("simter.pagebar.styles", {})
     }
   },
   computed: {
@@ -86,6 +103,7 @@ export default {
 <style>
 .st-pagebar {
   display: inline-flex;
+  align-items: center;
 }
 .st-pagebar > .text {
   cursor: default;
@@ -93,6 +111,6 @@ export default {
 }
 .st-pagebar > :not(.text) {
   cursor: pointer;
-  margin: 0 -1px 0 0;
+  margin: 0;
 }
 </style>
