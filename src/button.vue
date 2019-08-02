@@ -21,13 +21,13 @@
  * 1. click($event)
  * 2. "update:selected"(selected) < if selectable === true
  */
-import { get, concatClasses, concatStyles } from "./utils";
+import { gv, concatClasses, concatStyles } from "./utils";
 export default {
   props: {
     tag: {
       type: String,
       required: false,
-      default: () => get("simter.button.tag", "button")
+      default: () => gv("simter.button.tag", "button")
     },
     iconClass: { type: String, required: false },
     selectable: { type: Boolean, required: false, default: false },
@@ -37,13 +37,13 @@ export default {
     classes: {
       type: [Array, Object],
       required: false,
-      default: () => get("simter.button.classes", {})
+      default: () => gv("simter.button.classes", {})
     },
     // element style: { root, hover, selected, iconContainer, icon, text }
     styles: {
       type: Object,
       required: false,
-      default: () => get("simter.button.styles", {})
+      default: () => gv("simter.button.styles", {})
     }
   },
   data() {

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { g, get, flatten, concatStyles } from "./utils";
+import { g, gv, flatten, concatStyles } from "./utils";
 import stDataRow from "./row/data-row";
 import stColgroup from "./colgroup.vue";
 import stThead from "./thead.vue";
@@ -71,13 +71,13 @@ export default {
     classes: {
       type: Object,
       required: false,
-      default: () => get("simter.grid.classes", {})
+      default: () => gv("simter.grid.classes", {})
     },
     // All dom element style
     styles: {
       type: Object,
       required: false,
-      default: () => get("simter.grid.styles", {})
+      default: () => gv("simter.grid.styles", {})
     }
   },
   data: function() {
@@ -262,7 +262,7 @@ export default {
   table-layout: fixed;
   border-collapse: collapse;
 }
-.st-grid > .header > table > thead > tr > th,
+.st-grid > .header > table > thead > tr > td,
 .st-grid > .content > table > tbody > tr > td {
   overflow: hidden;
   text-overflow: ellipsis;

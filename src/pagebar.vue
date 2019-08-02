@@ -33,7 +33,7 @@
 /**
  * Events: change(newPageNo)
  */
-import { get } from "./utils";
+import { gv } from "./utils";
 import stButton from "./button.vue";
 export default {
   components: { stButton },
@@ -42,7 +42,7 @@ export default {
       type: Object,
       required: false,
       default: () =>
-        get("simter.pagebar.text", {
+        gv("simter.pagebar.text", {
           first: "First",
           previous: "Previous",
           next: "Next",
@@ -55,7 +55,7 @@ export default {
     pageSize: {
       type: Number,
       required: false,
-      default: () => get("simter.pagebar.pageSize", 25)
+      default: () => gv("simter.pagebar.pageSize", 25)
     },
     /** The total elements count */
     total: { type: Number, required: true },
@@ -63,13 +63,13 @@ export default {
     classes: {
       type: Object,
       required: false,
-      default: () => get("simter.pagebar.classes", {})
+      default: () => gv("simter.pagebar.classes", {})
     },
     // All dom element style
     styles: {
       type: Object,
       required: false,
-      default: () => get("simter.pagebar.styles", {})
+      default: () => gv("simter.pagebar.styles", {})
     }
   },
   computed: {

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { get } from "./utils";
+import { gv } from "./utils";
 export default {
   props: {
     // all dom elements class
@@ -19,7 +19,7 @@ export default {
       type: Object,
       required: false,
       default: () =>
-        get("simter.toolbar.classes", {
+        gv("simter.toolbar.classes", {
           root: "st-toolbar",
           default: "default",
           right: "right",

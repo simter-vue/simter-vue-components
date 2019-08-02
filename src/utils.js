@@ -22,7 +22,7 @@ function flatten(columns) {
 }
 
 /** Get global key's value */
-function get(key, defaultValue) {
+function getGlobalVariable(key, defaultValue) {
   if (g.hasOwnProperty(key)) return g[key]
   let p = g, value
   for (const k of key.split(".")) {
@@ -62,4 +62,4 @@ function concatStyles(...styles) {
   }, {})
 }
 
-export { g, get, flatten, concatClasses, concatStyles }
+export { g, getGlobalVariable as gv, flatten, concatClasses, concatStyles }

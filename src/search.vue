@@ -21,7 +21,7 @@
 /**
  * Events: search(value)
  */
-import { get } from "./utils";
+import { gv } from "./utils";
 import stButton from "./button.vue";
 
 export default {
@@ -30,19 +30,19 @@ export default {
     placeholder: {
       type: String,
       required: false,
-      default: () => get("simter.search.placeholder")
+      default: () => gv("simter.search.placeholder")
     },
     value: { required: false },
     searchButtonText: {
       type: String,
       required: false,
-      default: () => get("simter.search.searchButtonText", "Go")
+      default: () => gv("simter.search.searchButtonText", "Go")
     },
     // all dom elements class
     classes: {
       type: Object,
       required: false,
-      default: () => get("simter.search.classes", {})
+      default: () => gv("simter.search.classes", {})
     },
     // all dom elements class
     styles: {

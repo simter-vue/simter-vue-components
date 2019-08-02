@@ -18,7 +18,7 @@
 /**
  * Events: change(newValue, newIndex)
  */
-import { get, concatClasses, concatStyles } from "./utils";
+import { gv, concatClasses, concatStyles } from "./utils";
 import stButton from "./button.vue";
 export default {
   components: { stButton },
@@ -33,7 +33,7 @@ export default {
       type: Object,
       required: false,
       default: () =>
-        get("simter.buttonGroup.classes", {
+        gv("simter.buttonGroup.classes", {
           first: "first",
           last: "last"
         })
@@ -42,7 +42,7 @@ export default {
     styles: {
       type: Object,
       required: false,
-      default: () => get("simter.buttonGroup.styles", {})
+      default: () => gv("simter.buttonGroup.styles", {})
     }
   },
   data() {
@@ -89,6 +89,6 @@ export default {
   display: inline-flex;
 }
 .st-button-group > * {
-  margin: 0 -1px 0 0;
+  margin: 0;
 }
 </style>
