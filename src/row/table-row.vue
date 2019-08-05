@@ -94,7 +94,7 @@ export default {
     },
     // refactor column.cell (String|{}|Function) to standard structure ({})
     columnCellRefactors() {
-      const toStandardCell = cfg => {
+      const toStandardCell = (cell, cfg) => {
         let t = typeof cfg;
         if (t === "undefined") return { component: DEFAULT_CELL_COMPONENT };
         else if (t === "string") return { component: cfg };
@@ -103,13 +103,21 @@ export default {
             cfg.component = DEFAULT_CELL_COMPONENT;
           return cfg;
         } else if (t === "function") {
-          return toStandardCell(cfg.call(null, this.row, this.index));
+          if (cell.column.hasOwnProperty("pid")) {
+            let nestedRow = cell.empty
+              ? undefined
+              : this.row[cell.column.pid][this.index];
+            return toStandardCell(
+              cell,
+              cfg.call(null, nestedRow, this.row, cell.empty)
+            );
+          } else return toStandardCell(cell, cfg.call(null, this.row));
         } else return { component: DEFAULT_CELL_COMPONENT };
       };
 
       return this.cells.map(cell => {
         if (!cell.column) return { component: DEFAULT_CELL_COMPONENT };
-        return toStandardCell(cell.column.cell);
+        return toStandardCell(cell, cell.column.cell);
       });
     }
   },

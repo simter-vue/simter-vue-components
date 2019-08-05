@@ -144,7 +144,15 @@ export default {
               cell: "st-cell-sn-selectable",
               width: "2.5em"
             },
-            { pid: "commiters", id: "name", label: "Name", width: "4em" }
+            {
+              pid: "commiters",
+              id: "name",
+              label: "Name",
+              width: "6em",
+              cell: (r, _, emptyCel) => ({
+                value: emptyCel ? "" : `${r.id}/${r.name}`
+              })
+            }
           ]
         }
         //, { label: "|" }
@@ -163,14 +171,14 @@ export default {
           name: "360",
           website: "www.so.com",
           partners: [{ name: "P 41" }],
-          commiters: [{ name: "C 41" }, { name: "C 42" }]
+          commiters: [{ id: "c41", name: "C 41" }, { id: "c42", name: "C 42" }]
         },
         {
           id: "doge",
           name: "DogeDoge",
           website: "dogedoge.com",
           partners: [{ name: "P 51" }, { name: "P 52" }, { name: "P 53" }],
-          commiters: [{ name: "C 51" }, { name: "C 52" }]
+          commiters: [{ id: "c51", name: "C 51" }, { id: "c52", name: "C 52" }]
         }
       ]
     };
