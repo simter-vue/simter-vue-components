@@ -130,21 +130,35 @@ export default {
         preTableRowCount += subTableRows.length;
       });
       return all;
+    },
+    // Calculate each row's rowspan by Column.pid config
+    rowspans() {
+      let rowspans = {};
+
+      // find pid from columns config
+      let pids = this.subColumns
+        .map(c => c.pid)
+        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid
+
+      // calculate rowspan value
+      this.rows.forEach((row, index) => {
+        if (typeof row.rowspan === "number") {
+          // custom rowspan value
+          rowspans[index] = row.rowspan;
+        } else {
+          // auto calculate rowspan value
+          let maxSize = Math.max(
+            ...pids.map(pid => (row[pid] ? row[pid].length : 1))
+          );
+          if (maxSize > 1) rowspans[index] = maxSize;
+        }
+      });
+
+      return rowspans;
     }
   },
   created() {
-    // 1.1. find pid from columns config
-    let pids = this.subColumns.map(c => c.pid);
-
-    // 1.2. auto set row.rowspan = max(row[pid].length) if row.rowspan not exists
-    this.rows.forEach(row => {
-      let maxSize = Math.max(
-        ...pids.map(pid => (row[pid] ? row[pid].length : 1))
-      );
-      if (maxSize > 1 && !row.hasOwnProperty("rowspan")) row.rowspan = maxSize;
-    });
-
-    // 2. auto judge the last column width config
+    // auto judge the last column width config
     this.v.lastColumnIsAutoWidth = !this.flattenColumns[
       this.flattenColumns.length - 1
     ].width;
@@ -175,7 +189,7 @@ export default {
         row: dataRow,
         classes: this.classes.contentRow,
         styles: this.styles.contentRow,
-        cells: this.flattenColumns.map(column => {
+        cells: this.flattenColumns.map((column, i) => {
           let { empty, value } = getCellConfigInfo(
             dataRow,
             column,
@@ -184,14 +198,14 @@ export default {
           );
           let c = { column: column, empty: empty };
           if (!empty) c.value = value;
-          let rowspan = column.pid ? 1 : dataRow.rowspan;
+          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];
           if (rowspan > 1) c.rowspan = rowspan;
           return c;
         })
       });
 
       // sub TableRows
-      let len = dataRow.rowspan || 1;
+      let len = this.rowspans[dataRowIndex] || 1;
       for (let i = 1; i < len; i++) {
         tableRows.push({
           tableRowIndex: preTableRowCount + nestedIndex,
