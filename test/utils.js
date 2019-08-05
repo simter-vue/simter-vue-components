@@ -1,25 +1,25 @@
 import test from 'ava'
-import { g, get, concatClasses } from '../src/utils/utils'
+import { g, gv, concatClasses } from '../src/utils/utils'
 
-test('get', t => {
+test('gv', t => {
   // undefined
-  t.is(get("not-exists"), undefined)
-  t.is(get("not.exists"), undefined)
+  t.is(gv("not-exists"), undefined)
+  t.is(gv("not.exists"), undefined)
 
   // default
-  t.is(get("not-exists", "v"), "v")
+  t.is(gv("not-exists", "v"), "v")
 
   g.simter = {}
-  t.deepEqual(get("simter"), {})
+  t.deepEqual(gv("simter"), {})
 
   g.simter.k1 = "v1"
-  t.is(get("simter.k1"), "v1")
-  t.is(get("simter.k2"), undefined)
-  t.is(get("simter.k2", "v2"), "v2")
-  t.is(get("simter.k2.a"), undefined)
+  t.is(gv("simter.k1"), "v1")
+  t.is(gv("simter.k2"), undefined)
+  t.is(gv("simter.k2", "v2"), "v2")
+  t.is(gv("simter.k2.a"), undefined)
 
   g.simter.k1 = { a: "v1a" }
-  t.is(get("simter.k1.a"), "v1a")
+  t.is(gv("simter.k1.a"), "v1a")
 })
 
 test('concatClasses', t => {
