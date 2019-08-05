@@ -1,0 +1,125 @@
+/*!
+ * Integrate jQueryUI with simter-vue-components.
+ * 
+ * Set global css config for simter-vue-components.
+ *
+ * @author RJ
+ */
+
+.bc-page[data-type=list] .st-grid {
+  height: 100%;
+  font-weight: normal;
+}
+
+.st-grid.ui-widget-content {
+  border-width: 0;
+}
+
+.st-grid>.top {
+  border-width: 0 0 1px 0;
+}
+
+.st-grid>.bottom {
+  border-width: 1px 0 0 0;
+}
+
+.st-grid .st-row {
+  border-width: 1px 0 1px 0;
+}
+
+.st-grid .st-cell {
+  border-width: 1px;
+  border-color: inherit;
+  border-style: inherit;
+}
+
+.st-grid .st-row:first-child, .st-grid .st-row:first-child>.st-cell {
+  border-top: none;
+}
+
+.st-grid .st-cell:first-child {
+  border-left: none;
+}
+
+.st-grid .st-cell:last-child {
+  border-right: none;
+}
+
+.st-grid>.bottom .st-button {
+  padding: 0.32em;
+}
+
+.st-button {
+  padding: 0.45em;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1em;
+}
+
+.st-button>.ui-icon {
+  position: unset;
+  top: unset;
+  margin-top: unset;
+}
+
+.st-button-group>.st-button {
+  border-right-width: 0;
+}
+
+.st-button-group>.st-button:last-child {
+  border-right-width: 1px;
+}
+
+.st-pagebar>.st-button {
+  border-width: 0;
+  padding: 2px;
+  margin: 0;
+  font-size: 0;
+}
+
+.st-pagebar>.text {
+  font-size: 0.8em;
+}
+
+.st-pagebar>.st-button>* {
+  margin: 2px 0 2px 2px;
+}
+
+.st-pagebar, .st-pagebar-sizes {
+  padding: 2px;
+}
+
+.st-pagebar>*, .st-pagebar-sizes>* {
+  background-color: transparent;
+}
+
+.st-pagebar-sizes>.st-button>* {
+  margin: 0 4px;
+}
+
+.st-grid>.bottom>.st-pagebar-sizes>.st-button {
+  border-width: 0;
+  padding: 0;
+  margin: 0 1px 0 0;
+  font-size: 0.8em;
+}
+
+.st-search>.search {
+  position: absolute;
+  left: 2px;
+  padding: 0;
+  top: 50%;
+  margin: -8px 0 0 0;
+  font-size: 0;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.st-search>.text {
+  box-sizing: border-box;
+  padding: .45em 2px .45em 18px;
+  width: 12em;
+  font-size: 1em;
+  line-height: 1em;
+}
