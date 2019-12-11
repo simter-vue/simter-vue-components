@@ -1,5 +1,9 @@
 # simter-vue-components changelog
 
+## 0.2.0 2019-12-11
+
+- Set vue root component instance as config function context
+
 ## 0.1.0 2019-08-02
 
 - Init
