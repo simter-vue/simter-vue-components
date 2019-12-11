@@ -109,9 +109,9 @@ export default {
               : this.row[cell.column.pid][this.index];
             return toStandardCell(
               cell,
-              cfg.call(null, nestedRow, this.row, cell.empty)
+              cfg.call(this.$root, nestedRow, this.row, cell.empty)
             );
-          } else return toStandardCell(cell, cfg.call(null, this.row));
+          } else return toStandardCell(cell, cfg.call(this.$root, this.row));
         } else return { component: DEFAULT_CELL_COMPONENT };
       };
 
@@ -174,7 +174,7 @@ export default {
         // 1.2. invoke column.cell.on.click function
         let t = this.columnCellRefactors[td.cellIndex];
         if (typeof t.click === "function")
-          t.click.call(null, {
+          t.click.call(this.$root, {
             target: targetEl,
             value: t.hasOwnProperty("value") ? t.value : cell.value,
             row: this.row,

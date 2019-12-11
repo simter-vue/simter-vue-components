@@ -108,12 +108,14 @@ export default {
           label: "Link",
           width: "3em",
           cell(row, index) {
+            // 'this' is the vue root component instance
             return {
               component: "st-cell-html",
               value: row.website
                 ? `<a href="https://${row.website}">Go</a>`
                 : "",
               click({ target, row, value }) {
+                // 'this' is the vue root component instance
                 console.log("click cell: value=%s", value);
               }
             };
