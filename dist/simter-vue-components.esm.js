@@ -1,12 +1,12 @@
 /*!
-* simter-vue-components v0.1.0
+* simter-vue-components v0.2.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
 */
 import Vue from 'vue';
 
-var version = "0.1.0";
+var version = "0.2.0";
 
 const g = window || global;
 /**
@@ -568,8 +568,8 @@ var script$5 = {
         } else if (t === "function") {
           if (cell.column.hasOwnProperty("pid")) {
             let nestedRow = cell.empty ? undefined : this.row[cell.column.pid][this.index];
-            return toStandardCell(cell, cfg.call(null, nestedRow, this.row, cell.empty));
-          } else return toStandardCell(cell, cfg.call(null, this.row));
+            return toStandardCell(cell, cfg.call(this.$root, nestedRow, this.row, cell.empty));
+          } else return toStandardCell(cell, cfg.call(this.$root, this.row));
         } else return {
           component: DEFAULT_CELL_COMPONENT
         };
@@ -636,7 +636,7 @@ var script$5 = {
         this.$emit("update:selected", this.v.selected); // 1.2. invoke column.cell.on.click function
 
         let t = this.columnCellRefactors[td.cellIndex];
-        if (typeof t.click === "function") t.click.call(null, {
+        if (typeof t.click === "function") t.click.call(this.$root, {
           target: targetEl,
           value: t.hasOwnProperty("value") ? t.value : cell.value,
           row: this.row,

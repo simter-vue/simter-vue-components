@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v0.1.0
+* simter-vue-components v0.2.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -12,7 +12,7 @@
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "0.1.0";
+  var version = "0.2.0";
 
   function _typeof(obj) {
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -621,8 +621,8 @@
           } else if (t === "function") {
             if (cell.column.hasOwnProperty("pid")) {
               var nestedRow = cell.empty ? undefined : _this.row[cell.column.pid][_this.index];
-              return toStandardCell(cell, cfg.call(null, nestedRow, _this.row, cell.empty));
-            } else return toStandardCell(cell, cfg.call(null, _this.row));
+              return toStandardCell(cell, cfg.call(_this.$root, nestedRow, _this.row, cell.empty));
+            } else return toStandardCell(cell, cfg.call(_this.$root, _this.row));
           } else return {
             component: DEFAULT_CELL_COMPONENT
           };
@@ -688,7 +688,7 @@
 
 
           var t = _this2.columnCellRefactors[td.cellIndex];
-          if (typeof t.click === "function") t.click.call(null, {
+          if (typeof t.click === "function") t.click.call(_this2.$root, {
             target: targetEl,
             value: t.hasOwnProperty("value") ? t.value : cell.value,
             row: _this2.row,
