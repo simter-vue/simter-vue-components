@@ -257,6 +257,9 @@ export default {
     selectRow(index, selected) {
       let row = this.rows[index];
       if (row) this.$set(row, "selected", selected);
+    },
+    clearSelection() {
+      this.selection.forEach(row => this.$set(row, "selected", false));
     }
   }
 };
