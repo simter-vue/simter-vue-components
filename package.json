@@ -1,6 +1,6 @@
 {
   "name": "simter-vue-components",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Combine all simter-vue component to a single file",
   "main": "dist/simter-vue-components.cjs.js",
   "module": "dist/simter-vue-components.esm.js",
