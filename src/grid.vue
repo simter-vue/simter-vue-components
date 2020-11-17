@@ -260,6 +260,9 @@ export default {
     },
     clearSelection() {
       this.selection.forEach(row => this.$set(row, "selected", false));
+    },
+    deleteSelection() {
+      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));
     }
   }
 };
