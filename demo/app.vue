@@ -28,7 +28,9 @@
         <st-toolbar>
           <st-button icon-class="icon-create">Create</st-button>
           <st-button>Edit</st-button>
-          <st-button>Delete</st-button>
+          <st-button @click="deleteSelection">Delete</st-button>
+          <st-button @click="clearSelection">Clear</st-button>
+          <st-button @click="showSelection">Show</st-button>
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
           <template #right>
             <st-search :value.sync="fuzzyValue" @search="doSearch" @change="doSearchChange"></st-search>
@@ -240,6 +242,19 @@ export default {
     },
     changeCellSelected($event) {
       console.log("changeCellSelected: $event=%s", JSON.stringify($event));
+    },
+    deleteSelection() {
+      let count = this.$refs.grid.selection.length;
+      if (count > 0) {
+        if (window.confirm("Are you sure to delete " + count + " rows?"))
+          this.$refs.grid.deleteSelection();
+      } else window.alert("No row is selected.");
+    },
+    clearSelection() {
+      this.$refs.grid.clearSelection();
+    },
+    showSelection() {
+      window.alert("selectedIds=" + this.$refs.grid.selection.map(r => r.id).join(", "));
     }
   }
 };

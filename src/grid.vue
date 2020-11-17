@@ -89,12 +89,14 @@ export default {
         timer: null,
         contentEl: null,
         lastColumnIsAutoWidth: false
-      },
-      // all selected rows
-      selection: []
+      }
     };
   },
   computed: {
+    // all selected rows
+    selection() {
+      return this.rows.filter(row => row.selected === true);
+    },
     flattenColumns() {
       return flatten(this.columns);
     },
@@ -113,6 +115,16 @@ export default {
       Object.keys(this.$listeners)
         .filter(key => key.startsWith("row-") || key.startsWith("cell-"))
         .forEach(key => (events[key] = this.$listeners[key]));
+
+      // deal row-selection-change event
+      let old = events["row-selection-change"]; // user define listener
+      if (old) {
+        events["row-selection-change"] = data => {
+          this.selectRow(data.index, data.selected);
+          old.call(this, data);
+        }
+      } else events["row-selection-change"] = data => this.selectRow(data.index, data.selected);
+
       return events;
     },
     // [[tableRows], ...], index follow rows
@@ -189,6 +201,7 @@ export default {
         row: dataRow,
         classes: this.classes.contentRow,
         styles: this.styles.contentRow,
+        selected: dataRow.selected === true,
         cells: this.flattenColumns.map((column, i) => {
           let { empty, value } = getCellConfigInfo(
             dataRow,
@@ -241,13 +254,15 @@ export default {
         }
       }, 100);
     },
-    selectRow(row, selected) {
-      let index = this.selection.indexOf(row);
-      if (selected) {
-        if (index === -1) this.selection.push(row);
-      } else {
-        if (index !== -1) this.selection.splice(index, 1);
-      }
+    selectRow(index, selected) {
+      let row = this.rows[index];
+      if (row) this.$set(row, "selected", selected);
+    },
+    clearSelection() {
+      this.selection.forEach(row => this.$set(row, "selected", false));
+    },
+    deleteSelection() {
+      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));
     }
   }
 };
