@@ -74,7 +74,7 @@ export default {
     }
   },
   data() {
-    return { v: { hover: false, selected: false, clickTimer: null } };
+    return { v: { hover: false, clickTimer: null } };
   },
   computed: {
     rowClass() {
@@ -82,14 +82,14 @@ export default {
         "st-row", // always
         this.classes.row, // custom
         this.v.hover ? this.classes.rowHover || "hover" : undefined, // custom or default
-        this.v.selected ? this.classes.rowSelected || "selected" : undefined // custom or default
+        this.selected ? this.classes.rowSelected || "selected" : undefined // custom or default
       );
     },
     rowStyle() {
       return concatStyles(
         this.styles.row, // custom
         this.v.hover ? this.styles.rowHover : undefined, // custom or default
-        this.v.selected ? this.styles.rowSelected : undefined // custom or default
+        this.selected ? this.styles.rowSelected : undefined // custom or default
       );
     },
     // refactor column.cell (String|{}|Function) to standard structure ({})
@@ -162,14 +162,9 @@ export default {
         }
 
         // 1. do actual work for click
-        this.v.selected = !this.v.selected;
 
-        // 1.0. modify grid.selection
-        if (typeof this.$parent.selectRow === "function")
-          this.$parent.selectRow(this.row, this.v.selected);
-
-        // 1.1. emit status change event
-        this.$emit("update:selected", this.v.selected);
+        // 1.1. emit row-selection-change event
+        this.$emit("row-selection-change", {selected: !this.selected, index: this.dataRowIndex});
 
         // 1.2. invoke column.cell.on.click function
         let t = this.columnCellRefactors[td.cellIndex];
@@ -187,7 +182,7 @@ export default {
         this.$emit("row-click", {
           row: this.row,
           index: this.dataRowIndex,
-          selected: this.v.selected
+          selected: this.selected
         });
       }, 300);
     },
@@ -196,12 +191,10 @@ export default {
       if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
 
       // 1. do actual work for dblclick
-      let old = this.v.selected;
-      this.v.selected = true;
 
-      // 1.1. emit status change event
-      if (old !== this.v.selected)
-        this.$emit("update:selected", this.v.selected);
+      // 1.1. emit row-selection-change event
+      if (!this.selected)
+        this.$emit("row-selection-change", {selected: this.selected, index: this.dataRowIndex});
 
       // 1.2. emit row-dblclick event
       this.$emit("row-dblclick", {
