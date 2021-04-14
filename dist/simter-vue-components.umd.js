@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v0.3.0
+* simter-vue-components v0.4.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -12,41 +12,7 @@
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "0.3.0";
-
-  function _typeof(obj) {
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
-  }
-
-  function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
-  }
+  var version = "0.4.0";
 
   var g = window || global;
   /**
@@ -141,67 +107,107 @@
     }, {});
   }
 
-  var cellBase = {
+  //
+  var script = {
+    replace: true,
     props: {
-      // Whether is a empty cell
-      empty: {
+      size: {
+        type: Number,
         required: false,
-        "default": false
+        "default": 3.2
       },
-      // Cell value
-      value: {
-        required: false
+      sizeUnit: {
+        type: String,
+        required: false,
+        "default": "em"
       },
-      // Column option
-      column: {
-        type: Object,
-        required: false
+      speed: {
+        type: String,
+        required: false,
+        "default": "1s"
       },
-      // All dom element class
+      // show timer if over this timeout second value
+      timeout: {
+        type: Number,
+        required: false,
+        "default": 5
+      },
+      // elements class: { root, actor, timer }
       classes: {
         type: Object,
         required: false,
         "default": function _default() {
-          return {};
+          return getGlobalVariable("simter.loader.classes", {});
         }
       },
-      // All dom element style
+      // elements style: { root, actor, timer }
       styles: {
         type: Object,
         required: false,
         "default": function _default() {
-          return {};
+          return getGlobalVariable("simter.loader.styles", {});
         }
       }
     },
+    data: function data() {
+      return {
+        minutes: 0,
+        seconds: 0,
+        totalSeconds: 0,
+        showTimer: false,
+        timer: null
+      };
+    },
     computed: {
-      // DataRow.value
-      row: function row() {
-        return this.$parent.dataRowValue;
+      size_: function size_() {
+        return this.size + this.sizeUnit;
       },
-      // TableRow.index
-      index: function index() {
-        return this.$parent.index;
+      minutes_: function minutes_() {
+        if (this.minutes < 10) return "0" + this.minutes;else return "" + this.minutes;
       },
-      // TableRow.tableRowIndex
-      tableRowIndex: function tableRowIndex() {
-        return this.$parent.tableRowIndex;
+      seconds_: function seconds_() {
+        if (this.seconds < 10) return "0" + this.seconds;else return "" + this.seconds;
       },
-      // TableRow.dataRowIndex
-      dataRowIndex: function dataRowIndex() {
-        return this.$parent.dataRowIndex;
+      actorStyle_: function actorStyle_() {
+        return concatStyles({
+          'width': this.size_,
+          'height': this.size_,
+          'animation-duration': this.speed,
+          'margin-top': 'calc(' + this.size_ + ' / -2)',
+          'margin-left': 'calc(' + this.size_ + ' / -2)'
+        }, this.styles.actor);
       }
-    }
-  };
+    },
+    created: function created() {
+      var _this = this;
 
-  //
-  var script = {
-    "extends": cellBase,
-    computed: {
-      content: function content() {
-        var t = this.empty ? "" : this.column && this.column.pid ? this.index // nested index
-        : this.dataRowIndex; // dataRow index
+      var max = 60;
+      this.timer = setInterval(function () {
+        // show timer if timeout
+        if (++_this.totalSeconds >= _this.timeout && !_this.showTimer) _this.showTimer = true; // calculate timer's minutes and seconds
 
+        _this.seconds++;
+
+        if (_this.seconds == max) {
+          _this.seconds = 0;
+          _this.minutes++;
+          if (_this.minutes == max) _this.minutes = 0;
+        }
+      }, 1000);
+    },
+    destroyed: function destroyed() {
+      if (this.timer) clearInterval(this.timer);
+    },
+    methods: {
+      reset: function reset() {
+        this.minutes = 0;
+        this.seconds = 0;
+        if (this.timer) clearInterval(this.timer);
+      },
+      concatStyles: function concatStyles$1() {
+        var t = concatStyles.apply(void 0, arguments);
+
+        console.log(t);
         return t;
       }
     }
@@ -292,6 +298,61 @@
 
   var normalizeComponent_1 = normalizeComponent;
 
+  var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
+  function createInjector(context) {
+    return function (id, style) {
+      return addStyle(id, style);
+    };
+  }
+  var HEAD;
+  var styles = {};
+
+  function addStyle(id, css) {
+    var group = isOldIE ? css.media || 'default' : id;
+    var style = styles[group] || (styles[group] = {
+      ids: new Set(),
+      styles: []
+    });
+
+    if (!style.ids.has(id)) {
+      style.ids.add(id);
+      var code = css.source;
+
+      if (css.map) {
+        // https://developer.chrome.com/devtools/docs/javascript-debugging
+        // this makes source maps inside style tags work properly in Chrome
+        code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'; // http://stackoverflow.com/a/26603875
+
+        code += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) + ' */';
+      }
+
+      if (!style.element) {
+        style.element = document.createElement('style');
+        style.element.type = 'text/css';
+        if (css.media) style.element.setAttribute('media', css.media);
+
+        if (HEAD === undefined) {
+          HEAD = document.head || document.getElementsByTagName('head')[0];
+        }
+
+        HEAD.appendChild(style.element);
+      }
+
+      if ('styleSheet' in style.element) {
+        style.styles.push(code);
+        style.element.styleSheet.cssText = style.styles.filter(Boolean).join('\n');
+      } else {
+        var index = style.ids.size - 1;
+        var textNode = document.createTextNode(code);
+        var nodes = style.element.childNodes;
+        if (nodes[index]) style.element.removeChild(nodes[index]);
+        if (nodes.length) style.element.insertBefore(textNode, nodes[index]);else style.element.appendChild(textNode);
+      }
+    }
+  }
+
+  var browser = createInjector;
+
   /* script */
   const __vue_script__ = script;
 
@@ -300,41 +361,161 @@
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
-    return _c("span", { class: _vm.classes.root, style: _vm.styles.root }, [
-      _vm._v(_vm._s(_vm.content))
-    ])
+    return _c(
+      "div",
+      { class: ["st-loader", _vm.classes.root], style: _vm.styles.root },
+      [
+        _c("div", {
+          class: ["actor", _vm.classes.actor],
+          style: _vm.actorStyle_
+        }),
+        _vm._v(" "),
+        _vm.showTimer
+          ? _c(
+              "div",
+              { class: ["timer", _vm.classes.timer], style: _vm.styles.timer },
+              [
+                _vm._v(
+                  "\n    " +
+                    _vm._s(_vm.minutes_) +
+                    ":" +
+                    _vm._s(_vm.seconds_) +
+                    "\n  "
+                )
+              ]
+            )
+          : _vm._e()
+      ]
+    )
   };
   var __vue_staticRenderFns__ = [];
   __vue_render__._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__ = undefined;
+    const __vue_inject_styles__ = function (inject) {
+      if (!inject) return
+      inject("data-v-63c89424_0", { source: "\n.st-loader {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 100000;\n}\n.st-loader > .timer,\r\n.st-loader > .actor {\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\n}\n.st-loader > .timer {\r\n  width: 6em;\r\n  height: 2em;\r\n  line-height: 2em;\r\n  text-align: center;\r\n  margin: -1em auto auto -3em;\r\n  border: none;\r\n  background: none;\n}\n.st-loader > .actor {\r\n  background: none;\r\n  opacity: 0.8;\r\n  border-width: 0.2em;\r\n  border-radius: 50%;\r\n  border-left-color: transparent;\r\n  border-right-color: transparent;\r\n  animation: st-loader-animation-spin 1000ms infinite linear;\n}\r\n\r\n/* rotation animation */\n@keyframes st-loader-animation-spin {\n100% {\r\n    transform: rotate(360deg);\r\n    transform: rotate(360deg);\n}\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\loader.vue"],"names":[],"mappings":";AA8FA;EACA,kBAAA;EACA,MAAA;EACA,OAAA;EACA,WAAA;EACA,YAAA;EACA,eAAA;AACA;AAEA;;EAEA,kBAAA;EACA,sBAAA;EACA,QAAA;EACA,SAAA;AACA;AAEA;EACA,UAAA;EACA,WAAA;EACA,gBAAA;EACA,kBAAA;EACA,2BAAA;EACA,YAAA;EACA,gBAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;EACA,mBAAA;EACA,kBAAA;EACA,8BAAA;EACA,+BAAA;EACA,0DAAA;AACA;;AAEA,uBAAA;AACA;AACA;IACA,yBAAA;IACA,yBAAA;AACA;AACA","file":"loader.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-loader', classes.root]\" :style=\"styles.root\">\r\n    <div\r\n      :class=\"['actor', classes.actor]\"\r\n      :style=\"actorStyle_\"\r\n    ></div>\r\n    <div v-if=\"showTimer\" :class=\"['timer', classes.timer]\" :style=\"styles.timer\">\r\n      {{ minutes_ }}:{{ seconds_ }}\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { gv, concatStyles } from \"./utils\";\r\nexport default {\r\n  replace: true,\r\n  props: {\r\n    size: { type: Number, required: false, default: 3.2 },\r\n    sizeUnit: { type: String, required: false, default: \"em\" },\r\n    speed: { type: String, required: false, default: \"1s\" },\r\n    // show timer if over this timeout second value\r\n    timeout: { type: Number, required: false, default: 5 },\r\n    // elements class: { root, actor, timer }\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.loader.classes\", {})\r\n    },\r\n    // elements style: { root, actor, timer }\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.loader.styles\", {})\r\n    }\r\n  },\r\n  data: function () {\r\n    return { minutes: 0, seconds: 0, totalSeconds: 0, showTimer: false, timer: null };\r\n  },\r\n  computed: {\r\n    size_: function () {\r\n      return this.size + this.sizeUnit;\r\n    },\r\n    minutes_: function () {\r\n      if (this.minutes < 10) return \"0\" + this.minutes;\r\n      else return \"\" + this.minutes;\r\n    },\r\n    seconds_: function () {\r\n      if (this.seconds < 10) return \"0\" + this.seconds;\r\n      else return \"\" + this.seconds;\r\n    },\r\n    actorStyle_: function () {\r\n      return concatStyles({\r\n        'width': this.size_,\r\n        'height': this.size_,\r\n        'animation-duration': this.speed,\r\n        'margin-top': 'calc(' + this.size_ + ' / -2)',\r\n        'margin-left': 'calc(' + this.size_ + ' / -2)',\r\n      }, this.styles.actor);\r\n    }\r\n  },\r\n  created: function () {\r\n    const max = 60;\r\n    this.timer = setInterval(() => {\r\n      // show timer if timeout\r\n      if (++this.totalSeconds >= this.timeout && !this.showTimer) this.showTimer = true;\r\n\r\n      // calculate timer's minutes and seconds\r\n      this.seconds++;\r\n      if (this.seconds == max) {\r\n        this.seconds = 0;\r\n        this.minutes++;\r\n        if (this.minutes == max) this.minutes = 0;\r\n      }\r\n    }, 1000);\r\n  },\r\n  destroyed: function () {\r\n    if (this.timer) clearInterval(this.timer);\r\n  },\r\n  methods: {\r\n    reset: function () {\r\n      this.minutes = 0;\r\n      this.seconds = 0;\r\n      if (this.timer) clearInterval(this.timer);\r\n    },\r\n    concatStyles: function(...styles){\r\n      let t = concatStyles(...styles);\r\n      console.log(t);\r\n      return t;\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-loader {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 100000;\r\n}\r\n\r\n.st-loader > .timer,\r\n.st-loader > .actor {\r\n  position: absolute;\r\n  box-sizing: border-box;\r\n  top: 50%;\r\n  left: 50%;\r\n}\r\n\r\n.st-loader > .timer {\r\n  width: 6em;\r\n  height: 2em;\r\n  line-height: 2em;\r\n  text-align: center;\r\n  margin: -1em auto auto -3em;\r\n  border: none;\r\n  background: none;\r\n}\r\n\r\n.st-loader > .actor {\r\n  background: none;\r\n  opacity: 0.8;\r\n  border-width: 0.2em;\r\n  border-radius: 50%;\r\n  border-left-color: transparent;\r\n  border-right-color: transparent;\r\n  animation: st-loader-animation-spin 1000ms infinite linear;\r\n}\r\n\r\n/* rotation animation */\r\n@keyframes st-loader-animation-spin {\r\n  100% {\r\n    transform: rotate(360deg);\r\n    transform: rotate(360deg);\r\n  }\r\n}\r\n</style>"]}, media: undefined });
+
+    };
     /* scoped */
     const __vue_scope_id__ = undefined;
     /* module identifier */
     const __vue_module_identifier__ = undefined;
     /* functional template */
     const __vue_is_functional_template__ = false;
-    /* style inject */
-    
     /* style inject SSR */
     
 
     
-    var stCellIndex = normalizeComponent_1(
+    var stLoader = normalizeComponent_1(
       { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
       __vue_inject_styles__,
       __vue_script__,
       __vue_scope_id__,
       __vue_is_functional_template__,
       __vue_module_identifier__,
-      undefined,
+      browser,
       undefined
     );
 
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
+  function _iterableToArray(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  var cellBase = {
+    props: {
+      // Whether is a empty cell
+      empty: {
+        required: false,
+        "default": false
+      },
+      // Cell value
+      value: {
+        required: false
+      },
+      // Column option
+      column: {
+        type: Object,
+        required: false
+      },
+      // All dom element class
+      classes: {
+        type: Object,
+        required: false,
+        "default": function _default() {
+          return {};
+        }
+      },
+      // All dom element style
+      styles: {
+        type: Object,
+        required: false,
+        "default": function _default() {
+          return {};
+        }
+      }
+    },
+    computed: {
+      // DataRow.value
+      row: function row() {
+        return this.$parent.dataRowValue;
+      },
+      // TableRow.index
+      index: function index() {
+        return this.$parent.index;
+      },
+      // TableRow.tableRowIndex
+      tableRowIndex: function tableRowIndex() {
+        return this.$parent.tableRowIndex;
+      },
+      // TableRow.dataRowIndex
+      dataRowIndex: function dataRowIndex() {
+        return this.$parent.dataRowIndex;
+      }
+    }
+  };
+
   //
   var script$1 = {
-    "extends": cellBase
+    "extends": cellBase,
+    computed: {
+      content: function content() {
+        var t = this.empty ? "" : this.column && this.column.pid ? this.index // nested index
+        : this.dataRowIndex; // dataRow index
+
+        return t;
+      }
+    }
   };
 
   /* script */
@@ -346,7 +527,7 @@
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
     return _c("span", { class: _vm.classes.root, style: _vm.styles.root }, [
-      _vm._v(_vm._s(_vm.dataRowIndex >= 0 ? _vm.dataRowIndex + 1 : ""))
+      _vm._v(_vm._s(_vm.content))
     ])
   };
   var __vue_staticRenderFns__$1 = [];
@@ -366,7 +547,7 @@
     
 
     
-    var stCellSn = normalizeComponent_1(
+    var stCellIndex = normalizeComponent_1(
       { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
       __vue_inject_styles__$1,
       __vue_script__$1,
@@ -379,13 +560,7 @@
 
   //
   var script$2 = {
-    "extends": cellBase,
-    computed: {
-      content: function content() {
-        return this.empty ? "" : this.column && this.column.pid ? this.index + 1 // nested sn
-        : (this.$parent.selected ? "✓" : "") + (this.dataRowIndex + 1); // dataRow sn
-      }
-    }
+    "extends": cellBase
   };
 
   /* script */
@@ -397,7 +572,7 @@
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
     return _c("span", { class: _vm.classes.root, style: _vm.styles.root }, [
-      _vm._v(_vm._s(_vm.content))
+      _vm._v(_vm._s(_vm.dataRowIndex >= 0 ? _vm.dataRowIndex + 1 : ""))
     ])
   };
   var __vue_staticRenderFns__$2 = [];
@@ -417,7 +592,7 @@
     
 
     
-    var stCellSnSelectable = normalizeComponent_1(
+    var stCellSn = normalizeComponent_1(
       { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
       __vue_inject_styles__$2,
       __vue_script__$2,
@@ -430,7 +605,13 @@
 
   //
   var script$3 = {
-    "extends": cellBase
+    "extends": cellBase,
+    computed: {
+      content: function content() {
+        return this.empty ? "" : this.column && this.column.pid ? this.index + 1 // nested sn
+        : (this.$parent.selected ? "✓" : "") + (this.dataRowIndex + 1); // dataRow sn
+      }
+    }
   };
 
   /* script */
@@ -442,7 +623,7 @@
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
     return _c("span", { class: _vm.classes.root, style: _vm.styles.root }, [
-      _vm._v(_vm._s(_vm.value))
+      _vm._v(_vm._s(_vm.content))
     ])
   };
   var __vue_staticRenderFns__$3 = [];
@@ -462,7 +643,7 @@
     
 
     
-    var stCellText = normalizeComponent_1(
+    var stCellSnSelectable = normalizeComponent_1(
       { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
       __vue_inject_styles__$3,
       __vue_script__$3,
@@ -486,11 +667,9 @@
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
-    return _c("div", {
-      class: _vm.classes.root,
-      style: _vm.styles.root,
-      domProps: { innerHTML: _vm._s(_vm.value) }
-    })
+    return _c("span", { class: _vm.classes.root, style: _vm.styles.root }, [
+      _vm._v(_vm._s(_vm.value))
+    ])
   };
   var __vue_staticRenderFns__$4 = [];
   __vue_render__$4._withStripped = true;
@@ -509,7 +688,7 @@
     
 
     
-    var stCellHtml = normalizeComponent_1(
+    var stCellText = normalizeComponent_1(
       { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
       __vue_inject_styles__$4,
       __vue_script__$4,
@@ -520,8 +699,55 @@
       undefined
     );
 
-  var DEFAULT_CELL_COMPONENT = "st-cell-text";
+  //
   var script$5 = {
+    "extends": cellBase
+  };
+
+  /* script */
+  const __vue_script__$5 = script$5;
+
+  /* template */
+  var __vue_render__$5 = function() {
+    var _vm = this;
+    var _h = _vm.$createElement;
+    var _c = _vm._self._c || _h;
+    return _c("div", {
+      class: _vm.classes.root,
+      style: _vm.styles.root,
+      domProps: { innerHTML: _vm._s(_vm.value) }
+    })
+  };
+  var __vue_staticRenderFns__$5 = [];
+  __vue_render__$5._withStripped = true;
+
+    /* style */
+    const __vue_inject_styles__$5 = undefined;
+    /* scoped */
+    const __vue_scope_id__$5 = undefined;
+    /* module identifier */
+    const __vue_module_identifier__$5 = undefined;
+    /* functional template */
+    const __vue_is_functional_template__$5 = false;
+    /* style inject */
+    
+    /* style inject SSR */
+    
+
+    
+    var stCellHtml = normalizeComponent_1(
+      { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
+      __vue_inject_styles__$5,
+      __vue_script__$5,
+      __vue_scope_id__$5,
+      __vue_is_functional_template__$5,
+      __vue_module_identifier__$5,
+      undefined,
+      undefined
+    );
+
+  var DEFAULT_CELL_COMPONENT = "st-cell-text";
+  var script$6 = {
     // register all inner cell components
     components: {
       stCellIndex: stCellIndex,
@@ -718,10 +944,10 @@
   };
 
   /* script */
-  const __vue_script__$5 = script$5;
+  const __vue_script__$6 = script$6;
 
   /* template */
-  var __vue_render__$5 = function() {
+  var __vue_render__$6 = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -778,17 +1004,17 @@
       0
     )
   };
-  var __vue_staticRenderFns__$5 = [];
-  __vue_render__$5._withStripped = true;
+  var __vue_staticRenderFns__$6 = [];
+  __vue_render__$6._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$5 = undefined;
+    const __vue_inject_styles__$6 = undefined;
     /* scoped */
-    const __vue_scope_id__$5 = undefined;
+    const __vue_scope_id__$6 = undefined;
     /* module identifier */
-    const __vue_module_identifier__$5 = undefined;
+    const __vue_module_identifier__$6 = undefined;
     /* functional template */
-    const __vue_is_functional_template__$5 = false;
+    const __vue_is_functional_template__$6 = false;
     /* style inject */
     
     /* style inject SSR */
@@ -796,12 +1022,12 @@
 
     
     var stTableRow = normalizeComponent_1(
-      { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
-      __vue_inject_styles__$5,
-      __vue_script__$5,
-      __vue_scope_id__$5,
-      __vue_is_functional_template__$5,
-      __vue_module_identifier__$5,
+      { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
+      __vue_inject_styles__$6,
+      __vue_script__$6,
+      __vue_scope_id__$6,
+      __vue_is_functional_template__$6,
+      __vue_module_identifier__$6,
       undefined,
       undefined
     );
@@ -870,10 +1096,10 @@
   };
 
   /* script */
-  const __vue_script__$6 = component;
+  const __vue_script__$7 = component;
 
   /* template */
-  var __vue_render__$6 = function() {
+  var __vue_render__$7 = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -885,17 +1111,17 @@
       0
     )
   };
-  var __vue_staticRenderFns__$6 = [];
-  __vue_render__$6._withStripped = true;
+  var __vue_staticRenderFns__$7 = [];
+  __vue_render__$7._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$6 = undefined;
+    const __vue_inject_styles__$7 = undefined;
     /* scoped */
-    const __vue_scope_id__$6 = undefined;
+    const __vue_scope_id__$7 = undefined;
     /* module identifier */
-    const __vue_module_identifier__$6 = undefined;
+    const __vue_module_identifier__$7 = undefined;
     /* functional template */
-    const __vue_is_functional_template__$6 = false;
+    const __vue_is_functional_template__$7 = false;
     /* style inject */
     
     /* style inject SSR */
@@ -903,12 +1129,12 @@
 
     
     var stColgroup = normalizeComponent_1(
-      { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
-      __vue_inject_styles__$6,
-      __vue_script__$6,
-      __vue_scope_id__$6,
-      __vue_is_functional_template__$6,
-      __vue_module_identifier__$6,
+      { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
+      __vue_inject_styles__$7,
+      __vue_script__$7,
+      __vue_scope_id__$7,
+      __vue_is_functional_template__$7,
+      __vue_module_identifier__$7,
       undefined,
       undefined
     );
@@ -1188,10 +1414,10 @@
   }
 
   /* script */
-  const __vue_script__$7 = component$1;
+  const __vue_script__$8 = component$1;
 
   /* template */
-  var __vue_render__$7 = function() {
+  var __vue_render__$8 = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -1223,17 +1449,17 @@
       0
     )
   };
-  var __vue_staticRenderFns__$7 = [];
-  __vue_render__$7._withStripped = true;
+  var __vue_staticRenderFns__$8 = [];
+  __vue_render__$8._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$7 = undefined;
+    const __vue_inject_styles__$8 = undefined;
     /* scoped */
-    const __vue_scope_id__$7 = undefined;
+    const __vue_scope_id__$8 = undefined;
     /* module identifier */
-    const __vue_module_identifier__$7 = undefined;
+    const __vue_module_identifier__$8 = undefined;
     /* functional template */
-    const __vue_is_functional_template__$7 = false;
+    const __vue_is_functional_template__$8 = false;
     /* style inject */
     
     /* style inject SSR */
@@ -1241,12 +1467,12 @@
 
     
     var stThead = normalizeComponent_1(
-      { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
-      __vue_inject_styles__$7,
-      __vue_script__$7,
-      __vue_scope_id__$7,
-      __vue_is_functional_template__$7,
-      __vue_module_identifier__$7,
+      { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
+      __vue_inject_styles__$8,
+      __vue_script__$8,
+      __vue_scope_id__$8,
+      __vue_is_functional_template__$8,
+      __vue_module_identifier__$8,
       undefined,
       undefined
     );
@@ -1276,7 +1502,7 @@
     }; // top cell
   }
 
-  var script$6 = {
+  var script$7 = {
     components: {
       stColgroup: stColgroup,
       stThead: stThead,
@@ -1533,66 +1759,11 @@
     }
   };
 
-  var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());
-  function createInjector(context) {
-    return function (id, style) {
-      return addStyle(id, style);
-    };
-  }
-  var HEAD;
-  var styles = {};
-
-  function addStyle(id, css) {
-    var group = isOldIE ? css.media || 'default' : id;
-    var style = styles[group] || (styles[group] = {
-      ids: new Set(),
-      styles: []
-    });
-
-    if (!style.ids.has(id)) {
-      style.ids.add(id);
-      var code = css.source;
-
-      if (css.map) {
-        // https://developer.chrome.com/devtools/docs/javascript-debugging
-        // this makes source maps inside style tags work properly in Chrome
-        code += '\n/*# sourceURL=' + css.map.sources[0] + ' */'; // http://stackoverflow.com/a/26603875
-
-        code += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(css.map)))) + ' */';
-      }
-
-      if (!style.element) {
-        style.element = document.createElement('style');
-        style.element.type = 'text/css';
-        if (css.media) style.element.setAttribute('media', css.media);
-
-        if (HEAD === undefined) {
-          HEAD = document.head || document.getElementsByTagName('head')[0];
-        }
-
-        HEAD.appendChild(style.element);
-      }
-
-      if ('styleSheet' in style.element) {
-        style.styles.push(code);
-        style.element.styleSheet.cssText = style.styles.filter(Boolean).join('\n');
-      } else {
-        var index = style.ids.size - 1;
-        var textNode = document.createTextNode(code);
-        var nodes = style.element.childNodes;
-        if (nodes[index]) style.element.removeChild(nodes[index]);
-        if (nodes.length) style.element.insertBefore(textNode, nodes[index]);else style.element.appendChild(textNode);
-      }
-    }
-  }
-
-  var browser = createInjector;
-
   /* script */
-  const __vue_script__$8 = script$6;
+  const __vue_script__$9 = script$7;
 
   /* template */
-  var __vue_render__$8 = function() {
+  var __vue_render__$9 = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -1671,38 +1842,38 @@
         : _vm._e()
     ])
   };
-  var __vue_staticRenderFns__$8 = [];
-  __vue_render__$8._withStripped = true;
+  var __vue_staticRenderFns__$9 = [];
+  __vue_render__$9._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$8 = function (inject) {
+    const __vue_inject_styles__$9 = function (inject) {
       if (!inject) return
-      inject("data-v-238f4e16_0", { source: "\n.st-grid {\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\n}\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\n}\n.st-grid > .header > table {\r\n  position: relative;\n}\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\n}\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\n}\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\r\n  cursor: default;\n}\n.st-cell {\r\n  padding: 0.25rem;\n}\n.st-cell.number {\r\n  text-align: right;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\grid.vue"],"names":[],"mappings":";AA+QA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;AACA;AACA;;EAEA,WAAA;EACA,mBAAA;EACA,yBAAA;AACA;AACA;;EAEA,gBAAA;EACA,uBAAA;AACA;AACA;;EAEA,eAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,gBAAA;AACA;AACA;EACA,iBAAA;AACA","file":"grid.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-grid', classes.root]\">\r\n    <div :class=\"['top', classes.top]\" v-if=\"$slots.top && $slots.top.length > 0\">\r\n      <slot name=\"top\"></slot>\r\n    </div>\r\n    <div :class=\"['header', classes.header]\">\r\n      <table :class=\"classes.headerTable\" :style=\"headerTableStyle\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <st-thead :columns=\"columns\" :classes=\"classes.headerRow\" :styles=\"styles.headerRow\"></st-thead>\r\n      </table>\r\n    </div>\r\n    <div\r\n      :class=\"['content', classes.content]\"\r\n      @scroll=\"v.scrollLeft = -1 * $event.target.scrollLeft\"\r\n    >\r\n      <table :class=\"classes.contentTable\" :style=\"styles.contentTable\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <tbody>\r\n          <st-data-row\r\n            v-for=\"(row, index) in rows\"\r\n            :key=\"index\"\r\n            v-bind=\"dataRowProps(row, index)\"\r\n            v-on=\"dataRowListeners\"\r\n          ></st-data-row>\r\n        </tbody>\r\n      </table>\r\n    </div>\r\n    <div :class=\"['bottom', classes.bottom]\" v-if=\"$slots.bottom && $slots.bottom.length > 0\">\r\n      <slot name=\"bottom\"></slot>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { g, gv, flatten, concatStyles } from \"./utils\";\r\nimport stDataRow from \"./row/data-row\";\r\nimport stColgroup from \"./colgroup.vue\";\r\nimport stThead from \"./thead.vue\";\r\nimport tableRowVue from \"./row/table-row.vue\";\r\n\r\n/**\r\n * { empty, value }.\r\n *\r\n * If column has a pid, then:\r\n *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`\r\n *      if row[column.pid].length > subRowIndex,\r\n *   2. or return { empty: true }\r\n *      if row[column.pid].length <= subRowIndex.\r\n * Otherwise return `{ empty: false, value: row[column.id] }`.\r\n */\r\nfunction getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {\r\n  return column.pid\r\n    ? row[column.pid] && row[column.pid].length > subRowIndex\r\n      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell\r\n      : { empty: true } // empty cell\r\n    : { empty: false, value: row[column.id] }; // top cell\r\n}\r\n\r\nexport default {\r\n  components: { stColgroup, stThead, stDataRow },\r\n  props: {\r\n    columns: { type: Array, required: true },\r\n    rows: {\r\n      type: Array,\r\n      required: false,\r\n      default() {\r\n        return [];\r\n      }\r\n    },\r\n    // All dom element class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.classes\", {})\r\n    },\r\n    // All dom element style\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.styles\", {})\r\n    }\r\n  },\r\n  data: function() {\r\n    return {\r\n      // some params use in ui\r\n      v: {\r\n        scrollLeft: 0,\r\n        scrollBarWidth: 0,\r\n        timer: null,\r\n        contentEl: null,\r\n        lastColumnIsAutoWidth: false\r\n      }\r\n    };\r\n  },\r\n  computed: {\r\n    // all selected rows\r\n    selection() {\r\n      return this.rows.filter(row => row.selected === true);\r\n    },\r\n    flattenColumns() {\r\n      return flatten(this.columns);\r\n    },\r\n    subColumns() {\r\n      return this.flattenColumns.filter(c => c.pid);\r\n    },\r\n    headerTableStyle() {\r\n      return concatStyles(this.styles.headerTable, {\r\n        left: this.v.scrollLeft + \"px\",\r\n        width: \"calc(100% - \" + this.v.scrollBarWidth + \"px)\"\r\n      });\r\n    },\r\n    /** DataRow listeners to transfer */\r\n    dataRowListeners() {\r\n      const events = {};\r\n      Object.keys(this.$listeners)\r\n        .filter(key => key.startsWith(\"row-\") || key.startsWith(\"cell-\"))\r\n        .forEach(key => (events[key] = this.$listeners[key]));\r\n\r\n      // deal row-selection-change event\r\n      let old = events[\"row-selection-change\"]; // user define listener\r\n      if (old) {\r\n        events[\"row-selection-change\"] = data => {\r\n          this.selectRow(data.index, data.selected);\r\n          old.call(this, data);\r\n        }\r\n      } else events[\"row-selection-change\"] = data => this.selectRow(data.index, data.selected);\r\n\r\n      return events;\r\n    },\r\n    // [[tableRows], ...], index follow rows\r\n    tableRows() {\r\n      // DataRow OneToMany TableRow\r\n      let all = [];\r\n      let preTableRowCount = 0;\r\n      this.rows.forEach((dataRow, dataRowIndex) => {\r\n        let subTableRows = this.dataRowToTableRow(\r\n          dataRow,\r\n          dataRowIndex,\r\n          preTableRowCount\r\n        );\r\n        all.push(subTableRows);\r\n        preTableRowCount += subTableRows.length;\r\n      });\r\n      return all;\r\n    },\r\n    // Calculate each row's rowspan by Column.pid config\r\n    rowspans() {\r\n      let rowspans = {};\r\n\r\n      // find pid from columns config\r\n      let pids = this.subColumns\r\n        .map(c => c.pid)\r\n        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid\r\n\r\n      // calculate rowspan value\r\n      this.rows.forEach((row, index) => {\r\n        if (typeof row.rowspan === \"number\") {\r\n          // custom rowspan value\r\n          rowspans[index] = row.rowspan;\r\n        } else {\r\n          // auto calculate rowspan value\r\n          let maxSize = Math.max(\r\n            ...pids.map(pid => (row[pid] ? row[pid].length : 1))\r\n          );\r\n          if (maxSize > 1) rowspans[index] = maxSize;\r\n        }\r\n      });\r\n\r\n      return rowspans;\r\n    }\r\n  },\r\n  created() {\r\n    // auto judge the last column width config\r\n    this.v.lastColumnIsAutoWidth = !this.flattenColumns[\r\n      this.flattenColumns.length - 1\r\n    ].width;\r\n  },\r\n  mounted() {\r\n    if (!this.v.lastColumnIsAutoWidth) {\r\n      // watch horizon scrollbar size\r\n      this.v.contentEl = this.$el.querySelector(\".content\"); // cache content el\r\n      this.$_watchHorizonScrollBarSize();\r\n    }\r\n  },\r\n  destroyed() {\r\n    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);\r\n  },\r\n  methods: {\r\n    // DataRow OneToMany TableRow\r\n    // TableRow: {index, cells, classes, styles}\r\n    // TableCell: {rowspan, colspan, value, classes, styles}\r\n    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {\r\n      let tableRows = [];\r\n\r\n      // main TableRow\r\n      let nestedIndex = 0;\r\n      tableRows.push({\r\n        tableRowIndex: preTableRowCount,\r\n        dataRowIndex: dataRowIndex,\r\n        index: nestedIndex++,\r\n        row: dataRow,\r\n        classes: this.classes.contentRow,\r\n        styles: this.styles.contentRow,\r\n        selected: dataRow.selected === true,\r\n        cells: this.flattenColumns.map((column, i) => {\r\n          let { empty, value } = getCellConfigInfo(\r\n            dataRow,\r\n            column,\r\n            0,\r\n            dataRowIndex\r\n          );\r\n          let c = { column: column, empty: empty };\r\n          if (!empty) c.value = value;\r\n          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];\r\n          if (rowspan > 1) c.rowspan = rowspan;\r\n          return c;\r\n        })\r\n      });\r\n\r\n      // sub TableRows\r\n      let len = this.rowspans[dataRowIndex] || 1;\r\n      for (let i = 1; i < len; i++) {\r\n        tableRows.push({\r\n          tableRowIndex: preTableRowCount + nestedIndex,\r\n          dataRowIndex: dataRowIndex,\r\n          index: nestedIndex++,\r\n          row: dataRow,\r\n          classes: this.classes.contentRow,\r\n          styles: this.styles.contentRow,\r\n          cells: this.subColumns.map(column => {\r\n            let { empty, value } = getCellConfigInfo(dataRow, column, i);\r\n            let c = { column: column, empty: empty };\r\n            if (!empty) c.value = value;\r\n            return c;\r\n          })\r\n        });\r\n      }\r\n      return tableRows;\r\n    },\r\n    /** DataRow props to transfer */\r\n    dataRowProps(row, index) {\r\n      let props = {\r\n        tableRows: this.tableRows[index]\r\n      };\r\n      return props;\r\n    },\r\n    $_watchHorizonScrollBarSize() {\r\n      let t;\r\n      this.v.timer = g.setInterval(() => {\r\n        t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;\r\n        if (t != this.v.scrollBarWidth) {\r\n          // console.log(\"scrollBarWidth: %s > %s\", this.v.scrollBarWidth, t);\r\n          this.v.scrollBarWidth = t;\r\n        }\r\n      }, 100);\r\n    },\r\n    selectRow(index, selected) {\r\n      let row = this.rows[index];\r\n      if (row) this.$set(row, \"selected\", selected);\r\n    },\r\n    clearSelection() {\r\n      this.selection.forEach(row => this.$set(row, \"selected\", false));\r\n    },\r\n    deleteSelection() {\r\n      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-grid {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\r\n}\r\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\r\n}\r\n.st-grid > .header > table {\r\n  position: relative;\r\n}\r\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\r\n}\r\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\r\n}\r\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\r\n}\r\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\r\n}\r\n.st-row {\r\n  cursor: default;\r\n}\r\n.st-cell {\r\n  padding: 0.25rem;\r\n}\r\n.st-cell.number {\r\n  text-align: right;\r\n}\r\n</style>"]}, media: undefined });
+      inject("data-v-7ae86aff_0", { source: "\n.st-grid {\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\n}\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\n}\n.st-grid > .header > table {\r\n  position: relative;\n}\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\n}\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\n}\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\r\n  cursor: default;\n}\n.st-cell {\r\n  padding: 0.25rem;\n}\n.st-cell.number {\r\n  text-align: right;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\grid.vue"],"names":[],"mappings":";AA+QA;EACA,kBAAA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;AACA;AACA;;EAEA,WAAA;EACA,mBAAA;EACA,yBAAA;AACA;AACA;;EAEA,gBAAA;EACA,uBAAA;AACA;AACA;;EAEA,eAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,gBAAA;AACA;AACA;EACA,iBAAA;AACA","file":"grid.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-grid', classes.root]\">\r\n    <div :class=\"['top', classes.top]\" v-if=\"$slots.top && $slots.top.length > 0\">\r\n      <slot name=\"top\"></slot>\r\n    </div>\r\n    <div :class=\"['header', classes.header]\">\r\n      <table :class=\"classes.headerTable\" :style=\"headerTableStyle\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <st-thead :columns=\"columns\" :classes=\"classes.headerRow\" :styles=\"styles.headerRow\"></st-thead>\r\n      </table>\r\n    </div>\r\n    <div\r\n      :class=\"['content', classes.content]\"\r\n      @scroll=\"v.scrollLeft = -1 * $event.target.scrollLeft\"\r\n    >\r\n      <table :class=\"classes.contentTable\" :style=\"styles.contentTable\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <tbody>\r\n          <st-data-row\r\n            v-for=\"(row, index) in rows\"\r\n            :key=\"index\"\r\n            v-bind=\"dataRowProps(row, index)\"\r\n            v-on=\"dataRowListeners\"\r\n          ></st-data-row>\r\n        </tbody>\r\n      </table>\r\n    </div>\r\n    <div :class=\"['bottom', classes.bottom]\" v-if=\"$slots.bottom && $slots.bottom.length > 0\">\r\n      <slot name=\"bottom\"></slot>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { g, gv, flatten, concatStyles } from \"./utils\";\r\nimport stDataRow from \"./row/data-row\";\r\nimport stColgroup from \"./colgroup.vue\";\r\nimport stThead from \"./thead.vue\";\r\nimport tableRowVue from \"./row/table-row.vue\";\r\n\r\n/**\r\n * { empty, value }.\r\n *\r\n * If column has a pid, then:\r\n *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`\r\n *      if row[column.pid].length > subRowIndex,\r\n *   2. or return { empty: true }\r\n *      if row[column.pid].length <= subRowIndex.\r\n * Otherwise return `{ empty: false, value: row[column.id] }`.\r\n */\r\nfunction getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {\r\n  return column.pid\r\n    ? row[column.pid] && row[column.pid].length > subRowIndex\r\n      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell\r\n      : { empty: true } // empty cell\r\n    : { empty: false, value: row[column.id] }; // top cell\r\n}\r\n\r\nexport default {\r\n  components: { stColgroup, stThead, stDataRow },\r\n  props: {\r\n    columns: { type: Array, required: true },\r\n    rows: {\r\n      type: Array,\r\n      required: false,\r\n      default() {\r\n        return [];\r\n      }\r\n    },\r\n    // All dom element class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.classes\", {})\r\n    },\r\n    // All dom element style\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.styles\", {})\r\n    }\r\n  },\r\n  data: function() {\r\n    return {\r\n      // some params use in ui\r\n      v: {\r\n        scrollLeft: 0,\r\n        scrollBarWidth: 0,\r\n        timer: null,\r\n        contentEl: null,\r\n        lastColumnIsAutoWidth: false\r\n      }\r\n    };\r\n  },\r\n  computed: {\r\n    // all selected rows\r\n    selection() {\r\n      return this.rows.filter(row => row.selected === true);\r\n    },\r\n    flattenColumns() {\r\n      return flatten(this.columns);\r\n    },\r\n    subColumns() {\r\n      return this.flattenColumns.filter(c => c.pid);\r\n    },\r\n    headerTableStyle() {\r\n      return concatStyles(this.styles.headerTable, {\r\n        left: this.v.scrollLeft + \"px\",\r\n        width: \"calc(100% - \" + this.v.scrollBarWidth + \"px)\"\r\n      });\r\n    },\r\n    /** DataRow listeners to transfer */\r\n    dataRowListeners() {\r\n      const events = {};\r\n      Object.keys(this.$listeners)\r\n        .filter(key => key.startsWith(\"row-\") || key.startsWith(\"cell-\"))\r\n        .forEach(key => (events[key] = this.$listeners[key]));\r\n\r\n      // deal row-selection-change event\r\n      let old = events[\"row-selection-change\"]; // user define listener\r\n      if (old) {\r\n        events[\"row-selection-change\"] = data => {\r\n          this.selectRow(data.index, data.selected);\r\n          old.call(this, data);\r\n        }\r\n      } else events[\"row-selection-change\"] = data => this.selectRow(data.index, data.selected);\r\n\r\n      return events;\r\n    },\r\n    // [[tableRows], ...], index follow rows\r\n    tableRows() {\r\n      // DataRow OneToMany TableRow\r\n      let all = [];\r\n      let preTableRowCount = 0;\r\n      this.rows.forEach((dataRow, dataRowIndex) => {\r\n        let subTableRows = this.dataRowToTableRow(\r\n          dataRow,\r\n          dataRowIndex,\r\n          preTableRowCount\r\n        );\r\n        all.push(subTableRows);\r\n        preTableRowCount += subTableRows.length;\r\n      });\r\n      return all;\r\n    },\r\n    // Calculate each row's rowspan by Column.pid config\r\n    rowspans() {\r\n      let rowspans = {};\r\n\r\n      // find pid from columns config\r\n      let pids = this.subColumns\r\n        .map(c => c.pid)\r\n        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid\r\n\r\n      // calculate rowspan value\r\n      this.rows.forEach((row, index) => {\r\n        if (typeof row.rowspan === \"number\") {\r\n          // custom rowspan value\r\n          rowspans[index] = row.rowspan;\r\n        } else {\r\n          // auto calculate rowspan value\r\n          let maxSize = Math.max(\r\n            ...pids.map(pid => (row[pid] ? row[pid].length : 1))\r\n          );\r\n          if (maxSize > 1) rowspans[index] = maxSize;\r\n        }\r\n      });\r\n\r\n      return rowspans;\r\n    }\r\n  },\r\n  created() {\r\n    // auto judge the last column width config\r\n    this.v.lastColumnIsAutoWidth = !this.flattenColumns[\r\n      this.flattenColumns.length - 1\r\n    ].width;\r\n  },\r\n  mounted() {\r\n    if (!this.v.lastColumnIsAutoWidth) {\r\n      // watch horizon scrollbar size\r\n      this.v.contentEl = this.$el.querySelector(\".content\"); // cache content el\r\n      this.$_watchHorizonScrollBarSize();\r\n    }\r\n  },\r\n  destroyed() {\r\n    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);\r\n  },\r\n  methods: {\r\n    // DataRow OneToMany TableRow\r\n    // TableRow: {index, cells, classes, styles}\r\n    // TableCell: {rowspan, colspan, value, classes, styles}\r\n    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {\r\n      let tableRows = [];\r\n\r\n      // main TableRow\r\n      let nestedIndex = 0;\r\n      tableRows.push({\r\n        tableRowIndex: preTableRowCount,\r\n        dataRowIndex: dataRowIndex,\r\n        index: nestedIndex++,\r\n        row: dataRow,\r\n        classes: this.classes.contentRow,\r\n        styles: this.styles.contentRow,\r\n        selected: dataRow.selected === true,\r\n        cells: this.flattenColumns.map((column, i) => {\r\n          let { empty, value } = getCellConfigInfo(\r\n            dataRow,\r\n            column,\r\n            0,\r\n            dataRowIndex\r\n          );\r\n          let c = { column: column, empty: empty };\r\n          if (!empty) c.value = value;\r\n          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];\r\n          if (rowspan > 1) c.rowspan = rowspan;\r\n          return c;\r\n        })\r\n      });\r\n\r\n      // sub TableRows\r\n      let len = this.rowspans[dataRowIndex] || 1;\r\n      for (let i = 1; i < len; i++) {\r\n        tableRows.push({\r\n          tableRowIndex: preTableRowCount + nestedIndex,\r\n          dataRowIndex: dataRowIndex,\r\n          index: nestedIndex++,\r\n          row: dataRow,\r\n          classes: this.classes.contentRow,\r\n          styles: this.styles.contentRow,\r\n          cells: this.subColumns.map(column => {\r\n            let { empty, value } = getCellConfigInfo(dataRow, column, i);\r\n            let c = { column: column, empty: empty };\r\n            if (!empty) c.value = value;\r\n            return c;\r\n          })\r\n        });\r\n      }\r\n      return tableRows;\r\n    },\r\n    /** DataRow props to transfer */\r\n    dataRowProps(row, index) {\r\n      let props = {\r\n        tableRows: this.tableRows[index]\r\n      };\r\n      return props;\r\n    },\r\n    $_watchHorizonScrollBarSize() {\r\n      let t;\r\n      this.v.timer = g.setInterval(() => {\r\n        t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;\r\n        if (t != this.v.scrollBarWidth) {\r\n          // console.log(\"scrollBarWidth: %s > %s\", this.v.scrollBarWidth, t);\r\n          this.v.scrollBarWidth = t;\r\n        }\r\n      }, 100);\r\n    },\r\n    selectRow(index, selected) {\r\n      let row = this.rows[index];\r\n      if (row) this.$set(row, \"selected\", selected);\r\n    },\r\n    clearSelection() {\r\n      this.selection.forEach(row => this.$set(row, \"selected\", false));\r\n    },\r\n    deleteSelection() {\r\n      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-grid {\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\r\n}\r\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\r\n}\r\n.st-grid > .header > table {\r\n  position: relative;\r\n}\r\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\r\n}\r\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\r\n}\r\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\r\n}\r\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\r\n}\r\n.st-row {\r\n  cursor: default;\r\n}\r\n.st-cell {\r\n  padding: 0.25rem;\r\n}\r\n.st-cell.number {\r\n  text-align: right;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$8 = undefined;
+    const __vue_scope_id__$9 = undefined;
     /* module identifier */
-    const __vue_module_identifier__$8 = undefined;
+    const __vue_module_identifier__$9 = undefined;
     /* functional template */
-    const __vue_is_functional_template__$8 = false;
+    const __vue_is_functional_template__$9 = false;
     /* style inject SSR */
     
 
     
     var stGrid = normalizeComponent_1(
-      { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
-      __vue_inject_styles__$8,
-      __vue_script__$8,
-      __vue_scope_id__$8,
-      __vue_is_functional_template__$8,
-      __vue_module_identifier__$8,
+      { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
+      __vue_inject_styles__$9,
+      __vue_script__$9,
+      __vue_scope_id__$9,
+      __vue_is_functional_template__$9,
+      __vue_module_identifier__$9,
       browser,
       undefined
     );
 
   //
-  var script$7 = {
+  var script$8 = {
     props: {
       tag: {
         type: String,
@@ -1783,10 +1954,10 @@
   };
 
   /* script */
-  const __vue_script__$9 = script$7;
+  const __vue_script__$a = script$8;
 
   /* template */
-  var __vue_render__$9 = function() {
+  var __vue_render__$a = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -1822,38 +1993,38 @@
       ]
     )
   };
-  var __vue_staticRenderFns__$9 = [];
-  __vue_render__$9._withStripped = true;
+  var __vue_staticRenderFns__$a = [];
+  __vue_render__$a._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$9 = function (inject) {
+    const __vue_inject_styles__$a = function (inject) {
       if (!inject) return
       inject("data-v-0cab51a1_0", { source: "\n.st-button {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  min-height: 1.8em;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\button.vue"],"names":[],"mappings":";AA4FA;EACA,oBAAA;EACA,mBAAA;EACA,iBAAA;AACA","file":"button.vue","sourcesContent":["<template>\r\n  <component\r\n    :is=\"tag\"\r\n    :class=\"rootClass\"\r\n    :style=\"rootStyle\"\r\n    type=\"button\"\r\n    @mouseover=\"ui.hover = true\"\r\n    @mouseout=\"ui.hover = false\"\r\n    @click.stop.prevent=\"clickMe($event)\"\r\n  >\r\n    <i v-if=\"iconClass || classes.icon\" :class=\"[iconClass, classes.icon]\"></i>\r\n    <span v-if=\"$slots.default\" :class=\"classes.text\">\r\n      <slot></slot>\r\n    </span>\r\n  </component>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events:\r\n * 1. click($event)\r\n * 2. \"update:selected\"(selected) < if selectable === true\r\n */\r\nimport { gv, concatClasses, concatStyles } from \"./utils\";\r\nexport default {\r\n  props: {\r\n    tag: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.button.tag\", \"button\")\r\n    },\r\n    iconClass: { type: String, required: false },\r\n    selectable: { type: Boolean, required: false, default: false },\r\n    // only use when selectable === true\r\n    selected: { type: Boolean, required: false, default: false },\r\n    // element class: { root, hover, selected, iconContainer, icon, text }\r\n    classes: {\r\n      type: [Array, Object],\r\n      required: false,\r\n      default: () => gv(\"simter.button.classes\", {})\r\n    },\r\n    // element style: { root, hover, selected, iconContainer, icon, text }\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.button.styles\", {})\r\n    }\r\n  },\r\n  data() {\r\n    return { ui: { hover: false, selected: false } };\r\n  },\r\n  computed: {\r\n    rootClass() {\r\n      return concatClasses(\r\n        \"st-button\",\r\n        this.classes.root,\r\n        this.ui.hover ? this.classes.hover || \"hover\" : undefined,\r\n        this.ui.selected ? this.classes.selected || \"selected\" : undefined\r\n      );\r\n    },\r\n    rootStyle() {\r\n      return concatStyles(\r\n        this.styles.root,\r\n        this.ui.hover ? this.styles.hover : undefined,\r\n        this.selectable && this.ui.selected ? this.styles.selected : undefined\r\n      );\r\n    }\r\n  },\r\n  created() {\r\n    if (this.selectable) {\r\n      this.$watch(\r\n        \"selected\",\r\n        (newVal, _) => {\r\n          if (this.ui.selected !== newVal) this.ui.selected = newVal;\r\n        },\r\n        { immediate: true }\r\n      );\r\n    }\r\n  },\r\n  methods: {\r\n    clickMe($event) {\r\n      if (this.selectable && this.ui.selected !== true) {\r\n        this.ui.selected = true;\r\n        this.$emit(\"update:selected\", true);\r\n      }\r\n      this.$emit(\"click\", $event);\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-button {\r\n  display: inline-flex;\r\n  align-items: center;\r\n  min-height: 1.8em;\r\n}\r\n</style>\r\n"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$9 = undefined;
+    const __vue_scope_id__$a = undefined;
     /* module identifier */
-    const __vue_module_identifier__$9 = undefined;
+    const __vue_module_identifier__$a = undefined;
     /* functional template */
-    const __vue_is_functional_template__$9 = false;
+    const __vue_is_functional_template__$a = false;
     /* style inject SSR */
     
 
     
     var stButton = normalizeComponent_1(
-      { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
-      __vue_inject_styles__$9,
-      __vue_script__$9,
-      __vue_scope_id__$9,
-      __vue_is_functional_template__$9,
-      __vue_module_identifier__$9,
+      { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
+      __vue_inject_styles__$a,
+      __vue_script__$a,
+      __vue_scope_id__$a,
+      __vue_is_functional_template__$a,
+      __vue_module_identifier__$a,
       browser,
       undefined
     );
 
   //
-  var script$8 = {
+  var script$9 = {
     components: {
       stButton: stButton
     },
@@ -1941,10 +2112,10 @@
   };
 
   /* script */
-  const __vue_script__$a = script$8;
+  const __vue_script__$b = script$9;
 
   /* template */
-  var __vue_render__$a = function() {
+  var __vue_render__$b = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -2032,38 +2203,38 @@
       1
     )
   };
-  var __vue_staticRenderFns__$a = [];
-  __vue_render__$a._withStripped = true;
+  var __vue_staticRenderFns__$b = [];
+  __vue_render__$b._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$a = function (inject) {
+    const __vue_inject_styles__$b = function (inject) {
       if (!inject) return
       inject("data-v-15925312_0", { source: "\n.st-pagebar {\r\n  display: inline-flex;\r\n  align-items: center;\n}\n.st-pagebar > .text {\r\n  cursor: default;\r\n  margin: 0 0.25rem;\n}\n.st-pagebar > :not(.text) {\r\n  cursor: pointer;\r\n  margin: 0;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\pagebar.vue"],"names":[],"mappings":";AAuGA;EACA,oBAAA;EACA,mBAAA;AACA;AACA;EACA,eAAA;EACA,iBAAA;AACA;AACA;EACA,eAAA;EACA,SAAA;AACA","file":"pagebar.vue","sourcesContent":["<template>\r\n  <span :class=\"['st-pagebar', classes.root]\">\r\n    <st-button\r\n      :class=\"'first'\"\r\n      :classes=\"classes.first\"\r\n      :styles=\"styles.first\"\r\n      @click.native.prevent.stop=\"toPage(1)\"\r\n    >{{text.first}}</st-button>\r\n    <st-button\r\n      :class=\"'previous'\"\r\n      :classes=\"classes.previous\"\r\n      :styles=\"styles.previous\"\r\n      @click.native.prevent.stop=\"toPage(Math.max(v.pageNo - 1, 1))\"\r\n    >{{text.previous}}</st-button>\r\n    <span :class=\"['text', classes.text]\" v-if=\"total > 0\">{{v.pageNo}}/{{pageCount}}({{total}})</span>\r\n    <span :class=\"['text', classes.text]\" v-else>0</span>\r\n    <st-button\r\n      :class=\"'next'\"\r\n      :classes=\"classes.next\"\r\n      :styles=\"styles.next\"\r\n      @click.native.prevent.stop=\"toPage(Math.min(v.pageNo + 1, pageCount))\"\r\n    >{{text.next}}</st-button>\r\n    <st-button\r\n      :class=\"'last'\"\r\n      :classes=\"classes.last\"\r\n      :styles=\"styles.last\"\r\n      @click.native.prevent.stop=\"toPage(pageCount)\"\r\n    >{{text.last}}</st-button>\r\n  </span>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: change(newPageNo)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    text: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.pagebar.text\", {\r\n          first: \"First\",\r\n          previous: \"Previous\",\r\n          next: \"Next\",\r\n          last: \"Last\"\r\n        })\r\n    },\r\n    /** The current 1-base page number */\r\n    pageNo: { type: Number, required: false, default: 0 },\r\n    /** The maximal elements count of one page */\r\n    pageSize: {\r\n      type: Number,\r\n      required: false,\r\n      default: () => gv(\"simter.pagebar.pageSize\", 25)\r\n    },\r\n    /** The total elements count */\r\n    total: { type: Number, required: true },\r\n    // All dom element class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.pagebar.classes\", {})\r\n    },\r\n    // All dom element style\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.pagebar.styles\", {})\r\n    }\r\n  },\r\n  computed: {\r\n    pageCount() {\r\n      return Math.ceil(this.total / this.pageSize);\r\n    }\r\n  },\r\n  data() {\r\n    return { v: { pageNo: undefined } };\r\n  },\r\n  watch: {\r\n    pageNo: {\r\n      immediate: true,\r\n      handler(value) {\r\n        if (value !== this.v.pageNo) this.v.pageNo = value;\r\n      }\r\n    }\r\n  },\r\n  methods: {\r\n    toPage(pageNo) {\r\n      if (pageNo !== this.v.pageNo) {\r\n        this.v.pageNo = pageNo;\r\n        this.$emit(\"update:page-no\", pageNo);\r\n        this.$emit(\"change\", pageNo);\r\n      }\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-pagebar {\r\n  display: inline-flex;\r\n  align-items: center;\r\n}\r\n.st-pagebar > .text {\r\n  cursor: default;\r\n  margin: 0 0.25rem;\r\n}\r\n.st-pagebar > :not(.text) {\r\n  cursor: pointer;\r\n  margin: 0;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$a = undefined;
+    const __vue_scope_id__$b = undefined;
     /* module identifier */
-    const __vue_module_identifier__$a = undefined;
+    const __vue_module_identifier__$b = undefined;
     /* functional template */
-    const __vue_is_functional_template__$a = false;
+    const __vue_is_functional_template__$b = false;
     /* style inject SSR */
     
 
     
     var stPagebar = normalizeComponent_1(
-      { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
-      __vue_inject_styles__$a,
-      __vue_script__$a,
-      __vue_scope_id__$a,
-      __vue_is_functional_template__$a,
-      __vue_module_identifier__$a,
+      { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
+      __vue_inject_styles__$b,
+      __vue_script__$b,
+      __vue_scope_id__$b,
+      __vue_is_functional_template__$b,
+      __vue_module_identifier__$b,
       browser,
       undefined
     );
 
   //
-  var script$9 = {
+  var script$a = {
     components: {
       stButton: stButton
     },
@@ -2140,10 +2311,10 @@
   };
 
   /* script */
-  const __vue_script__$b = script$9;
+  const __vue_script__$c = script$a;
 
   /* template */
-  var __vue_render__$b = function() {
+  var __vue_render__$c = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -2185,32 +2356,32 @@
       1
     )
   };
-  var __vue_staticRenderFns__$b = [];
-  __vue_render__$b._withStripped = true;
+  var __vue_staticRenderFns__$c = [];
+  __vue_render__$c._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$b = function (inject) {
+    const __vue_inject_styles__$c = function (inject) {
       if (!inject) return
       inject("data-v-1b35d812_0", { source: "\n.st-button-group {\r\n  display: inline-flex;\n}\n.st-button-group > * {\r\n  margin: 0;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\button-group.vue"],"names":[],"mappings":";AAuFA;EACA,oBAAA;AACA;AACA;EACA,SAAA;AACA","file":"button-group.vue","sourcesContent":["<template>\r\n  <span :class=\"[rootClass, classes.root]\">\r\n    <st-button\r\n      v-for=\"(item, index) in items\"\r\n      :key=\"index\"\r\n      :classes=\"classes.button\"\r\n      :styles=\"styles.button\"\r\n      :class=\"itemClass(item, index)\"\r\n      :style=\"itemStyle(item, index)\"\r\n      :selectable=\"true\"\r\n      :selected=\"item === value\"\r\n      @click=\"clickItem(item, index)\"\r\n    >{{typeof item === \"string\" ? item : (typeof item === \"object\" ? item.text || item.value : item)}}</st-button>\r\n  </span>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: change(newValue, newIndex)\r\n */\r\nimport { gv, concatClasses, concatStyles } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    rootClass: { type: String, required: false, default: \"st-button-group\" },\r\n    /** buttons: [String|{text, value, ...}] */\r\n    items: { type: Array, required: true },\r\n    /** current value */\r\n    value: { required: false },\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.buttonGroup.classes\", {\r\n          first: \"first\",\r\n          last: \"last\"\r\n        })\r\n    },\r\n    // all dom elements class\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.buttonGroup.styles\", {})\r\n    }\r\n  },\r\n  data() {\r\n    return { v: { value: undefined } };\r\n  },\r\n  watch: {\r\n    value: {\r\n      immediate: true,\r\n      handler(value) {\r\n        if (value !== this.v.value) this.v.value = value;\r\n      }\r\n    }\r\n  },\r\n  methods: {\r\n    /** auto judge whether to add first, last or selected class to the relative button */\r\n    itemClass(item, index) {\r\n      return concatClasses(\r\n        item == this.v.value ? this.classes.selected : undefined,\r\n        index === 0 ? this.classes.first : undefined,\r\n        index === this.items.length - 1 ? this.classes.last : undefined\r\n      );\r\n    },\r\n    /** auto judge whether to add first, last or selected style to the relative button */\r\n    itemStyle(item, index) {\r\n      return concatStyles(\r\n        item == this.v.value ? this.styles.selected : undefined,\r\n        index === 0 ? this.styles.first : undefined,\r\n        index === this.items.length - 1 ? this.styles.last : undefined\r\n      );\r\n    },\r\n    clickItem(item, index) {\r\n      if (this.v.value !== item) {\r\n        this.v.value = item;\r\n        this.$emit(\"update:value\", item);\r\n        this.$emit(\"change\", item, index);\r\n      }\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-button-group {\r\n  display: inline-flex;\r\n}\r\n.st-button-group > * {\r\n  margin: 0;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$b = undefined;
+    const __vue_scope_id__$c = undefined;
     /* module identifier */
-    const __vue_module_identifier__$b = undefined;
+    const __vue_module_identifier__$c = undefined;
     /* functional template */
-    const __vue_is_functional_template__$b = false;
+    const __vue_is_functional_template__$c = false;
     /* style inject SSR */
     
 
     
     var stButtonGroup = normalizeComponent_1(
-      { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
-      __vue_inject_styles__$b,
-      __vue_script__$b,
-      __vue_scope_id__$b,
-      __vue_is_functional_template__$b,
-      __vue_module_identifier__$b,
+      { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
+      __vue_inject_styles__$c,
+      __vue_script__$c,
+      __vue_scope_id__$c,
+      __vue_is_functional_template__$c,
+      __vue_module_identifier__$c,
       browser,
       undefined
     );
@@ -2218,7 +2389,7 @@
   /**
    * Events: change(newValue, newIndex)
    */
-  var script$a = {
+  var script$b = {
     "extends": stButtonGroup,
     props: {
       rootClass: {
@@ -2260,39 +2431,39 @@
   };
 
   /* script */
-  const __vue_script__$c = script$a;
+  const __vue_script__$d = script$b;
 
   /* template */
 
     /* style */
-    const __vue_inject_styles__$c = function (inject) {
+    const __vue_inject_styles__$d = function (inject) {
       if (!inject) return
       inject("data-v-0d15719a_0", { source: "\n.st-page-sizes {\r\n  display: inline-flex;\n}\n.st-page-sizes > * {\r\n  margin: 0;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\pagebar-sizes.vue"],"names":[],"mappings":";AAsCA;EACA,oBAAA;AACA;AACA;EACA,SAAA;AACA","file":"pagebar-sizes.vue","sourcesContent":["<script>\r\n/**\r\n * Events: change(newValue, newIndex)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButtonGroup from \"./button-group.vue\";\r\nexport default {\r\n  extends: stButtonGroup,\r\n  props: {\r\n    rootClass: { type: String, required: false, default: \"st-pagebar-sizes\" },\r\n    items: {\r\n      type: Array,\r\n      required: false,\r\n      default: () => gv(\"simter.pagebar.pageSizes\", [25, 50, 100])\r\n    },\r\n    value: {\r\n      required: false,\r\n      default: () => gv(\"simter.pagebar.pageSize\", 25)\r\n    },\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.pagebarSizes.classes\", {\r\n          first: \"first\",\r\n          last: \"last\"\r\n        })\r\n    },\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.pagebarSizes.styles\", {})\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-page-sizes {\r\n  display: inline-flex;\r\n}\r\n.st-page-sizes > * {\r\n  margin: 0;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$c = undefined;
+    const __vue_scope_id__$d = undefined;
     /* module identifier */
-    const __vue_module_identifier__$c = undefined;
+    const __vue_module_identifier__$d = undefined;
     /* functional template */
-    const __vue_is_functional_template__$c = undefined;
+    const __vue_is_functional_template__$d = undefined;
     /* style inject SSR */
     
 
     
     var stPagebarSizes = normalizeComponent_1(
       {},
-      __vue_inject_styles__$c,
-      __vue_script__$c,
-      __vue_scope_id__$c,
-      __vue_is_functional_template__$c,
-      __vue_module_identifier__$c,
+      __vue_inject_styles__$d,
+      __vue_script__$d,
+      __vue_scope_id__$d,
+      __vue_is_functional_template__$d,
+      __vue_module_identifier__$d,
       browser,
       undefined
     );
 
   //
-  var script$b = {
+  var script$c = {
     props: {
       // all dom elements class
       classes: {
@@ -2311,10 +2482,10 @@
   };
 
   /* script */
-  const __vue_script__$d = script$b;
+  const __vue_script__$e = script$c;
 
   /* template */
-  var __vue_render__$c = function() {
+  var __vue_render__$d = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -2335,38 +2506,38 @@
       2
     )
   };
-  var __vue_staticRenderFns__$c = [];
-  __vue_render__$c._withStripped = true;
+  var __vue_staticRenderFns__$d = [];
+  __vue_render__$d._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$d = function (inject) {
+    const __vue_inject_styles__$e = function (inject) {
       if (!inject) return
       inject("data-v-ddb28036_0", { source: "\n.st-toolbar {\r\n  display: flex;\r\n  align-items: flex-start;\n}\n.st-toolbar > *:not(.right):not(.left) {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-toolbar > .left > *,\r\n.st-toolbar > .right > * {\r\n  margin: 0.25rem 0.25rem 0.25rem 0;\n}\n.st-toolbar > .right {\r\n  position: relative;\r\n  flex: 1 1 auto;\r\n  display: flex;\r\n  justify-content: flex-end;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\toolbar.vue"],"names":[],"mappings":";AAiCA;EACA,aAAA;EACA,uBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;;EAEA,iCAAA;AACA;AACA;EACA,kBAAA;EACA,cAAA;EACA,aAAA;EACA,yBAAA;AACA","file":"toolbar.vue","sourcesContent":["<template>\r\n  <div :class=\"classes.root\">\r\n    <slot name=\"default\" :class=\"classes.default\"></slot>\r\n    <div v-if=\"$slots.left\" :class=\"classes.left\">\r\n      <slot name=\"left\"></slot>\r\n    </div>\r\n    <div v-if=\"$slots.right\" :class=\"classes.right\">\r\n      <slot name=\"right\"></slot>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { gv } from \"./utils\";\r\nexport default {\r\n  props: {\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.toolbar.classes\", {\r\n          root: \"st-toolbar\",\r\n          default: \"default\",\r\n          right: \"right\",\r\n          left: \"left\"\r\n        })\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-toolbar {\r\n  display: flex;\r\n  align-items: flex-start;\r\n}\r\n.st-toolbar > *:not(.right):not(.left) {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\r\n}\r\n.st-toolbar > .left > *,\r\n.st-toolbar > .right > * {\r\n  margin: 0.25rem 0.25rem 0.25rem 0;\r\n}\r\n.st-toolbar > .right {\r\n  position: relative;\r\n  flex: 1 1 auto;\r\n  display: flex;\r\n  justify-content: flex-end;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$d = undefined;
+    const __vue_scope_id__$e = undefined;
     /* module identifier */
-    const __vue_module_identifier__$d = undefined;
+    const __vue_module_identifier__$e = undefined;
     /* functional template */
-    const __vue_is_functional_template__$d = false;
+    const __vue_is_functional_template__$e = false;
     /* style inject SSR */
     
 
     
     var stToolbar = normalizeComponent_1(
-      { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
-      __vue_inject_styles__$d,
-      __vue_script__$d,
-      __vue_scope_id__$d,
-      __vue_is_functional_template__$d,
-      __vue_module_identifier__$d,
+      { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
+      __vue_inject_styles__$e,
+      __vue_script__$e,
+      __vue_scope_id__$e,
+      __vue_is_functional_template__$e,
+      __vue_module_identifier__$e,
       browser,
       undefined
     );
 
   //
-  var script$c = {
+  var script$d = {
     components: {
       stButton: stButton
     },
@@ -2432,10 +2603,10 @@
   };
 
   /* script */
-  const __vue_script__$e = script$c;
+  const __vue_script__$f = script$d;
 
   /* template */
-  var __vue_render__$d = function() {
+  var __vue_render__$e = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
@@ -2495,37 +2666,38 @@
       1
     )
   };
-  var __vue_staticRenderFns__$d = [];
-  __vue_render__$d._withStripped = true;
+  var __vue_staticRenderFns__$e = [];
+  __vue_render__$e._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$e = function (inject) {
+    const __vue_inject_styles__$f = function (inject) {
       if (!inject) return
       inject("data-v-5996be36_0", { source: "\n.st-search {\r\n  position: relative;\r\n  display: inline-flex;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\search.vue"],"names":[],"mappings":";AA+EA;EACA,kBAAA;EACA,oBAAA;AACA","file":"search.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-search', classes.root]\" :style=\"styles.root\">\r\n    <input\r\n      type=\"search\"\r\n      :class=\"['text', classes.text]\"\r\n      :placeholder=\"placeholder\"\r\n      v-model=\"ui.value\"\r\n      @keyup.enter.stop=\"doSearch\"\r\n      @change=\"doChange\"\r\n    />\r\n    <st-button\r\n      :class=\"'search'\"\r\n      :classes=\"classes.search\"\r\n      :styles=\"styles.search\"\r\n      @click.native.prevent.stop=\"doSearch\"\r\n    >{{searchButtonText}}</st-button>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: search(value)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\n\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    placeholder: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.placeholder\")\r\n    },\r\n    value: { required: false },\r\n    searchButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.searchButtonText\", \"Go\")\r\n    },\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.search.classes\", {})\r\n    },\r\n    // all dom elements class\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default() {\r\n        return {};\r\n      }\r\n    }\r\n  },\r\n  data() {\r\n    return { ui: { value: undefined } };\r\n  },\r\n  watch: {\r\n    value: {\r\n      immediate: true,\r\n      handler(value) {\r\n        if (value !== this.ui.value) this.ui.value = value;\r\n      }\r\n    }\r\n  },\r\n  methods: {\r\n    doSearch() {\r\n      this.$emit(\"search\", this.ui.value);\r\n    },\r\n    doChange() {\r\n      this.$emit(\"update:value\", this.ui.value);\r\n      this.$emit(\"change\", this.ui.value);\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-search {\r\n  position: relative;\r\n  display: inline-flex;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$e = undefined;
+    const __vue_scope_id__$f = undefined;
     /* module identifier */
-    const __vue_module_identifier__$e = undefined;
+    const __vue_module_identifier__$f = undefined;
     /* functional template */
-    const __vue_is_functional_template__$e = false;
+    const __vue_is_functional_template__$f = false;
     /* style inject SSR */
     
 
     
     var stSearch = normalizeComponent_1(
-      { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
-      __vue_inject_styles__$e,
-      __vue_script__$e,
-      __vue_scope_id__$e,
-      __vue_is_functional_template__$e,
-      __vue_module_identifier__$e,
+      { render: __vue_render__$e, staticRenderFns: __vue_staticRenderFns__$e },
+      __vue_inject_styles__$f,
+      __vue_script__$f,
+      __vue_scope_id__$f,
+      __vue_is_functional_template__$f,
+      __vue_module_identifier__$f,
       browser,
       undefined
     );
 
   var components = {
+    "st-loader": [version, stLoader],
     "st-grid": [version, stGrid],
     "st-colgroup": ["0.3.0", stColgroup],
     "st-thead": ["0.4.2", stThead],
