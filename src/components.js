@@ -3,6 +3,9 @@ import Vue from 'vue'
 import { version } from '../package.json'
 
 
+// loader
+import stLoader from "./loader.vue";
+
 // grid
 import stGrid from "./grid.vue";
 import stColgroup from './colgroup.vue'
@@ -28,6 +31,8 @@ import stSearch from "./search.vue";
 
 // global register all components
 const components = {
+  "st-loader": [version, stLoader],
+
   "st-grid": [version, stGrid],
   "st-colgroup": ["0.3.0", stColgroup],
   "st-thead": ["0.4.2", stThead],
