@@ -88,5 +88,11 @@ window.simter = {
         icon: "ui-icon ui-icon-search"
       }
     }
+  },
+  loader: {
+    classes: {
+      actor: "ui-state-active",
+      timer: "ui-state-disabled"
+    }
   }
 };
