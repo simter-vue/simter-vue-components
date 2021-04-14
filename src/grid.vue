@@ -270,6 +270,7 @@ export default {
 
 <style>
 .st-grid {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
