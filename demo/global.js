@@ -28,5 +28,14 @@ window.simter = {
       hover: { "text-decoration": "underline" },
       selected: { "color": "blue" }
     }
+  },
+  loader: {
+    styles: {
+      actor: { 
+        "border-style": "solid",
+        "border-color": "blue transparent"
+      },
+      timer: { color: 'red' }
+    }
   }
 }

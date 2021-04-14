@@ -16,15 +16,21 @@
       <input type="range" min="10" max="30" v-model="heightValue" />
       {{heightValue}} {{unit}}
     </div>
+    <div>
+      <label><input type="checkbox" v-model="loading" /> Show Loader</label>
+      <input type="range" min="1" max="10" step="0.1" v-model="loaderSize" />
+      {{loaderSize}} em
+    </div>
     <st-grid
       ref="grid"
-      :style="{width: width, height: height, border: '1px solid #666'}"
+      :style="{width: width, height: height, border: '1px solid #666', position: 'relative'}"
       :columns="columns"
       :rows="rows"
       @row-click="clickRow"
       @row-dblclick="dblclickRow"
     >
       <template #top>
+        <st-loader v-if="loading" :size="loaderSize"></st-loader>
         <st-toolbar>
           <st-button icon-class="icon-create">Create</st-button>
           <st-button>Edit</st-button>
@@ -51,6 +57,7 @@
 </template>
 
 <script>
+import stLoader from "../src/loader.vue";
 import stGrid from "../src/grid.vue";
 import stPagebar from "../src/pagebar.vue";
 import stPagebarSizes from "../src/pagebar-sizes.vue";
@@ -60,6 +67,7 @@ import stSearch from "../src/search.vue";
 import stToolbar from "../src/toolbar.vue";
 export default {
   components: {
+    stLoader,
     stGrid,
     stPagebar,
     stPagebarSizes,
@@ -70,6 +78,8 @@ export default {
   },
   data() {
     return {
+      loading: false,
+      loaderSize: 3.2,
       unit: "em",
       customWidth: true,
       widthValue: 44,
@@ -220,6 +230,8 @@ export default {
     },
     doRefresh() {
       console.log("doRefresh");
+      this.loading = true;
+      setTimeout(() => this.loading = false, 90000); // 90s
     },
     doExport($event) {
       console.log("doExport=%o", $event);

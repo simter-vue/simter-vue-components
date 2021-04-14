@@ -6,6 +6,52 @@
   <meta name=viewport content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1">
   <title>st-grid</title>
   <link rel="stylesheet" href="./global.css">
+  <style>
+    .st-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100000;
+    }
+
+    .st-loader>.timer,
+    .st-loader>.actor {
+      position: absolute;
+      box-sizing: border-box;
+      top: 50%;
+      left: 50%;
+    }
+
+    .st-loader>.timer {
+      width: 6em;
+      height: 2em;
+      line-height: 2em;
+      text-align: center;
+      margin: -1em auto auto -3em;
+      border: none;
+      background: none;
+    }
+
+    .st-loader>.actor {
+      background: none;
+      opacity: 0.8;
+      border-width: 0.2em;
+      border-radius: 50%;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      animation: st-loader-animation-spin 1000ms infinite linear;
+    }
+
+    /* rotation animation */
+    @keyframes st-loader-animation-spin {
+      100% {
+        transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 
 <body>
