@@ -1,5 +1,10 @@
 # simter-vue-components changelog
 
+## 0.4.0 2021-04-14
+
+- New Loader component
+- Set grid component default position style to relative
+
 ## 0.3.0 2020-11-17
 
 - Fix grid's row selection error
