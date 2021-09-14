@@ -28,6 +28,8 @@ import stToolbar from "./toolbar.vue";
 import stButton from "./button.vue"
 import stButtonGroup from "./button-group.vue"
 import stSearch from "./search.vue";
+import stUpload from "./upload.vue";
+import stProgressbar from "./progressbar.vue";
 
 // global register all components
 const components = {
@@ -53,6 +55,8 @@ const components = {
   "st-button": [version, stButton],
   "st-button-group": [version, stButtonGroup],
   "st-search": [version, stSearch],
+  "st-upload": [version, stUpload],
+  "st-progress-bar": [version, stProgressbar]
 }
 const keyVersions = {}
 let value
