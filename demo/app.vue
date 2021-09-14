@@ -53,6 +53,20 @@
     </st-grid>
 
     <blockquote>Column 'Website' is auto width.</blockquote>
+    <div>
+      <h2>st-upload: </h2>
+      <label><input type="checkbox" v-model="autoStartUpload" />Auto upload file</label>
+      <button v-if="!autoStartUpload" @click="startUpload">Start Upload</button>
+      <st-upload ref="uploader"
+        :style="{width: width, border: '1px solid #666', padding: '.25em', height: '10em'}"
+        :url="getUploadUrl"
+        :auto="autoStartUpload"
+        @start="beforeUpload"
+        @progress="uploadProgress"
+        @success="afterUpload"
+        @error="uploadErrorCallback">
+      </st-upload>
+    </div>
   </div>
 </template>
 
@@ -64,6 +78,7 @@ import stPagebarSizes from "../src/pagebar-sizes.vue";
 import stButton from "../src/button.vue";
 import stButtonGroup from "../src/button-group.vue";
 import stSearch from "../src/search.vue";
+import stUpload from "../src/upload.vue";
 import stToolbar from "../src/toolbar.vue";
 export default {
   components: {
@@ -74,7 +89,8 @@ export default {
     stButton,
     stButtonGroup,
     stToolbar,
-    stSearch
+    stSearch,
+    stUpload
   },
   data() {
     return {
@@ -85,6 +101,7 @@ export default {
       widthValue: 44,
       customHeight: false,
       heightValue: 15,
+      autoStartUpload: false,
 
       // pagebar
       pageNo: 1,
@@ -267,6 +284,28 @@ export default {
     },
     showSelection() {
       window.alert("selectedIds=" + this.$refs.grid.selection.map(r => r.id).join(", "));
+    },
+
+    //----st-upload
+    startUpload() {
+      this.$refs.uploader.startUpload();
+    },
+    getUploadUrl(data) {
+      // data: {index, name, size, type}
+      console.log("----getUploadUrl: data=%o", data);
+      return `http://localhost:9013/file/?module=test&name=${encodeURIComponent(data.name)}&type=${data.type}&size=${data.size}`;
+    },
+    uploadProgress(data) {
+      console.log("----uploadProgress: data=%o", data);
+    },
+    beforeUpload(data) {
+      console.log("----beforeUpload: data=%o", data);
+    },
+    afterUpload(data) {
+      console.log("----afterUpload: data=%o", data);
+    },
+    uploadErrorCallback(data) {
+      console.log("----uploadErrorCallback: data=%o", data);
     }
   }
 };
