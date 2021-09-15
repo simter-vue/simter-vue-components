@@ -1,12 +1,12 @@
 /*!
-* simter-vue-components v0.4.0
+* simter-vue-components v0.5.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
 */
 import Vue from 'vue';
 
-var version = "0.4.0";
+var version = "0.5.0";
 
 const g = window || global;
 /**
@@ -70,6 +70,94 @@ function concatStyles(...styles) {
   return styles.reduce((a, b) => {
     if (typeof b === "undefined") return a;else return Object.assign(a, b);
   }, {});
+}
+/**
+ * Get the file extension.
+ * 
+ * @param {String} filename the file name with extension, sucs as 'my.png'.
+ * @returns the extension, such as 'png'
+ */
+
+
+function getFileExtension(filename) {
+  let i = filename.lastIndexOf(".");
+  if (i !== -1) return filename.substring(i + 1);else return '';
+}
+/**
+ * Format the byte size to a human reading size.
+ * 
+ * @param {Number} size the byte size
+ * @returns human reading size, such as '2 KB'
+ */
+
+
+function getPrettySize(size) {
+  if (size < 1024) return `${size} B`;else if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;else if (size < 1024 * 1024 * 1024) return `${Math.round(size / 1024 / 1024)} MB`;else return `${Math.round(size / 1024 / 1024 / 1024)} GB`;
+}
+/**
+ * Upload one file.
+ *  
+ * @param {Object} options 
+ * @options {String} url - upload file to this server
+ * @options {String} method - default POST
+ * @options {Array} headers - external headers to send
+ * @returns {Promise}
+ */
+
+
+function uploadOneFile(options) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest(); // upload progress
+    // don't use `xhr.addEventListener("progress", function (e) {...})`
+
+    xhr.upload.addEventListener("progress", function (e) {
+      let percent = Math.round(e.loaded / e.total * 100); // 0~100
+
+      if (options.progress) options.progress.call(this, {
+        index: options.index,
+        dir: options.dir,
+        name: options.file.name,
+        size: options.file.size,
+        percent: percent
+      });
+    }); // cancel upload
+
+    xhr.addEventListener("abort", function (e) {
+      reject(e);
+    }); // upload finished
+
+    xhr.addEventListener("load", function (e) {
+      let contentType = xhr.getResponseHeader('Content-Type');
+      let result;
+
+      if (contentType) {
+        contentType = contentType.toLowerCase();
+        if (contentType.indexOf('application/json') !== -1) {
+            // json
+            if (xhr.responseText) result = JSON.parse(xhr.responseText);else result = null;
+        } else if (contentType.startsWith('text/')) // text/plain、text/html
+          result = xhr.responseText;else // default text
+          result = xhr.responseText;
+      } else result = xhr.responseText; // default text
+
+
+      if (xhr.readyState === 4) resolve(result);else reject(result);
+    }); // upload error
+
+    xhr.addEventListener("error", function (e) {
+      reject(e);
+    }); // start upload
+
+    xhr.open(options.method || "POST", options.url);
+
+    if (options.headers) {
+      options.headers.forEach(h => xhr.setRequestHeader(h.name, h.value));
+    } else {
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+    }
+
+    xhr.send(options.file);
+  });
 }
 
 //
@@ -363,16 +451,20 @@ __vue_render__._withStripped = true;
   const __vue_is_functional_template__ = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stLoader = normalizeComponent_1(
+  const __vue_component__ = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
     __vue_inject_styles__,
     __vue_script__,
     __vue_scope_id__,
     __vue_is_functional_template__,
     __vue_module_identifier__,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -478,15 +570,19 @@ __vue_render__$1._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellIndex = normalizeComponent_1(
+  const __vue_component__$1 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
     __vue_inject_styles__$1,
     __vue_script__$1,
     __vue_scope_id__$1,
     __vue_is_functional_template__$1,
     __vue_module_identifier__$1,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -523,15 +619,19 @@ __vue_render__$2._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellSn = normalizeComponent_1(
+  const __vue_component__$2 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
     __vue_inject_styles__$2,
     __vue_script__$2,
     __vue_scope_id__$2,
     __vue_is_functional_template__$2,
     __vue_module_identifier__$2,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -575,15 +675,19 @@ __vue_render__$3._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellSnSelectable = normalizeComponent_1(
+  const __vue_component__$3 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
     __vue_inject_styles__$3,
     __vue_script__$3,
     __vue_scope_id__$3,
     __vue_is_functional_template__$3,
     __vue_module_identifier__$3,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -620,15 +724,19 @@ __vue_render__$4._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellText = normalizeComponent_1(
+  const __vue_component__$4 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
     __vue_inject_styles__$4,
     __vue_script__$4,
     __vue_scope_id__$4,
     __vue_is_functional_template__$4,
     __vue_module_identifier__$4,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -667,15 +775,19 @@ __vue_render__$5._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellHtml = normalizeComponent_1(
+  const __vue_component__$5 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
     __vue_inject_styles__$5,
     __vue_script__$5,
     __vue_scope_id__$5,
     __vue_is_functional_template__$5,
     __vue_module_identifier__$5,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -685,11 +797,11 @@ const DEFAULT_CELL_COMPONENT = "st-cell-text";
 var script$6 = {
   // register all inner cell components
   components: {
-    stCellIndex,
-    stCellSn,
-    stCellSnSelectable,
-    stCellText,
-    stCellHtml
+    stCellIndex: __vue_component__$1,
+    stCellSn: __vue_component__$2,
+    stCellSnSelectable: __vue_component__$3,
+    stCellText: __vue_component__$4,
+    stCellHtml: __vue_component__$5
   },
   props: {
     // DataRow.value
@@ -913,7 +1025,7 @@ var __vue_render__$6 = function() {
         dblclick: function($event) {
           $event.stopPropagation();
           $event.preventDefault();
-          return _vm.dblclickRow($event)
+          return _vm.dblclickRow.apply(null, arguments)
         }
       }
     },
@@ -962,15 +1074,19 @@ __vue_render__$6._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stTableRow = normalizeComponent_1(
+  const __vue_component__$6 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
     __vue_inject_styles__$6,
     __vue_script__$6,
     __vue_scope_id__$6,
     __vue_is_functional_template__$6,
     __vue_module_identifier__$6,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -987,7 +1103,7 @@ var stDataRow = {
 
   render(createElement, context) {
     return context.props.tableRows.map(tableRow => {
-      return createElement(stTableRow, {
+      return createElement(__vue_component__$6, {
         props: tableRow,
         on: context.listeners
       });
@@ -1066,15 +1182,19 @@ __vue_render__$7._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stColgroup = normalizeComponent_1(
+  const __vue_component__$7 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
     __vue_inject_styles__$7,
     __vue_script__$7,
     __vue_scope_id__$7,
     __vue_is_functional_template__$7,
     __vue_module_identifier__$7,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -1404,15 +1524,19 @@ __vue_render__$8._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stThead = normalizeComponent_1(
+  const __vue_component__$8 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
     __vue_inject_styles__$8,
     __vue_script__$8,
     __vue_scope_id__$8,
     __vue_is_functional_template__$8,
     __vue_module_identifier__$8,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -1432,12 +1556,12 @@ __vue_render__$8._withStripped = true;
 function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
   return column.pid ? row[column.pid] && row[column.pid].length > subRowIndex ? {
     empty: false,
-    value: row[column.pid][subRowIndex][column.id] // nested cell
-
-  } : {
-    empty: true // empty cell
-
-  } : {
+    value: row[column.pid][subRowIndex][column.id]
+  } // nested cell
+  : {
+    empty: true
+  } // empty cell
+  : {
     empty: false,
     value: row[column.id]
   }; // top cell
@@ -1445,8 +1569,8 @@ function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
 
 var script$7 = {
   components: {
-    stColgroup,
-    stThead,
+    stColgroup: __vue_component__$7,
+    stThead: __vue_component__$8,
     stDataRow
   },
   props: {
@@ -1775,16 +1899,20 @@ __vue_render__$9._withStripped = true;
   const __vue_is_functional_template__$9 = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stGrid = normalizeComponent_1(
+  const __vue_component__$9 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
     __vue_inject_styles__$9,
     __vue_script__$9,
     __vue_scope_id__$9,
     __vue_is_functional_template__$9,
     __vue_module_identifier__$9,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -1925,23 +2053,27 @@ __vue_render__$a._withStripped = true;
   const __vue_is_functional_template__$a = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stButton = normalizeComponent_1(
+  const __vue_component__$a = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
     __vue_inject_styles__$a,
     __vue_script__$a,
     __vue_scope_id__$a,
     __vue_is_functional_template__$a,
     __vue_module_identifier__$a,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
 var script$9 = {
   components: {
-    stButton
+    stButton: __vue_component__$a
   },
   props: {
     text: {
@@ -2133,23 +2265,27 @@ __vue_render__$b._withStripped = true;
   const __vue_is_functional_template__$b = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stPagebar = normalizeComponent_1(
+  const __vue_component__$b = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
     __vue_inject_styles__$b,
     __vue_script__$b,
     __vue_scope_id__$b,
     __vue_is_functional_template__$b,
     __vue_module_identifier__$b,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
 var script$a = {
   components: {
-    stButton
+    stButton: __vue_component__$a
   },
   props: {
     rootClass: {
@@ -2288,16 +2424,20 @@ __vue_render__$c._withStripped = true;
   const __vue_is_functional_template__$c = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stButtonGroup = normalizeComponent_1(
+  const __vue_component__$c = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
     __vue_inject_styles__$c,
     __vue_script__$c,
     __vue_scope_id__$c,
     __vue_is_functional_template__$c,
     __vue_module_identifier__$c,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -2305,7 +2445,7 @@ __vue_render__$c._withStripped = true;
  * Events: change(newValue, newIndex)
  */
 var script$b = {
-  extends: stButtonGroup,
+  extends: __vue_component__$c,
   props: {
     rootClass: {
       type: String,
@@ -2356,16 +2496,20 @@ const __vue_script__$d = script$b;
   const __vue_is_functional_template__$d = undefined;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stPagebarSizes = normalizeComponent_1(
+  const __vue_component__$d = /*#__PURE__*/normalizeComponent_1(
     {},
     __vue_inject_styles__$d,
     __vue_script__$d,
     __vue_scope_id__$d,
     __vue_is_functional_template__$d,
     __vue_module_identifier__$d,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -2428,23 +2572,27 @@ __vue_render__$d._withStripped = true;
   const __vue_is_functional_template__$e = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stToolbar = normalizeComponent_1(
+  const __vue_component__$e = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
     __vue_inject_styles__$e,
     __vue_script__$e,
     __vue_scope_id__$e,
     __vue_is_functional_template__$e,
     __vue_module_identifier__$e,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
 var script$d = {
   components: {
-    stButton
+    stButton: __vue_component__$a
   },
   props: {
     placeholder: {
@@ -2542,7 +2690,7 @@ var __vue_render__$e = function() {
               return null
             }
             $event.stopPropagation();
-            return _vm.doSearch($event)
+            return _vm.doSearch.apply(null, arguments)
           },
           change: _vm.doChange,
           input: function($event) {
@@ -2563,7 +2711,7 @@ var __vue_render__$e = function() {
             click: function($event) {
               $event.preventDefault();
               $event.stopPropagation();
-              return _vm.doSearch($event)
+              return _vm.doSearch.apply(null, arguments)
             }
           }
         },
@@ -2590,37 +2738,555 @@ __vue_render__$e._withStripped = true;
   const __vue_is_functional_template__$f = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stSearch = normalizeComponent_1(
+  const __vue_component__$f = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$e, staticRenderFns: __vue_staticRenderFns__$e },
     __vue_inject_styles__$f,
     __vue_script__$f,
     __vue_scope_id__$f,
     __vue_is_functional_template__$f,
     __vue_module_identifier__$f,
+    false,
     browser,
+    undefined,
+    undefined
+  );
+
+//
+var script$e = {
+  replace: true,
+  props: {
+    // upload percent: 0~100
+    percent: {
+      type: Number,
+      required: false,
+      default: 0
+    },
+    showText: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    // elements classes: { root, percent, text }
+    classes: {
+      type: Object,
+      required: false,
+      default: () => getGlobalVariable("simter.progressbar.classes", {})
+    },
+    // elements style: { root, percent, text }
+    styles: {
+      type: Object,
+      required: false,
+      default: () => getGlobalVariable("simter.progressbar.styles", {})
+    }
+  },
+  computed: {
+    percentStyle: function () {
+      return concatStyles({
+        'width': `${this.percent}%`
+      }, this.styles.percent);
+    }
+  },
+  methods: {
+    reset: function () {
+      this.percent = 0;
+    }
+  }
+};
+
+/* script */
+const __vue_script__$g = script$e;
+
+/* template */
+var __vue_render__$f = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c(
+    "div",
+    { class: ["st-progressbar", _vm.classes.root], style: _vm.styles.root },
+    [
+      _c("div", {
+        class: ["percent", _vm.classes.percent],
+        style: _vm.percentStyle
+      }),
+      _vm._v(" "),
+      _vm.showText
+        ? _c(
+            "div",
+            { class: ["text", _vm.classes.text], style: _vm.styles.text },
+            [_vm._v(_vm._s(_vm.percent + "%"))]
+          )
+        : _vm._e()
+    ]
+  )
+};
+var __vue_staticRenderFns__$f = [];
+__vue_render__$f._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$g = function (inject) {
+    if (!inject) return
+    inject("data-v-712afd06_0", { source: "\n.st-progressbar {\r\n  position: relative;\r\n  height: 1.2em;\r\n  text-align: center;\n}\n.st-progressbar > .percent,\r\n.st-progressbar > .text {\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n  height: 100%;\n}\n.st-progressbar > .text {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 100%;\r\n  font-size: 80%;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\progressbar.vue"],"names":[],"mappings":";AA4CA;EACA,kBAAA;EACA,aAAA;EACA,kBAAA;AACA;AAEA;;EAEA,kBAAA;EACA,OAAA;EACA,MAAA;EACA,YAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,WAAA;EACA,cAAA;AACA","file":"progressbar.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-progressbar', classes.root]\" :style=\"styles.root\">\r\n    <div :class=\"['percent', classes.percent]\" :style=\"percentStyle\"></div>\r\n    <div v-if=\"showText\" :class=\"['text', classes.text]\" :style=\"styles.text\">{{percent + '%'}}</div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { gv, concatStyles } from \"./utils\";\r\nexport default {\r\n  replace: true,\r\n  props: {\r\n    // upload percent: 0~100\r\n    percent: { type: Number, required: false, default: 0 },\r\n    showText: { type: Boolean, required: false, default: true },\r\n    // elements classes: { root, percent, text }\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.progressbar.classes\", {})\r\n    },\r\n    // elements style: { root, percent, text }\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.progressbar.styles\", {})\r\n    }\r\n  },\r\n  computed: {\r\n    percentStyle: function () {\r\n      return concatStyles({\r\n        'width': `${this.percent}%`\r\n      }, this.styles.percent);\r\n    }\r\n  },\r\n  methods: {\r\n    reset: function () {\r\n      this.percent = 0;\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-progressbar {\r\n  position: relative;\r\n  height: 1.2em;\r\n  text-align: center;\r\n}\r\n\r\n.st-progressbar > .percent,\r\n.st-progressbar > .text {\r\n  position: absolute;\r\n  left: 0;\r\n  top: 0;\r\n  height: 100%;\r\n}\r\n.st-progressbar > .text {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 100%;\r\n  font-size: 80%;\r\n}\r\n</style>"]}, media: undefined });
+
+  };
+  /* scoped */
+  const __vue_scope_id__$g = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$g = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$g = false;
+  /* style inject SSR */
+  
+  /* style inject shadow dom */
+  
+
+  
+  const __vue_component__$g = /*#__PURE__*/normalizeComponent_1(
+    { render: __vue_render__$f, staticRenderFns: __vue_staticRenderFns__$f },
+    __vue_inject_styles__$g,
+    __vue_script__$g,
+    __vue_scope_id__$g,
+    __vue_is_functional_template__$g,
+    __vue_module_identifier__$g,
+    false,
+    browser,
+    undefined,
+    undefined
+  );
+
+//
+
+function entryToFiles(entry, dir = '') {
+  return new Promise((resolve, recject) => {
+    if (entry.isFile) {
+      entry.file(file => {
+        file.dir = dir; // mark full dir
+
+        resolve(file);
+      });
+    } else if (entry.isDirectory) {
+      let dirReader = entry.createReader();
+      dirReader.readEntries(entries => {
+        let promises = [];
+
+        for (let i = 0; i < entries.length; i++) {
+          promises.push(entryToFiles(entries[i], dir ? dir + "/" + entry.name : entry.name));
+        }
+
+        resolve(Promise.all(promises));
+      });
+    }
+  });
+}
+
+function dataTransferItemsToFiles(items) {
+  return new Promise((resolve, reject) => {
+    let promises = [];
+
+    for (let i = 0; i < items.length; i++) promises.push(entryToFiles(items[i].webkitGetAsEntry()));
+
+    Promise.all(promises).then(files => resolve(files));
+  });
+} // [a, [b, c]] flatten to [a, b, c]
+
+
+function flattenArray(array) {
+  return array.reduce((a, b) => a.concat(Array.isArray(b) ? flattenArray(b) : b), []);
+}
+
+var script$f = {
+  components: {
+    stProgressbar: __vue_component__$g
+  },
+  props: {
+    /**
+     * the server upload to.
+     * 1. String - fixed server url
+     * 2. Function - generate the server url with option '{index, name, size, type}'
+     */
+    url: {
+      type: [String, Function],
+      required: true
+    },
+    // Whether allow edit file name
+    editable: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    // Whether allow select multiple files
+    multiple: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    // Whether allow auto start upload after selected files
+    auto: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    // the limitation of file types, default no limitation
+    accept: {
+      type: String,
+      required: false,
+      default: '*.*'
+    },
+    // element class: { root, header, files, file, name, size, other, operation, progress }
+    classes: {
+      type: Object,
+      required: false,
+      default: () => getGlobalVariable("simter.upload.classes", {})
+    },
+    // element style: { dropArea }
+    styles: {
+      type: Object,
+      required: false,
+      default: () => getGlobalVariable("simter.upload.styles", {})
+    },
+    text: {
+      type: Object,
+      required: false,
+      default: () => getGlobalVariable("simter.upload.text", {
+        selectFileFirst: "Please select file first.",
+        selectFile: "Select file",
+        delete: "Delete",
+        dropInfo: "Please click \"Select...\" to choose the files, or just drop the files to here."
+      })
+    },
+    summary: {
+      type: Function,
+      required: false,
+      default: getGlobalVariable("simter.upload.summary", function (count, _size, prettySize) {
+        return `${count} files ${prettySize}`;
+      })
+    }
+  },
+  data: function () {
+    return {
+      // the selected files
+      files: []
+    };
+  },
+  computed: {
+    count: function () {
+      return this.files.length;
+    },
+    toUploadFiles: function () {
+      return this.files.filter(f => f.percent === 0);
+    },
+    toUploadCount: function () {
+      return this.toUploadFiles.length;
+    },
+    size: function () {
+      return this.files.reduce((previousValue, currentValue) => previousValue + currentValue.size, 0);
+    },
+    prettySize: function () {
+      return getPrettySize(this.size);
+    }
+  },
+  methods: {
+    selectFile: function () {
+      this.$el.querySelector('input[type="file"]').click();
+    },
+    afterSelectedFile: function (files) {
+      // cache files
+      Array.from(files).forEach(file => {
+        if (this.files.every(f => f.name !== file.name)) this.files.push({
+          name: file.name,
+          dir: file.dir || '',
+          // original file
+          file: file,
+          size: file.size,
+          // pretty file size, such as '1KB'
+          prettySize: getPrettySize(file.size),
+          // get file extension, such as 'png'
+          type: getFileExtension(file.name),
+          // upload percent: 0~100
+          percent: 0
+        });
+      }); // auto upload
+
+      if (this.auto) this.startUpload();
+    },
+
+    removeFile(index) {
+      this.files.splice(index, 1);
+    },
+
+    // manual start the upload
+    startUpload() {
+      if (this.toUploadCount === 0) {
+        if (this.count === 0) {
+          return alert(this.text.selectFileFirst);
+        } else return; // no file to upload
+
+      } // emits upload start event
+
+
+      this.$emit("start", this.toUploadFiles.map(f => ({
+        dir: f.dir,
+        name: f.name,
+        size: f.size,
+        percent: f.percent
+      }))); // upload file one by one
+
+      let p = Promise.resolve();
+      let results = [];
+
+      for (let i = 0; i < this.toUploadFiles.length; i++) {
+        let f = this.toUploadFiles[i]; // get server url
+
+        let serverUrl;
+
+        if (typeof this.url === 'function') {
+          serverUrl = this.url.call(this, {
+            index: i,
+            dir: f.dir,
+            name: f.name,
+            size: f.size,
+            type: getFileExtension(f.name)
+          });
+        } else serverUrl = this.url;
+
+        p = p.then(() => uploadOneFile.call(null, {
+          index: i,
+          dir: f.dir,
+          file: f.file,
+          url: serverUrl,
+          progress: data => {
+            f.percent = data.percent; // emits upload progress event
+
+            this.$emit("progress", data);
+          },
+          start: xhr => {
+            console.log("start");
+          }
+        }).then(result => {
+          results.push(result);
+        }));
+      }
+
+      p.then(result => {
+        // emits upload success event
+        this.$emit("success", results);
+      }).catch(e => this.$emit("error", e)); // emits upload failed event
+    },
+
+    dropFiles: function (e) {
+      if (e.dataTransfer.items === null || e.dataTransfer.items.length === 0) {
+        console.log("upload: No dropped items");
+        return;
+      }
+
+      dataTransferItemsToFiles(e.dataTransfer.items).then(files => {
+        this.afterSelectedFile(flattenArray(files));
+      });
+    }
+  }
+};
+
+/* script */
+const __vue_script__$h = script$f;
+
+/* template */
+var __vue_render__$g = function() {
+  var _vm = this;
+  var _h = _vm.$createElement;
+  var _c = _vm._self._c || _h;
+  return _c("div", { class: ["st-upload", _vm.classes.root] }, [
+    _c("div", { class: ["header", _vm.classes.header] }, [
+      _c("span", { staticClass: "summary" }, [
+        _vm._v(_vm._s(_vm.summary(_vm.count, _vm.size, _vm.prettySize)))
+      ]),
+      _vm._v(" "),
+      _c(
+        "a",
+        {
+          class: ["operation", _vm.classes.operation],
+          attrs: { href: "#" },
+          on: {
+            click: function($event) {
+              $event.stopPropagation();
+              return _vm.selectFile.apply(null, arguments)
+            }
+          }
+        },
+        [_vm._v(_vm._s(_vm.text.selectFile))]
+      )
+    ]),
+    _vm._v(" "),
+    _vm.count > 0
+      ? _c(
+          "ul",
+          { class: ["files", _vm.classes.files] },
+          _vm._l(_vm.files, function(file, index) {
+            return _c("li", { class: ["file", _vm.classes.file] }, [
+              _c("span", { class: "file-icon " + file.type }),
+              _vm._v(" "),
+              _c("div", [
+                _vm.editable
+                  ? _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: file.name,
+                          expression: "file.name"
+                        }
+                      ],
+                      class: ["name", _vm.classes.name],
+                      attrs: { type: "text" },
+                      domProps: { value: file.name },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(file, "name", $event.target.value);
+                        }
+                      }
+                    })
+                  : _c("div", { class: ["name", _vm.classes.name] }, [
+                      _vm._v(_vm._s(file.name))
+                    ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { class: ["other", _vm.classes.other] },
+                  [
+                    _c("div", { class: ["size", _vm.classes.size] }, [
+                      _vm._v(_vm._s(file.prettySize))
+                    ]),
+                    _vm._v(" "),
+                    _c("st-progressbar", { attrs: { percent: file.percent } }),
+                    _vm._v(" "),
+                    file.percent === 0
+                      ? _c(
+                          "a",
+                          {
+                            class: ["operation", _vm.classes.operation],
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation();
+                                return _vm.removeFile(file)
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.text.delete))]
+                        )
+                      : _vm._e()
+                  ],
+                  1
+                )
+              ])
+            ])
+          }),
+          0
+        )
+      : _c(
+          "div",
+          {
+            class: ["drop-area", _vm.classes.dropArea],
+            style: _vm.styles.dropArea,
+            on: {
+              drop: function($event) {
+                $event.preventDefault();
+                return _vm.dropFiles($event)
+              },
+              dragover: function($event) {
+                $event.preventDefault();
+              }
+            }
+          },
+          [_vm._v(_vm._s(_vm.text.dropInfo))]
+        ),
+    _vm._v(" "),
+    _vm.multiple
+      ? _c("input", {
+          staticStyle: { display: "none" },
+          attrs: {
+            type: "file",
+            name: "file",
+            multiple: "",
+            accept: _vm.accept
+          },
+          on: {
+            change: function($event) {
+              return _vm.afterSelectedFile($event.target.files)
+            }
+          }
+        })
+      : _c("input", {
+          staticStyle: { display: "none" },
+          attrs: { type: "file", name: "file", accept: _vm.accept },
+          on: {
+            change: function($event) {
+              return _vm.afterSelectedFile($event.target.files)
+            }
+          }
+        })
+  ])
+};
+var __vue_staticRenderFns__$g = [];
+__vue_render__$g._withStripped = true;
+
+  /* style */
+  const __vue_inject_styles__$h = function (inject) {
+    if (!inject) return
+    inject("data-v-ba0801ac_0", { source: "\n.st-upload {\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-upload .st-progressbar {\r\n  min-width: 10em;\r\n  flex-grow: 1;\n}\n.st-upload .operation {\r\n  margin: auto 6px;\n}\n.st-upload > .header {\r\n  margin: 0.25em 0.5em;\n}\n.st-upload > .files {\r\n  overflow: auto;\r\n  flex-grow: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n  margin: 0 0 0.5em 0;\r\n  padding: 0;\n}\n.st-upload > .drop-area {\r\n  overflow: hidden;\r\n  flex-grow: 1;\r\n  margin: 0.5em;\r\n  padding: 0.5em;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 200%;\n}\n.st-upload > .files > .file {\r\n  list-style: none;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  margin: 8px 0 0 5px;\n}\n.st-upload > .files > .file > .file-icon {\r\n  display: block;\r\n  text-indent: -99999px;\r\n  overflow: hidden;\r\n  width: 32px;\r\n  height: 32px;\n}\n.st-upload > .files > .file > div {\r\n  margin-left: 5px;\r\n  flex-grow: 1;\n}\n.st-upload > .files > .file > div > input {\r\n  font: inherit;\r\n  border: none;\r\n  width: auto;\n}\n.st-upload > .files > .file > div > .other {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\n}\n.st-upload > .files > .file > div > .other > .size {\r\n  min-width: 5em;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\upload.vue"],"names":[],"mappings":";AA6PA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,eAAA;EACA,YAAA;AACA;AACA;EACA,gBAAA;AACA;AAEA;EACA,oBAAA;AACA;AAEA;EACA,cAAA;EACA,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,UAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;EACA,aAAA;EACA,cAAA;EACA,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,eAAA;AACA;AAEA;EACA,gBAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,mBAAA;AACA;AAEA;EACA,cAAA;EACA,qBAAA;EACA,gBAAA;EACA,WAAA;EACA,YAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;AACA;AAEA;EACA,aAAA;EACA,YAAA;EACA,WAAA;AACA;AAEA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;AACA;AAEA;EACA,cAAA;AACA","file":"upload.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-upload', classes.root]\">\r\n    <!-- header -->\r\n    <div :class=\"['header', classes.header]\">\r\n      <span class=\"summary\">{{summary(count, size, prettySize)}}</span>\r\n      <a href=\"#\" :class=\"['operation', classes.operation]\" @click.stop=\"selectFile\">{{text.selectFile}}</a>\r\n    </div>\r\n    <!-- files -->\r\n    <ul v-if=\"count > 0\" :class=\"['files', classes.files]\">\r\n      <li :class=\"['file', classes.file]\" v-for=\"(file, index) in files\">\r\n        <span :class=\"'file-icon ' + file.type\"></span>\r\n        <div>\r\n          <input v-if=\"editable\" type=\"text\" :class=\"['name', classes.name]\" v-model=\"file.name\">\r\n          <div v-else :class=\"['name', classes.name]\">{{file.name}}</div>\r\n\r\n          <div :class=\"['other', classes.other]\">\r\n            <div :class=\"['size', classes.size]\">{{file.prettySize}}</div>\r\n            <st-progressbar :percent=\"file.percent\"></st-progressbar>\r\n            <a v-if=\"file.percent === 0\" href=\"#\" :class=\"['operation', classes.operation]\" @click.stop=\"removeFile(file)\">{{text.delete}}</a>\r\n          </div>\r\n        </div>\r\n      </li>\r\n    </ul>\r\n    <div v-else :class=\"['drop-area', classes.dropArea]\" :style=\"styles.dropArea\" \r\n      @drop.prevent=\"dropFiles($event)\" @dragover.prevent>{{ text.dropInfo }}</div>\r\n    <!-- hidden -->\r\n    <input v-if=\"multiple\" type=\"file\" name=\"file\" style=\"display:none\" multiple\r\n      :accept=\"accept\" @change=\"afterSelectedFile($event.target.files)\">\r\n    <input v-else type=\"file\" name=\"file\" style=\"display:none\"\r\n      :accept=\"accept\" @change=\"afterSelectedFile($event.target.files)\">\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * File upload component.\r\n *\r\n * Events:\r\n * 1. progress({index, name, size, percent})\r\n * 2. start([{name, size, percent}, ...])\r\n * 3. success([result, ...])\r\n * 4. error(e)\r\n */\r\nimport { gv, getFileExtension, getPrettySize, uploadOneFile } from \"./utils\";\r\nimport stProgressbar from \"./progressbar.vue\";\r\n\r\nfunction entryToFiles(entry, dir = '') {\r\n  return new Promise((resolve, recject) => {\r\n    if (entry.isFile) {\r\n      entry.file(file => {\r\n        file.dir = dir // mark full dir\r\n        resolve(file);\r\n      })\r\n    } else if (entry.isDirectory) {\r\n      let dirReader = entry.createReader();\r\n      dirReader.readEntries(entries => {\r\n        let promises = [];\r\n        for (let i = 0; i < entries.length; i++){\r\n          promises.push(entryToFiles(entries[i], dir ? dir + \"/\" + entry.name : entry.name));\r\n        }\r\n        resolve(Promise.all(promises));\r\n      });\r\n    }\r\n  });\r\n}\r\n\r\nfunction dataTransferItemsToFiles(items) {\r\n  return new Promise((resolve, reject) => {\r\n    let promises = [];\r\n    for (let i = 0; i < items.length; i++) promises.push(entryToFiles(items[i].webkitGetAsEntry()));\r\n    Promise.all(promises).then(files => resolve(files));\r\n  });\r\n}\r\n\r\n// [a, [b, c]] flatten to [a, b, c]\r\nfunction flattenArray(array) {\r\n  return array.reduce(\r\n    (a, b) => a.concat(Array.isArray(b) ? flattenArray(b) : b),\r\n    []\r\n  );\r\n}\r\n\r\nexport default {\r\n  components: { stProgressbar },\r\n  props: {\r\n    /**\r\n     * the server upload to.\r\n     * 1. String - fixed server url\r\n     * 2. Function - generate the server url with option '{index, name, size, type}'\r\n     */\r\n    url: {type: [String, Function], required: true},\r\n    // Whether allow edit file name\r\n    editable: {type: Boolean, required: false, default: true},\r\n    // Whether allow select multiple files\r\n    multiple: {type: Boolean, required: false, default: true},\r\n    // Whether allow auto start upload after selected files\r\n    auto: {type: Boolean, required: false, default: true},\r\n    // the limitation of file types, default no limitation\r\n    accept: {type: String, required: false, default: '*.*'},\r\n    // element class: { root, header, files, file, name, size, other, operation, progress }\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.upload.classes\", {})\r\n    },\r\n    // element style: { dropArea }\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.upload.styles\", {})\r\n    },\r\n    text: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.upload.text\", {\r\n          selectFileFirst: \"Please select file first.\",\r\n          selectFile: \"Select file\",\r\n          delete: \"Delete\",\r\n          dropInfo: \"Please click \\\"Select...\\\" to choose the files, or just drop the files to here.\"\r\n        }),\r\n    },\r\n    summary: {\r\n      type: Function,\r\n      required: false,\r\n      default: gv(\"simter.upload.summary\", function(count, _size, prettySize) {\r\n        return `${count} files ${prettySize}`;\r\n      })\r\n    }\r\n  },\r\n  data: function () {\r\n    return {\r\n      // the selected files\r\n      files: []\r\n    }\r\n  },\r\n  computed: {\r\n    count: function () {\r\n      return this.files.length;\r\n    },\r\n    toUploadFiles: function () {\r\n      return this.files.filter(f => f.percent === 0);\r\n    },\r\n    toUploadCount: function () {\r\n      return this.toUploadFiles.length;\r\n    },\r\n    size: function () {\r\n      return this.files.reduce((previousValue, currentValue) => previousValue + currentValue.size, 0);\r\n    },\r\n    prettySize: function () {\r\n      return getPrettySize(this.size);\r\n    }\r\n  },\r\n  methods: {\r\n    selectFile: function () {\r\n      this.$el.querySelector('input[type=\"file\"]').click();\r\n    },\r\n    afterSelectedFile: function (files) {\r\n      // cache files\r\n      Array.from(files).forEach((file) => {\r\n        if (this.files.every((f) => f.name !== file.name))\r\n          this.files.push({\r\n            name: file.name,\r\n            dir: file.dir || '',\r\n            // original file\r\n            file: file,\r\n            size: file.size,\r\n            // pretty file size, such as '1KB'\r\n            prettySize: getPrettySize(file.size),\r\n            // get file extension, such as 'png'\r\n            type: getFileExtension(file.name),\r\n            // upload percent: 0~100\r\n            percent: 0,\r\n          });\r\n      });\r\n\r\n      // auto upload\r\n      if (this.auto) this.startUpload();\r\n    },\r\n    removeFile(index) {\r\n      this.files.splice(index, 1);\r\n    },\r\n    // manual start the upload\r\n    startUpload() {\r\n      if (this.toUploadCount === 0) {\r\n        if (this.count === 0) {\r\n          return alert(this.text.selectFileFirst);\r\n        } else return; // no file to upload\r\n      }\r\n\r\n      // emits upload start event\r\n      this.$emit(\"start\", this.toUploadFiles.map(f => ({\r\n        dir: f.dir,\r\n        name: f.name,\r\n        size: f.size,\r\n        percent: f.percent\r\n      })));\r\n\r\n      // upload file one by one\r\n      let p = Promise.resolve();\r\n      let results = []\r\n      for (let i = 0; i < this.toUploadFiles.length; i++) {\r\n        let f = this.toUploadFiles[i];\r\n\r\n        // get server url\r\n        let serverUrl;\r\n        if (typeof this.url === 'function') {\r\n          serverUrl = this.url.call(this, {\r\n            index: i,\r\n            dir: f.dir,\r\n            name: f.name,\r\n            size: f.size,\r\n            type: getFileExtension(f.name)\r\n          });\r\n        } else serverUrl = this.url;\r\n\r\n        p = p.then(() => uploadOneFile.call(null, {\r\n          index: i,\r\n          dir: f.dir,\r\n          file: f.file,\r\n          url: serverUrl,\r\n          progress: data => {\r\n            f.percent = data.percent;\r\n            // emits upload progress event\r\n            this.$emit(\"progress\", data);\r\n          },\r\n          start: xhr => {\r\n            console.log(\"start\");\r\n          }\r\n        }).then(result => {\r\n          results.push(result);\r\n        }));\r\n      }\r\n      p.then(result => {\r\n        // emits upload success event\r\n        this.$emit(\"success\", results);\r\n      }).catch(e => this.$emit(\"error\", e)); // emits upload failed event\r\n    },\r\n    dropFiles: function (e) {\r\n      if (e.dataTransfer.items === null || e.dataTransfer.items.length === 0) {\r\n        console.log(\"upload: No dropped items\");\r\n        return;\r\n      }\r\n\r\n      dataTransferItemsToFiles(e.dataTransfer.items).then(files => {\r\n        this.afterSelectedFile(flattenArray(files));\r\n      });\r\n    },\r\n  },\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-upload {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-upload .st-progressbar {\r\n  min-width: 10em;\r\n  flex-grow: 1;\r\n}\r\n.st-upload .operation {\r\n  margin: auto 6px;\r\n}\r\n\r\n.st-upload > .header {\r\n  margin: 0.25em 0.5em;\r\n}\r\n\r\n.st-upload > .files {\r\n  overflow: auto;\r\n  flex-grow: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n  margin: 0 0 0.5em 0;\r\n  padding: 0;\r\n}\r\n\r\n.st-upload > .drop-area {\r\n  overflow: hidden;\r\n  flex-grow: 1;\r\n  margin: 0.5em;\r\n  padding: 0.5em;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 200%;\r\n}\r\n\r\n.st-upload > .files > .file {\r\n  list-style: none;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  margin: 8px 0 0 5px;\r\n}\r\n\r\n.st-upload > .files > .file > .file-icon {\r\n  display: block;\r\n  text-indent: -99999px;\r\n  overflow: hidden;\r\n  width: 32px;\r\n  height: 32px;\r\n}\r\n\r\n.st-upload > .files > .file > div {\r\n  margin-left: 5px;\r\n  flex-grow: 1;\r\n}\r\n\r\n.st-upload > .files > .file > div > input {\r\n  font: inherit;\r\n  border: none;\r\n  width: auto;\r\n}\r\n\r\n.st-upload > .files > .file > div > .other {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n}\r\n\r\n.st-upload > .files > .file > div > .other > .size {\r\n  min-width: 5em;\r\n}\r\n</style>\r\n"]}, media: undefined });
+
+  };
+  /* scoped */
+  const __vue_scope_id__$h = undefined;
+  /* module identifier */
+  const __vue_module_identifier__$h = undefined;
+  /* functional template */
+  const __vue_is_functional_template__$h = false;
+  /* style inject SSR */
+  
+  /* style inject shadow dom */
+  
+
+  
+  const __vue_component__$h = /*#__PURE__*/normalizeComponent_1(
+    { render: __vue_render__$g, staticRenderFns: __vue_staticRenderFns__$g },
+    __vue_inject_styles__$h,
+    __vue_script__$h,
+    __vue_scope_id__$h,
+    __vue_is_functional_template__$h,
+    __vue_module_identifier__$h,
+    false,
+    browser,
+    undefined,
     undefined
   );
 
 const components = {
-  "st-loader": [version, stLoader],
-  "st-grid": [version, stGrid],
-  "st-colgroup": ["0.3.0", stColgroup],
-  "st-thead": ["0.4.2", stThead],
-  "st-table-row": [version, stTableRow],
+  "st-loader": [version, __vue_component__],
+  "st-grid": [version, __vue_component__$9],
+  "st-colgroup": ["0.3.0", __vue_component__$7],
+  "st-thead": ["0.4.2", __vue_component__$8],
+  "st-table-row": [version, __vue_component__$6],
   "st-data-row": [version, stDataRow],
-  "st-cell-index": [version, stCellIndex],
-  "st-cell-sn": [version, stCellSn],
-  "st-cell-sn-selectable": [version, stCellSnSelectable],
-  "st-cell-text": [version, stCellText],
-  "st-cell-html": [version, stCellHtml],
-  "st-pagebar": [version, stPagebar],
-  "st-pagebar-sizes": [version, stPagebarSizes],
-  "st-toolbar": [version, stToolbar],
-  "st-button": [version, stButton],
-  "st-button-group": [version, stButtonGroup],
-  "st-search": [version, stSearch]
+  "st-cell-index": [version, __vue_component__$1],
+  "st-cell-sn": [version, __vue_component__$2],
+  "st-cell-sn-selectable": [version, __vue_component__$3],
+  "st-cell-text": [version, __vue_component__$4],
+  "st-cell-html": [version, __vue_component__$5],
+  "st-pagebar": [version, __vue_component__$b],
+  "st-pagebar-sizes": [version, __vue_component__$d],
+  "st-toolbar": [version, __vue_component__$e],
+  "st-button": [version, __vue_component__$a],
+  "st-button-group": [version, __vue_component__$c],
+  "st-search": [version, __vue_component__$f],
+  "st-upload": [version, __vue_component__$h],
+  "st-progress-bar": [version, __vue_component__$g]
 };
 const keyVersions = {};
 let value;
