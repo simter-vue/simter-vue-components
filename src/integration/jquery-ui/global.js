@@ -94,5 +94,26 @@ window.simter = {
       actor: "ui-state-active",
       timer: "ui-state-disabled"
     }
+  },
+  upload: {
+    classes: {
+      name: "ui-widget-content",
+      dropArea: "ui-widget-content"
+    },
+    text: {
+      selectFileFirst: "No files",
+      selectFile: "Select...",
+      delete: "Delete",
+      dropInfo: "Please click \"Select...\" to choose the files, or just drop the files to here."
+    },
+    summary: function(count, _size, prettySize) {
+      return `${count} files total ${prettySize}`;
+    }
+  },
+  progressbar: {
+    classes: {
+      root: "ui-progressbar ui-widget ui-widget-content ui-corner-all",
+      percent: "ui-progressbar-value ui-widget-header ui-corner-left"
+    }
   }
 };
