@@ -110,6 +110,7 @@ function uploadOneFile(options) {
       let percent = Math.round((e.loaded / e.total) * 100); // 0~100
       if (options.progress) options.progress.call(this, {
         index: options.index,
+        dir: options.dir,
         name: options.file.name,
         size: options.file.size,
         percent: percent

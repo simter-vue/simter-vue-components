@@ -97,12 +97,14 @@ window.simter = {
   },
   upload: {
     classes: {
-      name: "ui-widget-content"
+      name: "ui-widget-content",
+      dropArea: "ui-widget-content"
     },
     text: {
       selectFileFirst: "No files",
       selectFile: "Select...",
-      delete: "Delete"
+      delete: "Delete",
+      dropInfo: "Please click \"Select...\" to choose the files, or just drop the files to here."
     },
     summary: function(count, _size, prettySize) {
       return `${count} files total ${prettySize}`;
