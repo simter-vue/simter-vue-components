@@ -1,5 +1,9 @@
 # simter-vue-components changelog
 
+## 0.5.0 2021-09-15
+
+- New upload component
+
 ## 0.4.0 2021-04-14
 
 - New Loader component
