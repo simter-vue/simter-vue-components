@@ -1,5 +1,10 @@
 # simter-vue-components changelog
 
+## 0.5.1 2021-11-18
+
+- Add requestOptions property for upload component
+    > For add extras options for XMLHttpRequest 
+
 ## 0.5.0 2021-09-15
 
 - New upload component
