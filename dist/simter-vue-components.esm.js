@@ -1,12 +1,12 @@
 /*!
-* simter-vue-components v0.5.0
+* simter-vue-components v0.5.1
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
 */
 import Vue from 'vue';
 
-var version = "0.5.0";
+var version = "0.5.1";
 
 const g = window || global;
 /**
@@ -451,20 +451,16 @@ __vue_render__._withStripped = true;
   const __vue_is_functional_template__ = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__ = /*#__PURE__*/normalizeComponent_1(
+  var stLoader = normalizeComponent_1(
     { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
     __vue_inject_styles__,
     __vue_script__,
     __vue_scope_id__,
     __vue_is_functional_template__,
     __vue_module_identifier__,
-    false,
     browser,
-    undefined,
     undefined
   );
 
@@ -570,19 +566,15 @@ __vue_render__$1._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$1 = /*#__PURE__*/normalizeComponent_1(
+  var stCellIndex = normalizeComponent_1(
     { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
     __vue_inject_styles__$1,
     __vue_script__$1,
     __vue_scope_id__$1,
     __vue_is_functional_template__$1,
     __vue_module_identifier__$1,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -619,19 +611,15 @@ __vue_render__$2._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$2 = /*#__PURE__*/normalizeComponent_1(
+  var stCellSn = normalizeComponent_1(
     { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
     __vue_inject_styles__$2,
     __vue_script__$2,
     __vue_scope_id__$2,
     __vue_is_functional_template__$2,
     __vue_module_identifier__$2,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -675,19 +663,15 @@ __vue_render__$3._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$3 = /*#__PURE__*/normalizeComponent_1(
+  var stCellSnSelectable = normalizeComponent_1(
     { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
     __vue_inject_styles__$3,
     __vue_script__$3,
     __vue_scope_id__$3,
     __vue_is_functional_template__$3,
     __vue_module_identifier__$3,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -724,19 +708,15 @@ __vue_render__$4._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$4 = /*#__PURE__*/normalizeComponent_1(
+  var stCellText = normalizeComponent_1(
     { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
     __vue_inject_styles__$4,
     __vue_script__$4,
     __vue_scope_id__$4,
     __vue_is_functional_template__$4,
     __vue_module_identifier__$4,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -775,19 +755,15 @@ __vue_render__$5._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$5 = /*#__PURE__*/normalizeComponent_1(
+  var stCellHtml = normalizeComponent_1(
     { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
     __vue_inject_styles__$5,
     __vue_script__$5,
     __vue_scope_id__$5,
     __vue_is_functional_template__$5,
     __vue_module_identifier__$5,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -797,11 +773,11 @@ const DEFAULT_CELL_COMPONENT = "st-cell-text";
 var script$6 = {
   // register all inner cell components
   components: {
-    stCellIndex: __vue_component__$1,
-    stCellSn: __vue_component__$2,
-    stCellSnSelectable: __vue_component__$3,
-    stCellText: __vue_component__$4,
-    stCellHtml: __vue_component__$5
+    stCellIndex,
+    stCellSn,
+    stCellSnSelectable,
+    stCellText,
+    stCellHtml
   },
   props: {
     // DataRow.value
@@ -1025,7 +1001,7 @@ var __vue_render__$6 = function() {
         dblclick: function($event) {
           $event.stopPropagation();
           $event.preventDefault();
-          return _vm.dblclickRow.apply(null, arguments)
+          return _vm.dblclickRow($event)
         }
       }
     },
@@ -1074,19 +1050,15 @@ __vue_render__$6._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$6 = /*#__PURE__*/normalizeComponent_1(
+  var stTableRow = normalizeComponent_1(
     { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
     __vue_inject_styles__$6,
     __vue_script__$6,
     __vue_scope_id__$6,
     __vue_is_functional_template__$6,
     __vue_module_identifier__$6,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -1103,7 +1075,7 @@ var stDataRow = {
 
   render(createElement, context) {
     return context.props.tableRows.map(tableRow => {
-      return createElement(__vue_component__$6, {
+      return createElement(stTableRow, {
         props: tableRow,
         on: context.listeners
       });
@@ -1182,19 +1154,15 @@ __vue_render__$7._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$7 = /*#__PURE__*/normalizeComponent_1(
+  var stColgroup = normalizeComponent_1(
     { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
     __vue_inject_styles__$7,
     __vue_script__$7,
     __vue_scope_id__$7,
     __vue_is_functional_template__$7,
     __vue_module_identifier__$7,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -1524,19 +1492,15 @@ __vue_render__$8._withStripped = true;
   
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$8 = /*#__PURE__*/normalizeComponent_1(
+  var stThead = normalizeComponent_1(
     { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
     __vue_inject_styles__$8,
     __vue_script__$8,
     __vue_scope_id__$8,
     __vue_is_functional_template__$8,
     __vue_module_identifier__$8,
-    false,
-    undefined,
     undefined,
     undefined
   );
@@ -1556,12 +1520,12 @@ __vue_render__$8._withStripped = true;
 function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
   return column.pid ? row[column.pid] && row[column.pid].length > subRowIndex ? {
     empty: false,
-    value: row[column.pid][subRowIndex][column.id]
-  } // nested cell
-  : {
-    empty: true
-  } // empty cell
-  : {
+    value: row[column.pid][subRowIndex][column.id] // nested cell
+
+  } : {
+    empty: true // empty cell
+
+  } : {
     empty: false,
     value: row[column.id]
   }; // top cell
@@ -1569,8 +1533,8 @@ function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
 
 var script$7 = {
   components: {
-    stColgroup: __vue_component__$7,
-    stThead: __vue_component__$8,
+    stColgroup,
+    stThead,
     stDataRow
   },
   props: {
@@ -1899,20 +1863,16 @@ __vue_render__$9._withStripped = true;
   const __vue_is_functional_template__$9 = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$9 = /*#__PURE__*/normalizeComponent_1(
+  var stGrid = normalizeComponent_1(
     { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
     __vue_inject_styles__$9,
     __vue_script__$9,
     __vue_scope_id__$9,
     __vue_is_functional_template__$9,
     __vue_module_identifier__$9,
-    false,
     browser,
-    undefined,
     undefined
   );
 
@@ -2053,27 +2013,23 @@ __vue_render__$a._withStripped = true;
   const __vue_is_functional_template__$a = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$a = /*#__PURE__*/normalizeComponent_1(
+  var stButton = normalizeComponent_1(
     { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
     __vue_inject_styles__$a,
     __vue_script__$a,
     __vue_scope_id__$a,
     __vue_is_functional_template__$a,
     __vue_module_identifier__$a,
-    false,
     browser,
-    undefined,
     undefined
   );
 
 //
 var script$9 = {
   components: {
-    stButton: __vue_component__$a
+    stButton
   },
   props: {
     text: {
@@ -2265,27 +2221,23 @@ __vue_render__$b._withStripped = true;
   const __vue_is_functional_template__$b = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$b = /*#__PURE__*/normalizeComponent_1(
+  var stPagebar = normalizeComponent_1(
     { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
     __vue_inject_styles__$b,
     __vue_script__$b,
     __vue_scope_id__$b,
     __vue_is_functional_template__$b,
     __vue_module_identifier__$b,
-    false,
     browser,
-    undefined,
     undefined
   );
 
 //
 var script$a = {
   components: {
-    stButton: __vue_component__$a
+    stButton
   },
   props: {
     rootClass: {
@@ -2424,20 +2376,16 @@ __vue_render__$c._withStripped = true;
   const __vue_is_functional_template__$c = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$c = /*#__PURE__*/normalizeComponent_1(
+  var stButtonGroup = normalizeComponent_1(
     { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
     __vue_inject_styles__$c,
     __vue_script__$c,
     __vue_scope_id__$c,
     __vue_is_functional_template__$c,
     __vue_module_identifier__$c,
-    false,
     browser,
-    undefined,
     undefined
   );
 
@@ -2445,7 +2393,7 @@ __vue_render__$c._withStripped = true;
  * Events: change(newValue, newIndex)
  */
 var script$b = {
-  extends: __vue_component__$c,
+  extends: stButtonGroup,
   props: {
     rootClass: {
       type: String,
@@ -2496,20 +2444,16 @@ const __vue_script__$d = script$b;
   const __vue_is_functional_template__$d = undefined;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$d = /*#__PURE__*/normalizeComponent_1(
+  var stPagebarSizes = normalizeComponent_1(
     {},
     __vue_inject_styles__$d,
     __vue_script__$d,
     __vue_scope_id__$d,
     __vue_is_functional_template__$d,
     __vue_module_identifier__$d,
-    false,
     browser,
-    undefined,
     undefined
   );
 
@@ -2572,27 +2516,23 @@ __vue_render__$d._withStripped = true;
   const __vue_is_functional_template__$e = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$e = /*#__PURE__*/normalizeComponent_1(
+  var stToolbar = normalizeComponent_1(
     { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
     __vue_inject_styles__$e,
     __vue_script__$e,
     __vue_scope_id__$e,
     __vue_is_functional_template__$e,
     __vue_module_identifier__$e,
-    false,
     browser,
-    undefined,
     undefined
   );
 
 //
 var script$d = {
   components: {
-    stButton: __vue_component__$a
+    stButton
   },
   props: {
     placeholder: {
@@ -2690,7 +2630,7 @@ var __vue_render__$e = function() {
               return null
             }
             $event.stopPropagation();
-            return _vm.doSearch.apply(null, arguments)
+            return _vm.doSearch($event)
           },
           change: _vm.doChange,
           input: function($event) {
@@ -2711,7 +2651,7 @@ var __vue_render__$e = function() {
             click: function($event) {
               $event.preventDefault();
               $event.stopPropagation();
-              return _vm.doSearch.apply(null, arguments)
+              return _vm.doSearch($event)
             }
           }
         },
@@ -2738,20 +2678,16 @@ __vue_render__$e._withStripped = true;
   const __vue_is_functional_template__$f = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$f = /*#__PURE__*/normalizeComponent_1(
+  var stSearch = normalizeComponent_1(
     { render: __vue_render__$e, staticRenderFns: __vue_staticRenderFns__$e },
     __vue_inject_styles__$f,
     __vue_script__$f,
     __vue_scope_id__$f,
     __vue_is_functional_template__$f,
     __vue_module_identifier__$f,
-    false,
     browser,
-    undefined,
     undefined
   );
 
@@ -2841,20 +2777,16 @@ __vue_render__$f._withStripped = true;
   const __vue_is_functional_template__$g = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$g = /*#__PURE__*/normalizeComponent_1(
+  var stProgressbar = normalizeComponent_1(
     { render: __vue_render__$f, staticRenderFns: __vue_staticRenderFns__$f },
     __vue_inject_styles__$g,
     __vue_script__$g,
     __vue_scope_id__$g,
     __vue_is_functional_template__$g,
     __vue_module_identifier__$g,
-    false,
     browser,
-    undefined,
     undefined
   );
 
@@ -2900,7 +2832,7 @@ function flattenArray(array) {
 
 var script$f = {
   components: {
-    stProgressbar: __vue_component__$g
+    stProgressbar
   },
   props: {
     /**
@@ -2964,6 +2896,11 @@ var script$f = {
       default: getGlobalVariable("simter.upload.summary", function (count, _size, prettySize) {
         return `${count} files ${prettySize}`;
       })
+    },
+    // the extras options for XMLHttpRequest
+    requestOptions: {
+      type: Object,
+      required: false
     }
   },
   data: function () {
@@ -3053,7 +2990,7 @@ var script$f = {
           });
         } else serverUrl = this.url;
 
-        p = p.then(() => uploadOneFile.call(null, {
+        p = p.then(() => uploadOneFile.call(null, Object.assign({
           index: i,
           dir: f.dir,
           file: f.file,
@@ -3066,7 +3003,7 @@ var script$f = {
           start: xhr => {
             console.log("start");
           }
-        }).then(result => {
+        }, this.requestOptions)).then(result => {
           results.push(result);
         }));
       }
@@ -3112,7 +3049,7 @@ var __vue_render__$g = function() {
           on: {
             click: function($event) {
               $event.stopPropagation();
-              return _vm.selectFile.apply(null, arguments)
+              return _vm.selectFile($event)
             }
           }
         },
@@ -3239,7 +3176,7 @@ __vue_render__$g._withStripped = true;
   /* style */
   const __vue_inject_styles__$h = function (inject) {
     if (!inject) return
-    inject("data-v-ba0801ac_0", { source: "\n.st-upload {\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-upload .st-progressbar {\r\n  min-width: 10em;\r\n  flex-grow: 1;\n}\n.st-upload .operation {\r\n  margin: auto 6px;\n}\n.st-upload > .header {\r\n  margin: 0.25em 0.5em;\n}\n.st-upload > .files {\r\n  overflow: auto;\r\n  flex-grow: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n  margin: 0 0 0.5em 0;\r\n  padding: 0;\n}\n.st-upload > .drop-area {\r\n  overflow: hidden;\r\n  flex-grow: 1;\r\n  margin: 0.5em;\r\n  padding: 0.5em;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 200%;\n}\n.st-upload > .files > .file {\r\n  list-style: none;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  margin: 8px 0 0 5px;\n}\n.st-upload > .files > .file > .file-icon {\r\n  display: block;\r\n  text-indent: -99999px;\r\n  overflow: hidden;\r\n  width: 32px;\r\n  height: 32px;\n}\n.st-upload > .files > .file > div {\r\n  margin-left: 5px;\r\n  flex-grow: 1;\n}\n.st-upload > .files > .file > div > input {\r\n  font: inherit;\r\n  border: none;\r\n  width: auto;\n}\n.st-upload > .files > .file > div > .other {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\n}\n.st-upload > .files > .file > div > .other > .size {\r\n  min-width: 5em;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\upload.vue"],"names":[],"mappings":";AA6PA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,eAAA;EACA,YAAA;AACA;AACA;EACA,gBAAA;AACA;AAEA;EACA,oBAAA;AACA;AAEA;EACA,cAAA;EACA,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,UAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;EACA,aAAA;EACA,cAAA;EACA,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,eAAA;AACA;AAEA;EACA,gBAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,mBAAA;AACA;AAEA;EACA,cAAA;EACA,qBAAA;EACA,gBAAA;EACA,WAAA;EACA,YAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;AACA;AAEA;EACA,aAAA;EACA,YAAA;EACA,WAAA;AACA;AAEA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;AACA;AAEA;EACA,cAAA;AACA","file":"upload.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-upload', classes.root]\">\r\n    <!-- header -->\r\n    <div :class=\"['header', classes.header]\">\r\n      <span class=\"summary\">{{summary(count, size, prettySize)}}</span>\r\n      <a href=\"#\" :class=\"['operation', classes.operation]\" @click.stop=\"selectFile\">{{text.selectFile}}</a>\r\n    </div>\r\n    <!-- files -->\r\n    <ul v-if=\"count > 0\" :class=\"['files', classes.files]\">\r\n      <li :class=\"['file', classes.file]\" v-for=\"(file, index) in files\">\r\n        <span :class=\"'file-icon ' + file.type\"></span>\r\n        <div>\r\n          <input v-if=\"editable\" type=\"text\" :class=\"['name', classes.name]\" v-model=\"file.name\">\r\n          <div v-else :class=\"['name', classes.name]\">{{file.name}}</div>\r\n\r\n          <div :class=\"['other', classes.other]\">\r\n            <div :class=\"['size', classes.size]\">{{file.prettySize}}</div>\r\n            <st-progressbar :percent=\"file.percent\"></st-progressbar>\r\n            <a v-if=\"file.percent === 0\" href=\"#\" :class=\"['operation', classes.operation]\" @click.stop=\"removeFile(file)\">{{text.delete}}</a>\r\n          </div>\r\n        </div>\r\n      </li>\r\n    </ul>\r\n    <div v-else :class=\"['drop-area', classes.dropArea]\" :style=\"styles.dropArea\" \r\n      @drop.prevent=\"dropFiles($event)\" @dragover.prevent>{{ text.dropInfo }}</div>\r\n    <!-- hidden -->\r\n    <input v-if=\"multiple\" type=\"file\" name=\"file\" style=\"display:none\" multiple\r\n      :accept=\"accept\" @change=\"afterSelectedFile($event.target.files)\">\r\n    <input v-else type=\"file\" name=\"file\" style=\"display:none\"\r\n      :accept=\"accept\" @change=\"afterSelectedFile($event.target.files)\">\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * File upload component.\r\n *\r\n * Events:\r\n * 1. progress({index, name, size, percent})\r\n * 2. start([{name, size, percent}, ...])\r\n * 3. success([result, ...])\r\n * 4. error(e)\r\n */\r\nimport { gv, getFileExtension, getPrettySize, uploadOneFile } from \"./utils\";\r\nimport stProgressbar from \"./progressbar.vue\";\r\n\r\nfunction entryToFiles(entry, dir = '') {\r\n  return new Promise((resolve, recject) => {\r\n    if (entry.isFile) {\r\n      entry.file(file => {\r\n        file.dir = dir // mark full dir\r\n        resolve(file);\r\n      })\r\n    } else if (entry.isDirectory) {\r\n      let dirReader = entry.createReader();\r\n      dirReader.readEntries(entries => {\r\n        let promises = [];\r\n        for (let i = 0; i < entries.length; i++){\r\n          promises.push(entryToFiles(entries[i], dir ? dir + \"/\" + entry.name : entry.name));\r\n        }\r\n        resolve(Promise.all(promises));\r\n      });\r\n    }\r\n  });\r\n}\r\n\r\nfunction dataTransferItemsToFiles(items) {\r\n  return new Promise((resolve, reject) => {\r\n    let promises = [];\r\n    for (let i = 0; i < items.length; i++) promises.push(entryToFiles(items[i].webkitGetAsEntry()));\r\n    Promise.all(promises).then(files => resolve(files));\r\n  });\r\n}\r\n\r\n// [a, [b, c]] flatten to [a, b, c]\r\nfunction flattenArray(array) {\r\n  return array.reduce(\r\n    (a, b) => a.concat(Array.isArray(b) ? flattenArray(b) : b),\r\n    []\r\n  );\r\n}\r\n\r\nexport default {\r\n  components: { stProgressbar },\r\n  props: {\r\n    /**\r\n     * the server upload to.\r\n     * 1. String - fixed server url\r\n     * 2. Function - generate the server url with option '{index, name, size, type}'\r\n     */\r\n    url: {type: [String, Function], required: true},\r\n    // Whether allow edit file name\r\n    editable: {type: Boolean, required: false, default: true},\r\n    // Whether allow select multiple files\r\n    multiple: {type: Boolean, required: false, default: true},\r\n    // Whether allow auto start upload after selected files\r\n    auto: {type: Boolean, required: false, default: true},\r\n    // the limitation of file types, default no limitation\r\n    accept: {type: String, required: false, default: '*.*'},\r\n    // element class: { root, header, files, file, name, size, other, operation, progress }\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.upload.classes\", {})\r\n    },\r\n    // element style: { dropArea }\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.upload.styles\", {})\r\n    },\r\n    text: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.upload.text\", {\r\n          selectFileFirst: \"Please select file first.\",\r\n          selectFile: \"Select file\",\r\n          delete: \"Delete\",\r\n          dropInfo: \"Please click \\\"Select...\\\" to choose the files, or just drop the files to here.\"\r\n        }),\r\n    },\r\n    summary: {\r\n      type: Function,\r\n      required: false,\r\n      default: gv(\"simter.upload.summary\", function(count, _size, prettySize) {\r\n        return `${count} files ${prettySize}`;\r\n      })\r\n    }\r\n  },\r\n  data: function () {\r\n    return {\r\n      // the selected files\r\n      files: []\r\n    }\r\n  },\r\n  computed: {\r\n    count: function () {\r\n      return this.files.length;\r\n    },\r\n    toUploadFiles: function () {\r\n      return this.files.filter(f => f.percent === 0);\r\n    },\r\n    toUploadCount: function () {\r\n      return this.toUploadFiles.length;\r\n    },\r\n    size: function () {\r\n      return this.files.reduce((previousValue, currentValue) => previousValue + currentValue.size, 0);\r\n    },\r\n    prettySize: function () {\r\n      return getPrettySize(this.size);\r\n    }\r\n  },\r\n  methods: {\r\n    selectFile: function () {\r\n      this.$el.querySelector('input[type=\"file\"]').click();\r\n    },\r\n    afterSelectedFile: function (files) {\r\n      // cache files\r\n      Array.from(files).forEach((file) => {\r\n        if (this.files.every((f) => f.name !== file.name))\r\n          this.files.push({\r\n            name: file.name,\r\n            dir: file.dir || '',\r\n            // original file\r\n            file: file,\r\n            size: file.size,\r\n            // pretty file size, such as '1KB'\r\n            prettySize: getPrettySize(file.size),\r\n            // get file extension, such as 'png'\r\n            type: getFileExtension(file.name),\r\n            // upload percent: 0~100\r\n            percent: 0,\r\n          });\r\n      });\r\n\r\n      // auto upload\r\n      if (this.auto) this.startUpload();\r\n    },\r\n    removeFile(index) {\r\n      this.files.splice(index, 1);\r\n    },\r\n    // manual start the upload\r\n    startUpload() {\r\n      if (this.toUploadCount === 0) {\r\n        if (this.count === 0) {\r\n          return alert(this.text.selectFileFirst);\r\n        } else return; // no file to upload\r\n      }\r\n\r\n      // emits upload start event\r\n      this.$emit(\"start\", this.toUploadFiles.map(f => ({\r\n        dir: f.dir,\r\n        name: f.name,\r\n        size: f.size,\r\n        percent: f.percent\r\n      })));\r\n\r\n      // upload file one by one\r\n      let p = Promise.resolve();\r\n      let results = []\r\n      for (let i = 0; i < this.toUploadFiles.length; i++) {\r\n        let f = this.toUploadFiles[i];\r\n\r\n        // get server url\r\n        let serverUrl;\r\n        if (typeof this.url === 'function') {\r\n          serverUrl = this.url.call(this, {\r\n            index: i,\r\n            dir: f.dir,\r\n            name: f.name,\r\n            size: f.size,\r\n            type: getFileExtension(f.name)\r\n          });\r\n        } else serverUrl = this.url;\r\n\r\n        p = p.then(() => uploadOneFile.call(null, {\r\n          index: i,\r\n          dir: f.dir,\r\n          file: f.file,\r\n          url: serverUrl,\r\n          progress: data => {\r\n            f.percent = data.percent;\r\n            // emits upload progress event\r\n            this.$emit(\"progress\", data);\r\n          },\r\n          start: xhr => {\r\n            console.log(\"start\");\r\n          }\r\n        }).then(result => {\r\n          results.push(result);\r\n        }));\r\n      }\r\n      p.then(result => {\r\n        // emits upload success event\r\n        this.$emit(\"success\", results);\r\n      }).catch(e => this.$emit(\"error\", e)); // emits upload failed event\r\n    },\r\n    dropFiles: function (e) {\r\n      if (e.dataTransfer.items === null || e.dataTransfer.items.length === 0) {\r\n        console.log(\"upload: No dropped items\");\r\n        return;\r\n      }\r\n\r\n      dataTransferItemsToFiles(e.dataTransfer.items).then(files => {\r\n        this.afterSelectedFile(flattenArray(files));\r\n      });\r\n    },\r\n  },\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-upload {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-upload .st-progressbar {\r\n  min-width: 10em;\r\n  flex-grow: 1;\r\n}\r\n.st-upload .operation {\r\n  margin: auto 6px;\r\n}\r\n\r\n.st-upload > .header {\r\n  margin: 0.25em 0.5em;\r\n}\r\n\r\n.st-upload > .files {\r\n  overflow: auto;\r\n  flex-grow: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n  margin: 0 0 0.5em 0;\r\n  padding: 0;\r\n}\r\n\r\n.st-upload > .drop-area {\r\n  overflow: hidden;\r\n  flex-grow: 1;\r\n  margin: 0.5em;\r\n  padding: 0.5em;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 200%;\r\n}\r\n\r\n.st-upload > .files > .file {\r\n  list-style: none;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  margin: 8px 0 0 5px;\r\n}\r\n\r\n.st-upload > .files > .file > .file-icon {\r\n  display: block;\r\n  text-indent: -99999px;\r\n  overflow: hidden;\r\n  width: 32px;\r\n  height: 32px;\r\n}\r\n\r\n.st-upload > .files > .file > div {\r\n  margin-left: 5px;\r\n  flex-grow: 1;\r\n}\r\n\r\n.st-upload > .files > .file > div > input {\r\n  font: inherit;\r\n  border: none;\r\n  width: auto;\r\n}\r\n\r\n.st-upload > .files > .file > div > .other {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n}\r\n\r\n.st-upload > .files > .file > div > .other > .size {\r\n  min-width: 5em;\r\n}\r\n</style>\r\n"]}, media: undefined });
+    inject("data-v-cc2aa570_0", { source: "\n.st-upload {\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-upload .st-progressbar {\r\n  min-width: 10em;\r\n  flex-grow: 1;\n}\n.st-upload .operation {\r\n  margin: auto 6px;\n}\n.st-upload > .header {\r\n  margin: 0.25em 0.5em;\n}\n.st-upload > .files {\r\n  overflow: auto;\r\n  flex-grow: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n  margin: 0 0 0.5em 0;\r\n  padding: 0;\n}\n.st-upload > .drop-area {\r\n  overflow: hidden;\r\n  flex-grow: 1;\r\n  margin: 0.5em;\r\n  padding: 0.5em;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 200%;\n}\n.st-upload > .files > .file {\r\n  list-style: none;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  margin: 8px 0 0 5px;\n}\n.st-upload > .files > .file > .file-icon {\r\n  display: block;\r\n  text-indent: -99999px;\r\n  overflow: hidden;\r\n  width: 32px;\r\n  height: 32px;\n}\n.st-upload > .files > .file > div {\r\n  margin-left: 5px;\r\n  flex-grow: 1;\n}\n.st-upload > .files > .file > div > input {\r\n  font: inherit;\r\n  border: none;\r\n  width: auto;\n}\n.st-upload > .files > .file > div > .other {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\n}\n.st-upload > .files > .file > div > .other > .size {\r\n  min-width: 5em;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\upload.vue"],"names":[],"mappings":";AAkQA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,eAAA;EACA,YAAA;AACA;AACA;EACA,gBAAA;AACA;AAEA;EACA,oBAAA;AACA;AAEA;EACA,cAAA;EACA,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,UAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;EACA,aAAA;EACA,cAAA;EACA,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,eAAA;AACA;AAEA;EACA,gBAAA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;EACA,mBAAA;AACA;AAEA;EACA,cAAA;EACA,qBAAA;EACA,gBAAA;EACA,WAAA;EACA,YAAA;AACA;AAEA;EACA,gBAAA;EACA,YAAA;AACA;AAEA;EACA,aAAA;EACA,YAAA;EACA,WAAA;AACA;AAEA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;AACA;AAEA;EACA,cAAA;AACA","file":"upload.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-upload', classes.root]\">\r\n    <!-- header -->\r\n    <div :class=\"['header', classes.header]\">\r\n      <span class=\"summary\">{{summary(count, size, prettySize)}}</span>\r\n      <a href=\"#\" :class=\"['operation', classes.operation]\" @click.stop=\"selectFile\">{{text.selectFile}}</a>\r\n    </div>\r\n    <!-- files -->\r\n    <ul v-if=\"count > 0\" :class=\"['files', classes.files]\">\r\n      <li :class=\"['file', classes.file]\" v-for=\"(file, index) in files\">\r\n        <span :class=\"'file-icon ' + file.type\"></span>\r\n        <div>\r\n          <input v-if=\"editable\" type=\"text\" :class=\"['name', classes.name]\" v-model=\"file.name\">\r\n          <div v-else :class=\"['name', classes.name]\">{{file.name}}</div>\r\n\r\n          <div :class=\"['other', classes.other]\">\r\n            <div :class=\"['size', classes.size]\">{{file.prettySize}}</div>\r\n            <st-progressbar :percent=\"file.percent\"></st-progressbar>\r\n            <a v-if=\"file.percent === 0\" href=\"#\" :class=\"['operation', classes.operation]\" @click.stop=\"removeFile(file)\">{{text.delete}}</a>\r\n          </div>\r\n        </div>\r\n      </li>\r\n    </ul>\r\n    <div v-else :class=\"['drop-area', classes.dropArea]\" :style=\"styles.dropArea\" \r\n      @drop.prevent=\"dropFiles($event)\" @dragover.prevent>{{ text.dropInfo }}</div>\r\n    <!-- hidden -->\r\n    <input v-if=\"multiple\" type=\"file\" name=\"file\" style=\"display:none\" multiple\r\n      :accept=\"accept\" @change=\"afterSelectedFile($event.target.files)\">\r\n    <input v-else type=\"file\" name=\"file\" style=\"display:none\"\r\n      :accept=\"accept\" @change=\"afterSelectedFile($event.target.files)\">\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * File upload component.\r\n *\r\n * Events:\r\n * 1. progress({index, name, size, percent})\r\n * 2. start([{name, size, percent}, ...])\r\n * 3. success([result, ...])\r\n * 4. error(e)\r\n */\r\nimport { gv, getFileExtension, getPrettySize, uploadOneFile } from \"./utils\";\r\nimport stProgressbar from \"./progressbar.vue\";\r\n\r\nfunction entryToFiles(entry, dir = '') {\r\n  return new Promise((resolve, recject) => {\r\n    if (entry.isFile) {\r\n      entry.file(file => {\r\n        file.dir = dir // mark full dir\r\n        resolve(file);\r\n      })\r\n    } else if (entry.isDirectory) {\r\n      let dirReader = entry.createReader();\r\n      dirReader.readEntries(entries => {\r\n        let promises = [];\r\n        for (let i = 0; i < entries.length; i++){\r\n          promises.push(entryToFiles(entries[i], dir ? dir + \"/\" + entry.name : entry.name));\r\n        }\r\n        resolve(Promise.all(promises));\r\n      });\r\n    }\r\n  });\r\n}\r\n\r\nfunction dataTransferItemsToFiles(items) {\r\n  return new Promise((resolve, reject) => {\r\n    let promises = [];\r\n    for (let i = 0; i < items.length; i++) promises.push(entryToFiles(items[i].webkitGetAsEntry()));\r\n    Promise.all(promises).then(files => resolve(files));\r\n  });\r\n}\r\n\r\n// [a, [b, c]] flatten to [a, b, c]\r\nfunction flattenArray(array) {\r\n  return array.reduce(\r\n    (a, b) => a.concat(Array.isArray(b) ? flattenArray(b) : b),\r\n    []\r\n  );\r\n}\r\n\r\nexport default {\r\n  components: { stProgressbar },\r\n  props: {\r\n    /**\r\n     * the server upload to.\r\n     * 1. String - fixed server url\r\n     * 2. Function - generate the server url with option '{index, name, size, type}'\r\n     */\r\n    url: {type: [String, Function], required: true},\r\n    // Whether allow edit file name\r\n    editable: {type: Boolean, required: false, default: true},\r\n    // Whether allow select multiple files\r\n    multiple: {type: Boolean, required: false, default: true},\r\n    // Whether allow auto start upload after selected files\r\n    auto: {type: Boolean, required: false, default: true},\r\n    // the limitation of file types, default no limitation\r\n    accept: {type: String, required: false, default: '*.*'},\r\n    // element class: { root, header, files, file, name, size, other, operation, progress }\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.upload.classes\", {})\r\n    },\r\n    // element style: { dropArea }\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.upload.styles\", {})\r\n    },\r\n    text: {\r\n      type: Object,\r\n      required: false,\r\n      default: () =>\r\n        gv(\"simter.upload.text\", {\r\n          selectFileFirst: \"Please select file first.\",\r\n          selectFile: \"Select file\",\r\n          delete: \"Delete\",\r\n          dropInfo: \"Please click \\\"Select...\\\" to choose the files, or just drop the files to here.\"\r\n        }),\r\n    },\r\n    summary: {\r\n      type: Function,\r\n      required: false,\r\n      default: gv(\"simter.upload.summary\", function(count, _size, prettySize) {\r\n        return `${count} files ${prettySize}`;\r\n      })\r\n    },\r\n    // the extras options for XMLHttpRequest\r\n    requestOptions: {\r\n      type: Object,\r\n      required: false\r\n    }\r\n  },\r\n  data: function () {\r\n    return {\r\n      // the selected files\r\n      files: []\r\n    }\r\n  },\r\n  computed: {\r\n    count: function () {\r\n      return this.files.length;\r\n    },\r\n    toUploadFiles: function () {\r\n      return this.files.filter(f => f.percent === 0);\r\n    },\r\n    toUploadCount: function () {\r\n      return this.toUploadFiles.length;\r\n    },\r\n    size: function () {\r\n      return this.files.reduce((previousValue, currentValue) => previousValue + currentValue.size, 0);\r\n    },\r\n    prettySize: function () {\r\n      return getPrettySize(this.size);\r\n    }\r\n  },\r\n  methods: {\r\n    selectFile: function () {\r\n      this.$el.querySelector('input[type=\"file\"]').click();\r\n    },\r\n    afterSelectedFile: function (files) {\r\n      // cache files\r\n      Array.from(files).forEach((file) => {\r\n        if (this.files.every((f) => f.name !== file.name))\r\n          this.files.push({\r\n            name: file.name,\r\n            dir: file.dir || '',\r\n            // original file\r\n            file: file,\r\n            size: file.size,\r\n            // pretty file size, such as '1KB'\r\n            prettySize: getPrettySize(file.size),\r\n            // get file extension, such as 'png'\r\n            type: getFileExtension(file.name),\r\n            // upload percent: 0~100\r\n            percent: 0,\r\n          });\r\n      });\r\n\r\n      // auto upload\r\n      if (this.auto) this.startUpload();\r\n    },\r\n    removeFile(index) {\r\n      this.files.splice(index, 1);\r\n    },\r\n    // manual start the upload\r\n    startUpload() {\r\n      if (this.toUploadCount === 0) {\r\n        if (this.count === 0) {\r\n          return alert(this.text.selectFileFirst);\r\n        } else return; // no file to upload\r\n      }\r\n\r\n      // emits upload start event\r\n      this.$emit(\"start\", this.toUploadFiles.map(f => ({\r\n        dir: f.dir,\r\n        name: f.name,\r\n        size: f.size,\r\n        percent: f.percent\r\n      })));\r\n\r\n      // upload file one by one\r\n      let p = Promise.resolve();\r\n      let results = []\r\n      for (let i = 0; i < this.toUploadFiles.length; i++) {\r\n        let f = this.toUploadFiles[i];\r\n\r\n        // get server url\r\n        let serverUrl;\r\n        if (typeof this.url === 'function') {\r\n          serverUrl = this.url.call(this, {\r\n            index: i,\r\n            dir: f.dir,\r\n            name: f.name,\r\n            size: f.size,\r\n            type: getFileExtension(f.name)\r\n          });\r\n        } else serverUrl = this.url;\r\n\r\n        p = p.then(() => uploadOneFile.call(null, Object.assign({\r\n          index: i,\r\n          dir: f.dir,\r\n          file: f.file,\r\n          url: serverUrl,\r\n          progress: data => {\r\n            f.percent = data.percent;\r\n            // emits upload progress event\r\n            this.$emit(\"progress\", data);\r\n          },\r\n          start: xhr => {\r\n            console.log(\"start\");\r\n          }\r\n        }, this.requestOptions)).then(result => {\r\n          results.push(result);\r\n        }));\r\n      }\r\n      p.then(result => {\r\n        // emits upload success event\r\n        this.$emit(\"success\", results);\r\n      }).catch(e => this.$emit(\"error\", e)); // emits upload failed event\r\n    },\r\n    dropFiles: function (e) {\r\n      if (e.dataTransfer.items === null || e.dataTransfer.items.length === 0) {\r\n        console.log(\"upload: No dropped items\");\r\n        return;\r\n      }\r\n\r\n      dataTransferItemsToFiles(e.dataTransfer.items).then(files => {\r\n        this.afterSelectedFile(flattenArray(files));\r\n      });\r\n    },\r\n  },\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-upload {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-upload .st-progressbar {\r\n  min-width: 10em;\r\n  flex-grow: 1;\r\n}\r\n.st-upload .operation {\r\n  margin: auto 6px;\r\n}\r\n\r\n.st-upload > .header {\r\n  margin: 0.25em 0.5em;\r\n}\r\n\r\n.st-upload > .files {\r\n  overflow: auto;\r\n  flex-grow: 1;\r\n  display: flex;\r\n  flex-direction: column;\r\n  margin: 0 0 0.5em 0;\r\n  padding: 0;\r\n}\r\n\r\n.st-upload > .drop-area {\r\n  overflow: hidden;\r\n  flex-grow: 1;\r\n  margin: 0.5em;\r\n  padding: 0.5em;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 200%;\r\n}\r\n\r\n.st-upload > .files > .file {\r\n  list-style: none;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  margin: 8px 0 0 5px;\r\n}\r\n\r\n.st-upload > .files > .file > .file-icon {\r\n  display: block;\r\n  text-indent: -99999px;\r\n  overflow: hidden;\r\n  width: 32px;\r\n  height: 32px;\r\n}\r\n\r\n.st-upload > .files > .file > div {\r\n  margin-left: 5px;\r\n  flex-grow: 1;\r\n}\r\n\r\n.st-upload > .files > .file > div > input {\r\n  font: inherit;\r\n  border: none;\r\n  width: auto;\r\n}\r\n\r\n.st-upload > .files > .file > div > .other {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n}\r\n\r\n.st-upload > .files > .file > div > .other > .size {\r\n  min-width: 5em;\r\n}\r\n</style>\r\n"]}, media: undefined });
 
   };
   /* scoped */
@@ -3250,43 +3187,39 @@ __vue_render__$g._withStripped = true;
   const __vue_is_functional_template__$h = false;
   /* style inject SSR */
   
-  /* style inject shadow dom */
-  
 
   
-  const __vue_component__$h = /*#__PURE__*/normalizeComponent_1(
+  var stUpload = normalizeComponent_1(
     { render: __vue_render__$g, staticRenderFns: __vue_staticRenderFns__$g },
     __vue_inject_styles__$h,
     __vue_script__$h,
     __vue_scope_id__$h,
     __vue_is_functional_template__$h,
     __vue_module_identifier__$h,
-    false,
     browser,
-    undefined,
     undefined
   );
 
 const components = {
-  "st-loader": [version, __vue_component__],
-  "st-grid": [version, __vue_component__$9],
-  "st-colgroup": ["0.3.0", __vue_component__$7],
-  "st-thead": ["0.4.2", __vue_component__$8],
-  "st-table-row": [version, __vue_component__$6],
+  "st-loader": [version, stLoader],
+  "st-grid": [version, stGrid],
+  "st-colgroup": ["0.3.0", stColgroup],
+  "st-thead": ["0.4.2", stThead],
+  "st-table-row": [version, stTableRow],
   "st-data-row": [version, stDataRow],
-  "st-cell-index": [version, __vue_component__$1],
-  "st-cell-sn": [version, __vue_component__$2],
-  "st-cell-sn-selectable": [version, __vue_component__$3],
-  "st-cell-text": [version, __vue_component__$4],
-  "st-cell-html": [version, __vue_component__$5],
-  "st-pagebar": [version, __vue_component__$b],
-  "st-pagebar-sizes": [version, __vue_component__$d],
-  "st-toolbar": [version, __vue_component__$e],
-  "st-button": [version, __vue_component__$a],
-  "st-button-group": [version, __vue_component__$c],
-  "st-search": [version, __vue_component__$f],
-  "st-upload": [version, __vue_component__$h],
-  "st-progress-bar": [version, __vue_component__$g]
+  "st-cell-index": [version, stCellIndex],
+  "st-cell-sn": [version, stCellSn],
+  "st-cell-sn-selectable": [version, stCellSnSelectable],
+  "st-cell-text": [version, stCellText],
+  "st-cell-html": [version, stCellHtml],
+  "st-pagebar": [version, stPagebar],
+  "st-pagebar-sizes": [version, stPagebarSizes],
+  "st-toolbar": [version, stToolbar],
+  "st-button": [version, stButton],
+  "st-button-group": [version, stButtonGroup],
+  "st-search": [version, stSearch],
+  "st-upload": [version, stUpload],
+  "st-progress-bar": [version, stProgressbar]
 };
 const keyVersions = {};
 let value;
