@@ -126,6 +126,11 @@ export default {
       default: gv("simter.upload.summary", function(count, _size, prettySize) {
         return `${count} files ${prettySize}`;
       })
+    },
+    // the extras options for XMLHttpRequest
+    requestOptions: {
+      type: Object,
+      required: false
     }
   },
   data: function () {
@@ -214,7 +219,7 @@ export default {
           });
         } else serverUrl = this.url;
 
-        p = p.then(() => uploadOneFile.call(null, {
+        p = p.then(() => uploadOneFile.call(null, Object.assign({
           index: i,
           dir: f.dir,
           file: f.file,
@@ -227,7 +232,7 @@ export default {
           start: xhr => {
             console.log("start");
           }
-        }).then(result => {
+        }, this.requestOptions)).then(result => {
           results.push(result);
         }));
       }
