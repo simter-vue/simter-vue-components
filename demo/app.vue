@@ -121,7 +121,8 @@ export default {
           label: "SN",
           cell: "st-cell-sn-selectable",
           width: "2.5em",
-          class: "number"
+          class: "number",
+          checkAll: true
         }, // test st-cell-sn (global)
         {
           label: "Index",

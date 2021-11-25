@@ -6,7 +6,7 @@
     <div :class="['header', classes.header]">
       <table :class="classes.headerTable" :style="headerTableStyle">
         <st-colgroup :columns="columns"></st-colgroup>
-        <st-thead :columns="columns" :classes="classes.headerRow" :styles="styles.headerRow"></st-thead>
+        <st-thead :columns="columns" :classes="classes.headerRow" :styles="styles.headerRow" v-bind:checked="isChecked" v-on:changeCheckAll="selectAll"></st-thead>
       </table>
     </div>
     <div
@@ -93,6 +93,9 @@ export default {
     };
   },
   computed: {
+    isChecked() {
+      return this.rows.filter(row => row.selected === true).length === this.rows.length;
+    },
     // all selected rows
     selection() {
       return this.rows.filter(row => row.selected === true);
@@ -186,6 +189,10 @@ export default {
     if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
   },
   methods: {
+    selectAll(val) {
+        if (val) this.rows.forEach(row => this.$set(row, "selected", true));
+        else this.rows.forEach(row => this.$set(row, "selected", false));
+    },
     // DataRow OneToMany TableRow
     // TableRow: {index, cells, classes, styles}
     // TableCell: {rowspan, colspan, value, classes, styles}
