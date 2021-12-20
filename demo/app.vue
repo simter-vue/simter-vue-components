@@ -122,13 +122,16 @@ export default {
           cell: "st-cell-sn-selectable",
           width: "2.5em",
           class: "number",
-          checkAll: true
+          selectable: true
         }, // test st-cell-sn (global)
         {
           label: "Index",
           cell: "st-cell-index",
           width: "4em",
-          class: "number"
+          class: "number",
+          selectable(value, column, rows) {
+            console.log(`value:${value}, column:${column}, rows:${rows}`);
+          }
         }, // test st-cell-index
         { id: "id", label: "ID", width: "5em" }, // test st-cell-text (default)
         { id: "name", label: "Name", width: "7em" }, // test st-cell-text (default)

@@ -6,7 +6,8 @@
     <div :class="['header', classes.header]">
       <table :class="classes.headerTable" :style="headerTableStyle">
         <st-colgroup :columns="columns"></st-colgroup>
-        <st-thead :columns="columns" :classes="classes.headerRow" :styles="styles.headerRow" v-bind:checked="isChecked" v-on:changeCheckAll="selectAll"></st-thead>
+        <st-thead :columns="columns" :classes="classes.headerRow" :styles="styles.headerRow"
+          @column-select-state-change="columnSelectStateChange"></st-thead>
       </table>
     </div>
     <div
@@ -93,9 +94,6 @@ export default {
     };
   },
   computed: {
-    isChecked() {
-      return this.rows.filter(row => row.selected === true).length === this.rows.length;
-    },
     // all selected rows
     selection() {
       return this.rows.filter(row => row.selected === true);
@@ -189,9 +187,13 @@ export default {
     if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
   },
   methods: {
-    selectAll(val) {
-        if (val) this.rows.forEach(row => this.$set(row, "selected", true));
+    columnSelectStateChange(value, index, column) {
+      if (index === 0) { // add full selection to the first column
+        if (value.target.checked) this.rows.forEach(row => this.$set(row, "selected", true));
         else this.rows.forEach(row => this.$set(row, "selected", false));
+      } else { // execute a custom method for the column
+        column.selectable(value, column, this.rows);
+      }
     },
     // DataRow OneToMany TableRow
     // TableRow: {index, cells, classes, styles}

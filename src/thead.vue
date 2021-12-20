@@ -9,8 +9,10 @@
         :rowspan="cell.rowspan"
         :class="['st-cell text', classes.cell]"
         :style="styles.cell"
-        ><input type="checkbox" v-if="cell.checkAll && index === 0" :key="index" :checked="checked"
-          @change="$emit('changeCheckAll', $event.target.checked)">{{cell.hasOwnProperty("label") ? cell.label : cell}}</td>
+        >
+        <input type="checkbox" v-if="cell.selectable" :key="index" @change="$emit('column-select-state-change', $event, index, cell)">
+        {{cell.hasOwnProperty("label") ? cell.label : cell}}
+    </td>
   </tr>
 </thead>
 </template>
@@ -35,13 +37,6 @@ const component = {
       required: false,
       default() {
         return {};
-      }
-    },
-    checked: {
-      type: Boolean,
-      required: false,
-      default() {
-        return false;
       }
     }
   },
