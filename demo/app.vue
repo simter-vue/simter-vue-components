@@ -28,6 +28,7 @@
       :rows="rows"
       @row-click="clickRow"
       @row-dblclick="dblclickRow"
+      @column-select-state-change="columnSelectStateChange"
     >
       <template #top>
         <st-loader v-if="loading" :size="loaderSize"></st-loader>
@@ -129,9 +130,7 @@ export default {
           cell: "st-cell-index",
           width: "4em",
           class: "number",
-          selectable(value, column, rows) {
-            console.log(`value:${value}, column:${column}, rows:${rows}`);
-          }
+          selectable: true
         }, // test st-cell-index
         { id: "id", label: "ID", width: "5em" }, // test st-cell-text (default)
         { id: "name", label: "Name", width: "7em" }, // test st-cell-text (default)
@@ -269,6 +268,9 @@ export default {
     },
     dblclickRow($event) {
       console.log("dblclickRow: $event=%s", JSON.stringify($event));
+    },
+    columnSelectStateChange(selected, index, column) {
+      console.log(`selected:${selected}, index:${index}, column:${column}`);
     },
     changeRowSelected($event) {
       console.log("changeRowSelected: $event=%s", JSON.stringify($event));

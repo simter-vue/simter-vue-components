@@ -187,13 +187,12 @@ export default {
     if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
   },
   methods: {
-    columnSelectStateChange(value, index, column) {
+    columnSelectStateChange(selected, index, column) {
       if (index === 0) { // add full selection to the first column
-        if (value.target.checked) this.rows.forEach(row => this.$set(row, "selected", true));
-        else this.rows.forEach(row => this.$set(row, "selected", false));
-      } else { // execute a custom method for the column
-        column.selectable(value, column, this.rows);
+        this.rows.forEach(row => this.$set(row, "selected", selected));
       }
+      // emit column-select-state-change event
+      this.$emit('column-select-state-change', selected, index, column);
     },
     // DataRow OneToMany TableRow
     // TableRow: {index, cells, classes, styles}
