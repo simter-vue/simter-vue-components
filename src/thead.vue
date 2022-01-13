@@ -9,7 +9,10 @@
         :rowspan="cell.rowspan"
         :class="['st-cell text', classes.cell]"
         :style="styles.cell"
-        >{{cell.hasOwnProperty("label") ? cell.label : cell}}</td>
+        >
+        <input type="checkbox" v-if="cell.selectable" :key="index" @change="$emit('column-select-state-change', $event.target.checked, index, cell)">
+        {{cell.hasOwnProperty("label") ? cell.label : cell}}
+    </td>
   </tr>
 </thead>
 </template>

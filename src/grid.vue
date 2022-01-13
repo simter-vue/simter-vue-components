@@ -6,7 +6,8 @@
     <div :class="['header', classes.header]">
       <table :class="classes.headerTable" :style="headerTableStyle">
         <st-colgroup :columns="columns"></st-colgroup>
-        <st-thead :columns="columns" :classes="classes.headerRow" :styles="styles.headerRow"></st-thead>
+        <st-thead :columns="columns" :classes="classes.headerRow" :styles="styles.headerRow"
+          @column-select-state-change="columnSelectStateChange"></st-thead>
       </table>
     </div>
     <div
@@ -186,6 +187,13 @@ export default {
     if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
   },
   methods: {
+    columnSelectStateChange(selected, index, column) {
+      if (index === 0) { // add full selection to the first column
+        this.rows.forEach(row => this.$set(row, "selected", selected));
+      }
+      // emit column-select-state-change event
+      this.$emit('column-select-state-change', selected, index, column);
+    },
     // DataRow OneToMany TableRow
     // TableRow: {index, cells, classes, styles}
     // TableCell: {rowspan, colspan, value, classes, styles}
