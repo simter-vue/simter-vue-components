@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v0.5.1
+* simter-vue-components v0.6.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -8,7 +8,7 @@ define(['vue'], function (Vue) { 'use strict';
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "0.5.1";
+  var version = "0.6.0";
 
   var g = window || global;
   /**
@@ -1241,6 +1241,9 @@ define(['vue'], function (Vue) { 'use strict';
   //
   //
   //
+  //
+  //
+  //
   var component$1 = {
     replace: true,
     props: {
@@ -1526,7 +1529,29 @@ define(['vue'], function (Vue) { 'use strict';
                 style: _vm.styles.cell,
                 attrs: { colspan: cell.colspan, rowspan: cell.rowspan }
               },
-              [_vm._v(_vm._s(cell.hasOwnProperty("label") ? cell.label : cell))]
+              [
+                cell.selectable
+                  ? _c("input", {
+                      key: index,
+                      attrs: { type: "checkbox" },
+                      on: {
+                        change: function($event) {
+                          return _vm.$emit(
+                            "column-select-state-change",
+                            $event.target.checked,
+                            index,
+                            cell
+                          )
+                        }
+                      }
+                    })
+                  : _vm._e(),
+                _vm._v(
+                  "\r\n        " +
+                    _vm._s(cell.hasOwnProperty("label") ? cell.label : cell) +
+                    "\r\n    "
+                )
+              ]
             )
           }),
           0
@@ -1739,11 +1764,24 @@ define(['vue'], function (Vue) { 'use strict';
       if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
     },
     methods: {
+      columnSelectStateChange: function columnSelectStateChange(selected, index, column) {
+        var _this3 = this;
+
+        if (index === 0) {
+          // add full selection to the first column
+          this.rows.forEach(function (row) {
+            return _this3.$set(row, "selected", selected);
+          });
+        } // emit column-select-state-change event
+
+
+        this.$emit('column-select-state-change', selected, index, column);
+      },
       // DataRow OneToMany TableRow
       // TableRow: {index, cells, classes, styles}
       // TableCell: {rowspan, colspan, value, classes, styles}
       dataRowToTableRow: function dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {
-        var _this3 = this;
+        var _this4 = this;
 
         var tableRows = []; // main TableRow
 
@@ -1766,7 +1804,7 @@ define(['vue'], function (Vue) { 'use strict';
               empty: empty
             };
             if (!empty) c.value = value;
-            var rowspan = column.pid ? 1 : _this3.rowspans[dataRowIndex];
+            var rowspan = column.pid ? 1 : _this4.rowspans[dataRowIndex];
             if (rowspan > 1) c.rowspan = rowspan;
             return c;
           })
@@ -1780,9 +1818,9 @@ define(['vue'], function (Vue) { 'use strict';
             dataRowIndex: dataRowIndex,
             index: nestedIndex++,
             row: dataRow,
-            classes: _this3.classes.contentRow,
-            styles: _this3.styles.contentRow,
-            cells: _this3.subColumns.map(function (column) {
+            classes: _this4.classes.contentRow,
+            styles: _this4.styles.contentRow,
+            cells: _this4.subColumns.map(function (column) {
               var _getCellConfigInfo2 = getCellConfigInfo(dataRow, column, i),
                   empty = _getCellConfigInfo2.empty,
                   value = _getCellConfigInfo2.value;
@@ -1812,15 +1850,15 @@ define(['vue'], function (Vue) { 'use strict';
         return props;
       },
       $_watchHorizonScrollBarSize: function $_watchHorizonScrollBarSize() {
-        var _this4 = this;
+        var _this5 = this;
 
         var t;
         this.v.timer = g.setInterval(function () {
-          t = _this4.v.contentEl.offsetWidth - _this4.v.contentEl.clientWidth;
+          t = _this5.v.contentEl.offsetWidth - _this5.v.contentEl.clientWidth;
 
-          if (t != _this4.v.scrollBarWidth) {
+          if (t != _this5.v.scrollBarWidth) {
             // console.log("scrollBarWidth: %s > %s", this.v.scrollBarWidth, t);
-            _this4.v.scrollBarWidth = t;
+            _this5.v.scrollBarWidth = t;
           }
         }, 100);
       },
@@ -1829,17 +1867,17 @@ define(['vue'], function (Vue) { 'use strict';
         if (row) this.$set(row, "selected", selected);
       },
       clearSelection: function clearSelection() {
-        var _this5 = this;
-
-        this.selection.forEach(function (row) {
-          return _this5.$set(row, "selected", false);
-        });
-      },
-      deleteSelection: function deleteSelection() {
         var _this6 = this;
 
         this.selection.forEach(function (row) {
-          return _this6.rows.splice(_this6.rows.indexOf(row), 1);
+          return _this6.$set(row, "selected", false);
+        });
+      },
+      deleteSelection: function deleteSelection() {
+        var _this7 = this;
+
+        this.selection.forEach(function (row) {
+          return _this7.rows.splice(_this7.rows.indexOf(row), 1);
         });
       }
     }
@@ -1870,7 +1908,8 @@ define(['vue'], function (Vue) { 'use strict';
                 columns: _vm.columns,
                 classes: _vm.classes.headerRow,
                 styles: _vm.styles.headerRow
-              }
+              },
+              on: { "column-select-state-change": _vm.columnSelectStateChange }
             })
           ],
           1
@@ -1934,7 +1973,7 @@ define(['vue'], function (Vue) { 'use strict';
     /* style */
     const __vue_inject_styles__$9 = function (inject) {
       if (!inject) return
-      inject("data-v-7ae86aff_0", { source: "\n.st-grid {\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\n}\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\n}\n.st-grid > .header > table {\r\n  position: relative;\n}\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\n}\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\n}\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\r\n  cursor: default;\n}\n.st-cell {\r\n  padding: 0.25rem;\n}\n.st-cell.number {\r\n  text-align: right;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\grid.vue"],"names":[],"mappings":";AA+QA;EACA,kBAAA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;AACA;AACA;;EAEA,WAAA;EACA,mBAAA;EACA,yBAAA;AACA;AACA;;EAEA,gBAAA;EACA,uBAAA;AACA;AACA;;EAEA,eAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,gBAAA;AACA;AACA;EACA,iBAAA;AACA","file":"grid.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-grid', classes.root]\">\r\n    <div :class=\"['top', classes.top]\" v-if=\"$slots.top && $slots.top.length > 0\">\r\n      <slot name=\"top\"></slot>\r\n    </div>\r\n    <div :class=\"['header', classes.header]\">\r\n      <table :class=\"classes.headerTable\" :style=\"headerTableStyle\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <st-thead :columns=\"columns\" :classes=\"classes.headerRow\" :styles=\"styles.headerRow\"></st-thead>\r\n      </table>\r\n    </div>\r\n    <div\r\n      :class=\"['content', classes.content]\"\r\n      @scroll=\"v.scrollLeft = -1 * $event.target.scrollLeft\"\r\n    >\r\n      <table :class=\"classes.contentTable\" :style=\"styles.contentTable\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <tbody>\r\n          <st-data-row\r\n            v-for=\"(row, index) in rows\"\r\n            :key=\"index\"\r\n            v-bind=\"dataRowProps(row, index)\"\r\n            v-on=\"dataRowListeners\"\r\n          ></st-data-row>\r\n        </tbody>\r\n      </table>\r\n    </div>\r\n    <div :class=\"['bottom', classes.bottom]\" v-if=\"$slots.bottom && $slots.bottom.length > 0\">\r\n      <slot name=\"bottom\"></slot>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { g, gv, flatten, concatStyles } from \"./utils\";\r\nimport stDataRow from \"./row/data-row\";\r\nimport stColgroup from \"./colgroup.vue\";\r\nimport stThead from \"./thead.vue\";\r\nimport tableRowVue from \"./row/table-row.vue\";\r\n\r\n/**\r\n * { empty, value }.\r\n *\r\n * If column has a pid, then:\r\n *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`\r\n *      if row[column.pid].length > subRowIndex,\r\n *   2. or return { empty: true }\r\n *      if row[column.pid].length <= subRowIndex.\r\n * Otherwise return `{ empty: false, value: row[column.id] }`.\r\n */\r\nfunction getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {\r\n  return column.pid\r\n    ? row[column.pid] && row[column.pid].length > subRowIndex\r\n      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell\r\n      : { empty: true } // empty cell\r\n    : { empty: false, value: row[column.id] }; // top cell\r\n}\r\n\r\nexport default {\r\n  components: { stColgroup, stThead, stDataRow },\r\n  props: {\r\n    columns: { type: Array, required: true },\r\n    rows: {\r\n      type: Array,\r\n      required: false,\r\n      default() {\r\n        return [];\r\n      }\r\n    },\r\n    // All dom element class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.classes\", {})\r\n    },\r\n    // All dom element style\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.styles\", {})\r\n    }\r\n  },\r\n  data: function() {\r\n    return {\r\n      // some params use in ui\r\n      v: {\r\n        scrollLeft: 0,\r\n        scrollBarWidth: 0,\r\n        timer: null,\r\n        contentEl: null,\r\n        lastColumnIsAutoWidth: false\r\n      }\r\n    };\r\n  },\r\n  computed: {\r\n    // all selected rows\r\n    selection() {\r\n      return this.rows.filter(row => row.selected === true);\r\n    },\r\n    flattenColumns() {\r\n      return flatten(this.columns);\r\n    },\r\n    subColumns() {\r\n      return this.flattenColumns.filter(c => c.pid);\r\n    },\r\n    headerTableStyle() {\r\n      return concatStyles(this.styles.headerTable, {\r\n        left: this.v.scrollLeft + \"px\",\r\n        width: \"calc(100% - \" + this.v.scrollBarWidth + \"px)\"\r\n      });\r\n    },\r\n    /** DataRow listeners to transfer */\r\n    dataRowListeners() {\r\n      const events = {};\r\n      Object.keys(this.$listeners)\r\n        .filter(key => key.startsWith(\"row-\") || key.startsWith(\"cell-\"))\r\n        .forEach(key => (events[key] = this.$listeners[key]));\r\n\r\n      // deal row-selection-change event\r\n      let old = events[\"row-selection-change\"]; // user define listener\r\n      if (old) {\r\n        events[\"row-selection-change\"] = data => {\r\n          this.selectRow(data.index, data.selected);\r\n          old.call(this, data);\r\n        }\r\n      } else events[\"row-selection-change\"] = data => this.selectRow(data.index, data.selected);\r\n\r\n      return events;\r\n    },\r\n    // [[tableRows], ...], index follow rows\r\n    tableRows() {\r\n      // DataRow OneToMany TableRow\r\n      let all = [];\r\n      let preTableRowCount = 0;\r\n      this.rows.forEach((dataRow, dataRowIndex) => {\r\n        let subTableRows = this.dataRowToTableRow(\r\n          dataRow,\r\n          dataRowIndex,\r\n          preTableRowCount\r\n        );\r\n        all.push(subTableRows);\r\n        preTableRowCount += subTableRows.length;\r\n      });\r\n      return all;\r\n    },\r\n    // Calculate each row's rowspan by Column.pid config\r\n    rowspans() {\r\n      let rowspans = {};\r\n\r\n      // find pid from columns config\r\n      let pids = this.subColumns\r\n        .map(c => c.pid)\r\n        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid\r\n\r\n      // calculate rowspan value\r\n      this.rows.forEach((row, index) => {\r\n        if (typeof row.rowspan === \"number\") {\r\n          // custom rowspan value\r\n          rowspans[index] = row.rowspan;\r\n        } else {\r\n          // auto calculate rowspan value\r\n          let maxSize = Math.max(\r\n            ...pids.map(pid => (row[pid] ? row[pid].length : 1))\r\n          );\r\n          if (maxSize > 1) rowspans[index] = maxSize;\r\n        }\r\n      });\r\n\r\n      return rowspans;\r\n    }\r\n  },\r\n  created() {\r\n    // auto judge the last column width config\r\n    this.v.lastColumnIsAutoWidth = !this.flattenColumns[\r\n      this.flattenColumns.length - 1\r\n    ].width;\r\n  },\r\n  mounted() {\r\n    if (!this.v.lastColumnIsAutoWidth) {\r\n      // watch horizon scrollbar size\r\n      this.v.contentEl = this.$el.querySelector(\".content\"); // cache content el\r\n      this.$_watchHorizonScrollBarSize();\r\n    }\r\n  },\r\n  destroyed() {\r\n    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);\r\n  },\r\n  methods: {\r\n    // DataRow OneToMany TableRow\r\n    // TableRow: {index, cells, classes, styles}\r\n    // TableCell: {rowspan, colspan, value, classes, styles}\r\n    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {\r\n      let tableRows = [];\r\n\r\n      // main TableRow\r\n      let nestedIndex = 0;\r\n      tableRows.push({\r\n        tableRowIndex: preTableRowCount,\r\n        dataRowIndex: dataRowIndex,\r\n        index: nestedIndex++,\r\n        row: dataRow,\r\n        classes: this.classes.contentRow,\r\n        styles: this.styles.contentRow,\r\n        selected: dataRow.selected === true,\r\n        cells: this.flattenColumns.map((column, i) => {\r\n          let { empty, value } = getCellConfigInfo(\r\n            dataRow,\r\n            column,\r\n            0,\r\n            dataRowIndex\r\n          );\r\n          let c = { column: column, empty: empty };\r\n          if (!empty) c.value = value;\r\n          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];\r\n          if (rowspan > 1) c.rowspan = rowspan;\r\n          return c;\r\n        })\r\n      });\r\n\r\n      // sub TableRows\r\n      let len = this.rowspans[dataRowIndex] || 1;\r\n      for (let i = 1; i < len; i++) {\r\n        tableRows.push({\r\n          tableRowIndex: preTableRowCount + nestedIndex,\r\n          dataRowIndex: dataRowIndex,\r\n          index: nestedIndex++,\r\n          row: dataRow,\r\n          classes: this.classes.contentRow,\r\n          styles: this.styles.contentRow,\r\n          cells: this.subColumns.map(column => {\r\n            let { empty, value } = getCellConfigInfo(dataRow, column, i);\r\n            let c = { column: column, empty: empty };\r\n            if (!empty) c.value = value;\r\n            return c;\r\n          })\r\n        });\r\n      }\r\n      return tableRows;\r\n    },\r\n    /** DataRow props to transfer */\r\n    dataRowProps(row, index) {\r\n      let props = {\r\n        tableRows: this.tableRows[index]\r\n      };\r\n      return props;\r\n    },\r\n    $_watchHorizonScrollBarSize() {\r\n      let t;\r\n      this.v.timer = g.setInterval(() => {\r\n        t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;\r\n        if (t != this.v.scrollBarWidth) {\r\n          // console.log(\"scrollBarWidth: %s > %s\", this.v.scrollBarWidth, t);\r\n          this.v.scrollBarWidth = t;\r\n        }\r\n      }, 100);\r\n    },\r\n    selectRow(index, selected) {\r\n      let row = this.rows[index];\r\n      if (row) this.$set(row, \"selected\", selected);\r\n    },\r\n    clearSelection() {\r\n      this.selection.forEach(row => this.$set(row, \"selected\", false));\r\n    },\r\n    deleteSelection() {\r\n      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-grid {\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\r\n}\r\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\r\n}\r\n.st-grid > .header > table {\r\n  position: relative;\r\n}\r\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\r\n}\r\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\r\n}\r\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\r\n}\r\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\r\n}\r\n.st-row {\r\n  cursor: default;\r\n}\r\n.st-cell {\r\n  padding: 0.25rem;\r\n}\r\n.st-cell.number {\r\n  text-align: right;\r\n}\r\n</style>"]}, media: undefined });
+      inject("data-v-7d1d9f96_0", { source: "\n.st-grid {\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\n}\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\n}\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\n}\n.st-grid > .header > table {\r\n  position: relative;\n}\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\n}\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\n}\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\r\n  cursor: default;\n}\n.st-cell {\r\n  padding: 0.25rem;\n}\n.st-cell.number {\r\n  text-align: right;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\grid.vue"],"names":[],"mappings":";AAuRA;EACA,kBAAA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;AACA;AACA;;EAEA,WAAA;EACA,mBAAA;EACA,yBAAA;AACA;AACA;;EAEA,gBAAA;EACA,uBAAA;AACA;AACA;;EAEA,eAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,gBAAA;AACA;AACA;EACA,iBAAA;AACA","file":"grid.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-grid', classes.root]\">\r\n    <div :class=\"['top', classes.top]\" v-if=\"$slots.top && $slots.top.length > 0\">\r\n      <slot name=\"top\"></slot>\r\n    </div>\r\n    <div :class=\"['header', classes.header]\">\r\n      <table :class=\"classes.headerTable\" :style=\"headerTableStyle\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <st-thead :columns=\"columns\" :classes=\"classes.headerRow\" :styles=\"styles.headerRow\"\r\n          @column-select-state-change=\"columnSelectStateChange\"></st-thead>\r\n      </table>\r\n    </div>\r\n    <div\r\n      :class=\"['content', classes.content]\"\r\n      @scroll=\"v.scrollLeft = -1 * $event.target.scrollLeft\"\r\n    >\r\n      <table :class=\"classes.contentTable\" :style=\"styles.contentTable\">\r\n        <st-colgroup :columns=\"columns\"></st-colgroup>\r\n        <tbody>\r\n          <st-data-row\r\n            v-for=\"(row, index) in rows\"\r\n            :key=\"index\"\r\n            v-bind=\"dataRowProps(row, index)\"\r\n            v-on=\"dataRowListeners\"\r\n          ></st-data-row>\r\n        </tbody>\r\n      </table>\r\n    </div>\r\n    <div :class=\"['bottom', classes.bottom]\" v-if=\"$slots.bottom && $slots.bottom.length > 0\">\r\n      <slot name=\"bottom\"></slot>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nimport { g, gv, flatten, concatStyles } from \"./utils\";\r\nimport stDataRow from \"./row/data-row\";\r\nimport stColgroup from \"./colgroup.vue\";\r\nimport stThead from \"./thead.vue\";\r\nimport tableRowVue from \"./row/table-row.vue\";\r\n\r\n/**\r\n * { empty, value }.\r\n *\r\n * If column has a pid, then:\r\n *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`\r\n *      if row[column.pid].length > subRowIndex,\r\n *   2. or return { empty: true }\r\n *      if row[column.pid].length <= subRowIndex.\r\n * Otherwise return `{ empty: false, value: row[column.id] }`.\r\n */\r\nfunction getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {\r\n  return column.pid\r\n    ? row[column.pid] && row[column.pid].length > subRowIndex\r\n      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell\r\n      : { empty: true } // empty cell\r\n    : { empty: false, value: row[column.id] }; // top cell\r\n}\r\n\r\nexport default {\r\n  components: { stColgroup, stThead, stDataRow },\r\n  props: {\r\n    columns: { type: Array, required: true },\r\n    rows: {\r\n      type: Array,\r\n      required: false,\r\n      default() {\r\n        return [];\r\n      }\r\n    },\r\n    // All dom element class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.classes\", {})\r\n    },\r\n    // All dom element style\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.grid.styles\", {})\r\n    }\r\n  },\r\n  data: function() {\r\n    return {\r\n      // some params use in ui\r\n      v: {\r\n        scrollLeft: 0,\r\n        scrollBarWidth: 0,\r\n        timer: null,\r\n        contentEl: null,\r\n        lastColumnIsAutoWidth: false\r\n      }\r\n    };\r\n  },\r\n  computed: {\r\n    // all selected rows\r\n    selection() {\r\n      return this.rows.filter(row => row.selected === true);\r\n    },\r\n    flattenColumns() {\r\n      return flatten(this.columns);\r\n    },\r\n    subColumns() {\r\n      return this.flattenColumns.filter(c => c.pid);\r\n    },\r\n    headerTableStyle() {\r\n      return concatStyles(this.styles.headerTable, {\r\n        left: this.v.scrollLeft + \"px\",\r\n        width: \"calc(100% - \" + this.v.scrollBarWidth + \"px)\"\r\n      });\r\n    },\r\n    /** DataRow listeners to transfer */\r\n    dataRowListeners() {\r\n      const events = {};\r\n      Object.keys(this.$listeners)\r\n        .filter(key => key.startsWith(\"row-\") || key.startsWith(\"cell-\"))\r\n        .forEach(key => (events[key] = this.$listeners[key]));\r\n\r\n      // deal row-selection-change event\r\n      let old = events[\"row-selection-change\"]; // user define listener\r\n      if (old) {\r\n        events[\"row-selection-change\"] = data => {\r\n          this.selectRow(data.index, data.selected);\r\n          old.call(this, data);\r\n        }\r\n      } else events[\"row-selection-change\"] = data => this.selectRow(data.index, data.selected);\r\n\r\n      return events;\r\n    },\r\n    // [[tableRows], ...], index follow rows\r\n    tableRows() {\r\n      // DataRow OneToMany TableRow\r\n      let all = [];\r\n      let preTableRowCount = 0;\r\n      this.rows.forEach((dataRow, dataRowIndex) => {\r\n        let subTableRows = this.dataRowToTableRow(\r\n          dataRow,\r\n          dataRowIndex,\r\n          preTableRowCount\r\n        );\r\n        all.push(subTableRows);\r\n        preTableRowCount += subTableRows.length;\r\n      });\r\n      return all;\r\n    },\r\n    // Calculate each row's rowspan by Column.pid config\r\n    rowspans() {\r\n      let rowspans = {};\r\n\r\n      // find pid from columns config\r\n      let pids = this.subColumns\r\n        .map(c => c.pid)\r\n        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid\r\n\r\n      // calculate rowspan value\r\n      this.rows.forEach((row, index) => {\r\n        if (typeof row.rowspan === \"number\") {\r\n          // custom rowspan value\r\n          rowspans[index] = row.rowspan;\r\n        } else {\r\n          // auto calculate rowspan value\r\n          let maxSize = Math.max(\r\n            ...pids.map(pid => (row[pid] ? row[pid].length : 1))\r\n          );\r\n          if (maxSize > 1) rowspans[index] = maxSize;\r\n        }\r\n      });\r\n\r\n      return rowspans;\r\n    }\r\n  },\r\n  created() {\r\n    // auto judge the last column width config\r\n    this.v.lastColumnIsAutoWidth = !this.flattenColumns[\r\n      this.flattenColumns.length - 1\r\n    ].width;\r\n  },\r\n  mounted() {\r\n    if (!this.v.lastColumnIsAutoWidth) {\r\n      // watch horizon scrollbar size\r\n      this.v.contentEl = this.$el.querySelector(\".content\"); // cache content el\r\n      this.$_watchHorizonScrollBarSize();\r\n    }\r\n  },\r\n  destroyed() {\r\n    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);\r\n  },\r\n  methods: {\r\n    columnSelectStateChange(selected, index, column) {\r\n      if (index === 0) { // add full selection to the first column\r\n        this.rows.forEach(row => this.$set(row, \"selected\", selected));\r\n      }\r\n      // emit column-select-state-change event\r\n      this.$emit('column-select-state-change', selected, index, column);\r\n    },\r\n    // DataRow OneToMany TableRow\r\n    // TableRow: {index, cells, classes, styles}\r\n    // TableCell: {rowspan, colspan, value, classes, styles}\r\n    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {\r\n      let tableRows = [];\r\n\r\n      // main TableRow\r\n      let nestedIndex = 0;\r\n      tableRows.push({\r\n        tableRowIndex: preTableRowCount,\r\n        dataRowIndex: dataRowIndex,\r\n        index: nestedIndex++,\r\n        row: dataRow,\r\n        classes: this.classes.contentRow,\r\n        styles: this.styles.contentRow,\r\n        selected: dataRow.selected === true,\r\n        cells: this.flattenColumns.map((column, i) => {\r\n          let { empty, value } = getCellConfigInfo(\r\n            dataRow,\r\n            column,\r\n            0,\r\n            dataRowIndex\r\n          );\r\n          let c = { column: column, empty: empty };\r\n          if (!empty) c.value = value;\r\n          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];\r\n          if (rowspan > 1) c.rowspan = rowspan;\r\n          return c;\r\n        })\r\n      });\r\n\r\n      // sub TableRows\r\n      let len = this.rowspans[dataRowIndex] || 1;\r\n      for (let i = 1; i < len; i++) {\r\n        tableRows.push({\r\n          tableRowIndex: preTableRowCount + nestedIndex,\r\n          dataRowIndex: dataRowIndex,\r\n          index: nestedIndex++,\r\n          row: dataRow,\r\n          classes: this.classes.contentRow,\r\n          styles: this.styles.contentRow,\r\n          cells: this.subColumns.map(column => {\r\n            let { empty, value } = getCellConfigInfo(dataRow, column, i);\r\n            let c = { column: column, empty: empty };\r\n            if (!empty) c.value = value;\r\n            return c;\r\n          })\r\n        });\r\n      }\r\n      return tableRows;\r\n    },\r\n    /** DataRow props to transfer */\r\n    dataRowProps(row, index) {\r\n      let props = {\r\n        tableRows: this.tableRows[index]\r\n      };\r\n      return props;\r\n    },\r\n    $_watchHorizonScrollBarSize() {\r\n      let t;\r\n      this.v.timer = g.setInterval(() => {\r\n        t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;\r\n        if (t != this.v.scrollBarWidth) {\r\n          // console.log(\"scrollBarWidth: %s > %s\", this.v.scrollBarWidth, t);\r\n          this.v.scrollBarWidth = t;\r\n        }\r\n      }, 100);\r\n    },\r\n    selectRow(index, selected) {\r\n      let row = this.rows[index];\r\n      if (row) this.$set(row, \"selected\", selected);\r\n    },\r\n    clearSelection() {\r\n      this.selection.forEach(row => this.$set(row, \"selected\", false));\r\n    },\r\n    deleteSelection() {\r\n      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-grid {\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n.st-grid > .content {\r\n  flex: 1 1 0%;\r\n  overflow: auto;\r\n}\r\n.st-grid > .header {\r\n  overflow: hidden;\r\n  position: relative;\r\n  text-align: center;\r\n}\r\n.st-grid > .header > table {\r\n  position: relative;\r\n}\r\n.st-grid > .content > table,\r\n.st-grid > .header > table {\r\n  width: 100%;\r\n  table-layout: fixed;\r\n  border-collapse: collapse;\r\n}\r\n.st-grid > .header > table > thead > tr > td,\r\n.st-grid > .content > table > tbody > tr > td {\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n.st-grid > .header > table > thead > tr,\r\n.st-grid > .content > table > tbody > tr {\r\n  min-height: 2em;\r\n}\r\n.st-grid > .bottom {\r\n  display: flex;\r\n  flex-direction: row;\r\n}\r\n.st-grid > .bottom > * {\r\n  margin: 0.25rem 0 0.25rem 0.25rem;\r\n}\r\n.st-row {\r\n  cursor: default;\r\n}\r\n.st-cell {\r\n  padding: 0.25rem;\r\n}\r\n.st-cell.number {\r\n  text-align: right;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
