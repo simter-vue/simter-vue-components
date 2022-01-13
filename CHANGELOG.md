@@ -1,5 +1,9 @@
 # simter-vue-components changelog
 
+## 0.6.0 2022-01-13
+
+- Grid component add toggle-select-all feature
+
 ## 0.5.1 2021-11-18
 
 - Add requestOptions property for upload component
