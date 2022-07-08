@@ -11,7 +11,9 @@
         :style="styles.cell"
         >
         <input type="checkbox" v-if="cell.selectable" :key="index" @change="$emit('column-select-state-change', $event.target.checked, index, cell)">
-        {{cell.hasOwnProperty("label") ? cell.label : cell}}
+        <!--{{cell.hasOwnProperty("label") ? cell.label : cell}}-->
+        <span v-if="cell.hasOwnProperty('label')" v-html="cell.label"></span>
+        <span v-else v-html="cell"></span>
     </td>
   </tr>
 </thead>

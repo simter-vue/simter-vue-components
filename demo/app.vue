@@ -154,7 +154,7 @@ export default {
           }
         },
         {
-          label: "Partners",
+          label: "Partners<br>br test",
           children: [
             // test global sn
             { label: "GSN", cell: "st-cell-sn", width: "3.5em" },
