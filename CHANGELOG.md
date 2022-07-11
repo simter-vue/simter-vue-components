@@ -1,5 +1,9 @@
 # simter-vue-components changelog
 
+## 1.0.0 2022-07-11
+
+- Display `cell.label` as html
+
 ## 0.6.0 2022-01-13
 
 - Grid component add toggle-select-all feature
