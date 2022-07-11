@@ -1,12 +1,12 @@
 /*!
-* simter-vue-components v0.6.0
+* simter-vue-components v1.0.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
 */
 import Vue from 'vue';
 
-var version = "0.6.0";
+var version = "1.0.0";
 
 const g = window || global;
 /**
@@ -1186,6 +1186,7 @@ __vue_render__$7._withStripped = true;
 //
 //
 //
+//
 const component$1 = {
   replace: true,
   props: {
@@ -1488,11 +1489,10 @@ var __vue_render__$8 = function() {
                     }
                   })
                 : _vm._e(),
-              _vm._v(
-                "\r\n        " +
-                  _vm._s(cell.hasOwnProperty("label") ? cell.label : cell) +
-                  "\r\n    "
-              )
+              _vm._v(" "),
+              cell.hasOwnProperty("label")
+                ? _c("span", { domProps: { innerHTML: _vm._s(cell.label) } })
+                : _c("span", { domProps: { innerHTML: _vm._s(cell) } })
             ]
           )
         }),

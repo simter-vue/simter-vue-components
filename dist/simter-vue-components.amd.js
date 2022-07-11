@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v0.6.0
+* simter-vue-components v1.0.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -8,7 +8,7 @@ define(['vue'], function (Vue) { 'use strict';
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "0.6.0";
+  var version = "1.0.0";
 
   var g = window || global;
   /**
@@ -1244,6 +1244,7 @@ define(['vue'], function (Vue) { 'use strict';
   //
   //
   //
+  //
   var component$1 = {
     replace: true,
     props: {
@@ -1546,11 +1547,10 @@ define(['vue'], function (Vue) { 'use strict';
                       }
                     })
                   : _vm._e(),
-                _vm._v(
-                  "\r\n        " +
-                    _vm._s(cell.hasOwnProperty("label") ? cell.label : cell) +
-                    "\r\n    "
-                )
+                _vm._v(" "),
+                cell.hasOwnProperty("label")
+                  ? _c("span", { domProps: { innerHTML: _vm._s(cell.label) } })
+                  : _c("span", { domProps: { innerHTML: _vm._s(cell) } })
               ]
             )
           }),
