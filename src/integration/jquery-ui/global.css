@@ -104,7 +104,7 @@
   font-size: 0.8em;
 }
 
-.st-search>.search {
+.st-search>.fuzzy-box>.search {
   position: absolute;
   left: 2px;
   padding: 0;
@@ -116,10 +116,29 @@
   background: none;
 }
 
-.st-search>.text {
+.st-search>.fuzzy-box>.advance {
+  position: absolute;
+  right: 2px;
+  padding: 0;
+  top: 50%;
+  margin: -8px 0 0 0;
+  font-size: 0;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.st-search>.fuzzy-box>.text {
   box-sizing: border-box;
   padding: .45em 2px .45em 18px;
   width: 12em;
   font-size: 1em;
   line-height: 1em;
 }
+.st-search>.fuzzy-box>.text:has(+ * + .more) {
+  padding-right: 18px;
+}
+.st-search>.fuzzy-box>.text::-webkit-search-decoration,
+.st-search>.fuzzy-box>.text::-webkit-search-cancel-button,
+.st-search>.fuzzy-box>.text::-webkit-search-results-button,
+.st-search>.fuzzy-box>.text::-webkit-search-results-decoration { display: none; }

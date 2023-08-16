@@ -80,13 +80,33 @@ window.simter = {
     }
   },
   search: {
-    placeholder: "Please input key word",
+    placeholder: "输入关键字",
     searchButtonText: "",
+    advancevButtonText: "",
+    clickToHideAdvanceButtonText: "点击隐藏高级搜索",
+    clickToShowAdvanceButtonText: "点击显示高级搜索",
     classes: {
+      value: "ui-widget-content",
       text: "ui-widget-content",
       search: {
         icon: "ui-icon ui-icon-search"
+      },
+      advance: {
+        downIcon: "ui-icon ui-icon-triangle-1-s",
+        upIcon: "ui-icon ui-icon-triangle-1-n"
+      },
+      advanceBox: "ui-widget-content ui-state-highlight",
+      operations: {
+        class: "ui-widget-content",
+        runIcon: "ui-icon ui-icon-search",
+        cleanIcon: "ui-icon ui-icon-minus",
+        closeIcon: "ui-icon ui-icon-closethick"
       }
+    },
+    operations: {
+      runButtonText: "查询",
+      cleanButtonText: "清空",
+      closeButtonText: "关闭"
     }
   },
   loader: {

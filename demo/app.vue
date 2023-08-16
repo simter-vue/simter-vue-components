@@ -40,7 +40,7 @@
           <st-button @click="showSelection">Show</st-button>
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
           <template #right>
-            <st-search :value.sync="fuzzyValue" @search="doSearch" @change="doSearchChange"></st-search>
+            <st-search v-model="fuzzyValue" @search="doSearch" :advanceConfig="advanceConfig"></st-search>
           </template>
         </st-toolbar>
       </template>
@@ -214,7 +214,30 @@ export default {
           partners: [{ name: "P 51" }, { name: "P 52" }, { name: "P 53" }],
           commiters: [{ id: "c51", name: "C 51" }, { id: "c52", name: "C 52" }]
         }
-      ]
+      ],
+      advanceConfig: {
+        maxHeight: "25em",
+        // width: "18em",
+        conditions: [
+          { id: "c0", label: "string value =", value: "test"},
+          { id: "c1", label: "number >", operator: ">", type: "int", ui: "number", step: 10, min: -50, max:50},
+          { id: "c2", label: "single select =", tag: "select", options: [{text: "S1", value: "sv1"}, {text: "S2", value: "sv2"}]},
+          { id: "c3", label: "multiple select in", tag: "select", operator: "in", options: [
+            {text: "S1", value: "sv1"}, {text: "S2", value: "sv2"}, {text: "S3", value: "sv3"}
+          ], style: "height:4em"},
+          { id: "c4", label: "datetime =", type: "datetime", ui: "datetime-local"},
+          { id: "c5", label: "month =", type: "month", ui: "month"},
+          { id: "c6", label: "date =", type: "date", ui: "date"},
+          { id: "c7", label: "time =", type: "time", ui: "time"},
+          { id: "c8", label: "radio =", ui: "radio", options: ["R1", "R2", "R3"]},
+          { id: "c9", label: "single checkbox =", ui: "checkbox", options: {text: "C1", value: "cv1"}},
+          { id: "c10", label: "multiple checkbox in", operator: "in", ui: "checkbox", options: [
+            {text: "C1", value: "cv1"}, {text: "C2", value: "cv2"}, {text: "C3", value: "cv3"}
+          ]},
+          { id: "c98", label: "number range [)", operator: "[)", type: "number", ui: "number"},
+          { id: "c99", label: "date range []", operator: "[]", type: "date", ui: "date"},
+        ]
+      }
     };
   },
   computed: {
@@ -236,8 +259,11 @@ export default {
         this.status
       );
     },
-    doSearch(value) {
-      console.log("doSearch: value=%s, fuzzy=%s", value, this.fuzzyValue);
+    doSearch(fuzzyValue, advanceValue, mixValue) {
+      console.log("doSearch: origin fuzzyValue=%s", this.fuzzyValue);
+      console.log("  [0]fuzzyValue=%s", fuzzyValue);
+      console.log("  [1]advanceValue=%s", JSON.stringify(advanceValue));
+      console.log("  [2]mixValue=%s", JSON.stringify(mixValue));
     },
     doSearchChange(value) {
       console.log("doChange: value=%s, fuzzy=%s", value, this.fuzzyValue);
