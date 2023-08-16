@@ -1,14 +1,15 @@
 /*!
-* simter-vue-components v1.0.0
+* simter-vue-components v1.1.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
 */
 import Vue from 'vue';
 
-var version = "1.0.0";
+var version = "1.1.0";
 
 const g = window || global;
+
 /**
  * Flatten all leaf object to simple object array.
  *
@@ -23,34 +24,29 @@ const g = window || global;
  *    flatten to
  *    [{id: 1}, {id: 2}, {id: 3}, {id: 4}]
  */
-
 function flatten(columns) {
   return columns.reduce((a, b) => a.concat(b.children ? flatten(b.children) : b), []);
 }
+
 /** Get global key's value */
-
-
 function getGlobalVariable(key, defaultValue) {
   if (g.hasOwnProperty(key)) return g[key];
   let p = g,
-      value;
-
+    value;
   for (const k of key.split(".")) {
     if (p.hasOwnProperty(k)) value = p = p[k];else {
       value = undefined;
       break;
     }
   }
-
   return typeof value === "undefined" ? defaultValue : value;
 }
+
 /** 
  * concat all class.
  * 
  * each class is String, Array or undefined.
  */
-
-
 function concatClasses(...classes) {
   return classes.reduce((a, b) => {
     if (typeof b === "undefined") return a;else {
@@ -59,41 +55,39 @@ function concatClasses(...classes) {
     }
   }, []);
 }
+
 /** 
  * concat all style.
  * 
  * each style is Json-Object or undefined.
  */
-
-
 function concatStyles(...styles) {
   return styles.reduce((a, b) => {
     if (typeof b === "undefined") return a;else return Object.assign(a, b);
   }, {});
 }
+
 /**
  * Get the file extension.
  * 
  * @param {String} filename the file name with extension, sucs as 'my.png'.
  * @returns the extension, such as 'png'
  */
-
-
 function getFileExtension(filename) {
   let i = filename.lastIndexOf(".");
   if (i !== -1) return filename.substring(i + 1);else return '';
 }
+
 /**
  * Format the byte size to a human reading size.
  * 
  * @param {Number} size the byte size
  * @returns human reading size, such as '2 KB'
  */
-
-
 function getPrettySize(size) {
   if (size < 1024) return `${size} B`;else if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;else if (size < 1024 * 1024 * 1024) return `${Math.round(size / 1024 / 1024)} MB`;else return `${Math.round(size / 1024 / 1024 / 1024)} GB`;
 }
+
 /**
  * Upload one file.
  *  
@@ -103,16 +97,14 @@ function getPrettySize(size) {
  * @options {Array} headers - external headers to send
  * @returns {Promise}
  */
-
-
 function uploadOneFile(options) {
   return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest(); // upload progress
-    // don't use `xhr.addEventListener("progress", function (e) {...})`
+    let xhr = new XMLHttpRequest();
 
+    // upload progress
+    // don't use `xhr.addEventListener("progress", function (e) {...})`
     xhr.upload.addEventListener("progress", function (e) {
       let percent = Math.round(e.loaded / e.total * 100); // 0~100
-
       if (options.progress) options.progress.call(this, {
         index: options.index,
         dir: options.dir,
@@ -120,42 +112,44 @@ function uploadOneFile(options) {
         size: options.file.size,
         percent: percent
       });
-    }); // cancel upload
+    });
 
+    // cancel upload
     xhr.addEventListener("abort", function (e) {
       reject(e);
-    }); // upload finished
+    });
 
+    // upload finished
     xhr.addEventListener("load", function (e) {
       let contentType = xhr.getResponseHeader('Content-Type');
       let result;
-
       if (contentType) {
         contentType = contentType.toLowerCase();
         if (contentType.indexOf('application/json') !== -1) {
             // json
             if (xhr.responseText) result = JSON.parse(xhr.responseText);else result = null;
-        } else if (contentType.startsWith('text/')) // text/plain、text/html
-          result = xhr.responseText;else // default text
+        } else if (contentType.startsWith('text/'))
+          // text/plain、text/html
+          result = xhr.responseText;else
+          // default text
           result = xhr.responseText;
       } else result = xhr.responseText; // default text
 
-
       if (xhr.readyState === 4) resolve(result);else reject(result);
-    }); // upload error
+    });
 
+    // upload error
     xhr.addEventListener("error", function (e) {
       reject(e);
-    }); // start upload
+    });
 
+    // start upload
     xhr.open(options.method || "POST", options.url);
-
     if (options.headers) {
       options.headers.forEach(h => xhr.setRequestHeader(h.name, h.value));
     } else {
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
     }
-
     xhr.send(options.file);
   });
 }
@@ -231,10 +225,10 @@ var script = {
     const max = 60;
     this.timer = setInterval(() => {
       // show timer if timeout
-      if (++this.totalSeconds >= this.timeout && !this.showTimer) this.showTimer = true; // calculate timer's minutes and seconds
+      if (++this.totalSeconds >= this.timeout && !this.showTimer) this.showTimer = true;
 
+      // calculate timer's minutes and seconds
       this.seconds++;
-
       if (this.seconds == max) {
         this.seconds = 0;
         this.minutes++;
@@ -451,16 +445,20 @@ __vue_render__._withStripped = true;
   const __vue_is_functional_template__ = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stLoader = normalizeComponent_1(
+  const __vue_component__ = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
     __vue_inject_styles__,
     __vue_script__,
     __vue_scope_id__,
     __vue_is_functional_template__,
     __vue_module_identifier__,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -484,21 +482,17 @@ var cellBase = {
     classes: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
     },
     // All dom element style
     styles: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
     }
   },
   computed: {
@@ -506,22 +500,18 @@ var cellBase = {
     row() {
       return this.$parent.dataRowValue;
     },
-
     // TableRow.index
     index() {
       return this.$parent.index;
     },
-
     // TableRow.tableRowIndex
     tableRowIndex() {
       return this.$parent.tableRowIndex;
     },
-
     // TableRow.dataRowIndex
     dataRowIndex() {
       return this.$parent.dataRowIndex;
     }
-
   }
 };
 
@@ -532,10 +522,8 @@ var script$1 = {
     content() {
       let t = this.empty ? "" : this.column && this.column.pid ? this.index // nested index
       : this.dataRowIndex; // dataRow index
-
       return t;
     }
-
   }
 };
 
@@ -566,15 +554,19 @@ __vue_render__$1._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellIndex = normalizeComponent_1(
+  const __vue_component__$1 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
     __vue_inject_styles__$1,
     __vue_script__$1,
     __vue_scope_id__$1,
     __vue_is_functional_template__$1,
     __vue_module_identifier__$1,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -611,15 +603,19 @@ __vue_render__$2._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellSn = normalizeComponent_1(
+  const __vue_component__$2 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
     __vue_inject_styles__$2,
     __vue_script__$2,
     __vue_scope_id__$2,
     __vue_is_functional_template__$2,
     __vue_module_identifier__$2,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -632,7 +628,6 @@ var script$3 = {
       return this.empty ? "" : this.column && this.column.pid ? this.index + 1 // nested sn
       : (this.$parent.selected ? "✓" : "") + (this.dataRowIndex + 1); // dataRow sn
     }
-
   }
 };
 
@@ -663,15 +658,19 @@ __vue_render__$3._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellSnSelectable = normalizeComponent_1(
+  const __vue_component__$3 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
     __vue_inject_styles__$3,
     __vue_script__$3,
     __vue_scope_id__$3,
     __vue_is_functional_template__$3,
     __vue_module_identifier__$3,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -708,15 +707,19 @@ __vue_render__$4._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellText = normalizeComponent_1(
+  const __vue_component__$4 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
     __vue_inject_styles__$4,
     __vue_script__$4,
     __vue_scope_id__$4,
     __vue_is_functional_template__$4,
     __vue_module_identifier__$4,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -755,15 +758,19 @@ __vue_render__$5._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stCellHtml = normalizeComponent_1(
+  const __vue_component__$5 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
     __vue_inject_styles__$5,
     __vue_script__$5,
     __vue_scope_id__$5,
     __vue_is_functional_template__$5,
     __vue_module_identifier__$5,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -773,11 +780,11 @@ const DEFAULT_CELL_COMPONENT = "st-cell-text";
 var script$6 = {
   // register all inner cell components
   components: {
-    stCellIndex,
-    stCellSn,
-    stCellSnSelectable,
-    stCellText,
-    stCellHtml
+    stCellIndex: __vue_component__$1,
+    stCellSn: __vue_component__$2,
+    stCellSnSelectable: __vue_component__$3,
+    stCellText: __vue_component__$4,
+    stCellHtml: __vue_component__$5
   },
   props: {
     // DataRow.value
@@ -813,24 +820,19 @@ var script$6 = {
     classes: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
     },
     // All dom element style
     styles: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
     }
   },
-
   data() {
     return {
       v: {
@@ -839,19 +841,23 @@ var script$6 = {
       }
     };
   },
-
   computed: {
     rowClass() {
-      return concatClasses("st-row", // always
-      this.classes.row, // custom
-      this.v.hover ? this.classes.rowHover || "hover" : undefined, // custom or default
+      return concatClasses("st-row",
+      // always
+      this.classes.row,
+      // custom
+      this.v.hover ? this.classes.rowHover || "hover" : undefined,
+      // custom or default
       this.selected ? this.classes.rowSelected || "selected" : undefined // custom or default
       );
     },
 
     rowStyle() {
-      return concatStyles(this.styles.row, // custom
-      this.v.hover ? this.styles.rowHover : undefined, // custom or default
+      return concatStyles(this.styles.row,
+      // custom
+      this.v.hover ? this.styles.rowHover : undefined,
+      // custom or default
       this.selected ? this.styles.rowSelected : undefined // custom or default
       );
     },
@@ -876,7 +882,6 @@ var script$6 = {
           component: DEFAULT_CELL_COMPONENT
         };
       };
-
       return this.cells.map(cell => {
         if (!cell.column) return {
           component: DEFAULT_CELL_COMPONENT
@@ -884,12 +889,13 @@ var script$6 = {
         return toStandardCell(cell, cell.column.cell);
       });
     }
-
   },
   methods: {
     cellClass(cell) {
-      return concatClasses("st-cell", // always
-      this.classes.cell, // define in Grid.classes.contentRow
+      return concatClasses("st-cell",
+      // always
+      this.classes.cell,
+      // define in Grid.classes.contentRow
       cell.column && cell.column.class || "text" // define in Grid.columns[index].class
       );
     },
@@ -897,7 +903,6 @@ var script$6 = {
     cellStyle(cell) {
       return concatStyles(this.styles.cell, cell.column && cell.column.style);
     },
-
     cellComponentProps(cell, index) {
       // { empty, column, value, classes, styles }
       let t = this.columnCellRefactors[index];
@@ -910,33 +915,31 @@ var script$6 = {
       if (t.styles) main.styles = t.styles;
       return main;
     },
-
     clickRow(targetEl) {
       // delay click event for dblclick event to clear it
       if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
       this.v.clickTimer = g.setTimeout(() => {
         // find cell
         let td = targetEl.closest("td");
-
         if (!td) {
           alert("This browser not support Element.closest method");
           return;
         }
-
         let cell = this.cells[td.cellIndex];
-
         if (!cell) {
           alert("Error to find cell config");
           return;
-        } // 1. do actual work for click
+        }
+
+        // 1. do actual work for click
+
         // 1.1. emit row-selection-change event
-
-
         this.$emit("row-selection-change", {
           selected: !this.selected,
           index: this.dataRowIndex
-        }); // 1.2. invoke column.cell.on.click function
+        });
 
+        // 1.2. invoke column.cell.on.click function
         let t = this.columnCellRefactors[td.cellIndex];
         if (typeof t.click === "function") t.click.call(this.$root, {
           target: targetEl,
@@ -945,8 +948,9 @@ var script$6 = {
           nestedRowIndex: this.index,
           tableRowIndex: this.tableRowIndex,
           dataRowIndex: this.dataRowIndex
-        }); // 1.3. emit row-click event
+        });
 
+        // 1.3. emit row-click event
         this.$emit("row-click", {
           row: this.row,
           index: this.dataRowIndex,
@@ -954,23 +958,24 @@ var script$6 = {
         });
       }, 300);
     },
-
     dblclickRow() {
       // clear click event
-      if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer); // 1. do actual work for dblclick
-      // 1.1. emit row-selection-change event
+      if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
 
+      // 1. do actual work for dblclick
+
+      // 1.1. emit row-selection-change event
       if (!this.selected) this.$emit("row-selection-change", {
         selected: this.selected,
         index: this.dataRowIndex
-      }); // 1.2. emit row-dblclick event
+      });
 
+      // 1.2. emit row-dblclick event
       this.$emit("row-dblclick", {
         row: this.row,
         index: this.dataRowIndex
       });
     }
-
   }
 };
 
@@ -1001,7 +1006,7 @@ var __vue_render__$6 = function() {
         dblclick: function($event) {
           $event.stopPropagation();
           $event.preventDefault();
-          return _vm.dblclickRow($event)
+          return _vm.dblclickRow.apply(null, arguments)
         }
       }
     },
@@ -1050,15 +1055,19 @@ __vue_render__$6._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stTableRow = normalizeComponent_1(
+  const __vue_component__$6 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
     __vue_inject_styles__$6,
     __vue_script__$6,
     __vue_scope_id__$6,
     __vue_is_functional_template__$6,
     __vue_module_identifier__$6,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -1072,16 +1081,14 @@ var stDataRow = {
       type: Array
     }
   },
-
   render(createElement, context) {
     return context.props.tableRows.map(tableRow => {
-      return createElement(stTableRow, {
+      return createElement(__vue_component__$6, {
         props: tableRow,
         on: context.listeners
       });
     });
   }
-
 };
 
 //
@@ -1090,6 +1097,7 @@ var stDataRow = {
 //
 //
 //
+
 const component = {
   replace: true,
   props: {
@@ -1106,9 +1114,9 @@ const component = {
     widthArray() {
       return flatten$1(this.columns);
     }
-
   }
 };
+
 /**
  * Flatten complex object array to simple string array.
  *
@@ -1120,7 +1128,6 @@ const component = {
  * 3. [{width: '20px'}, {children: [{width: '40px'}, {width: '60px'}]}, ...]
  *    flatten to ['20px', '40px', '60px', ...]
  */
-
 const flatten$1 = columns => columns.reduce((a, b) => a.concat(b.children ? flatten$1(b.children) : b.width || b), []).map(a => typeof a === "object" ? a.width : a);
 
 /* script */
@@ -1154,15 +1161,19 @@ __vue_render__$7._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stColgroup = normalizeComponent_1(
+  const __vue_component__$7 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
     __vue_inject_styles__$7,
     __vue_script__$7,
     __vue_scope_id__$7,
     __vue_is_functional_template__$7,
     __vue_module_identifier__$7,
+    false,
+    undefined,
     undefined,
     undefined
   );
@@ -1187,6 +1198,7 @@ __vue_render__$7._withStripped = true;
 //
 //
 //
+
 const component$1 = {
   replace: true,
   props: {
@@ -1199,21 +1211,17 @@ const component$1 = {
     classes: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
     },
     // element style: { row, cell }
     styles: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
     }
   },
   computed: {
@@ -1223,9 +1231,9 @@ const component$1 = {
     rows() {
       return transform(deepClone(this.columns));
     }
-
   }
 };
+
 /**
  * Transform the origin string or lable/children config to matched trs array config.
  *
@@ -1261,22 +1269,24 @@ const component$1 = {
  *      [{label: "X211"}, {label: "X212"}]
  *    ]
  */
-
 function transform(columns) {
   // Polishing String item to Object item
   columns = polishing(columns);
   columns.forEach(column => {
     // set $_rowIndex and $_depth
-    descendantDepth(column); // set colspan
+    descendantDepth(column);
 
+    // set colspan
     leafCount(column);
-  }); // group by $_rowIndex
+  });
 
+  // group by $_rowIndex
   const rows = flattenWithSelf(columns, true).reduce(function (result, column) {
     if (!result[column.$_rowIndex]) result[column.$_rowIndex] = [column];else result[column.$_rowIndex].push(column);
     return result;
-  }, []); // calculate each column's rowspan
+  }, []);
 
+  // calculate each column's rowspan
   rows.forEach(row => {
     row.forEach(column => {
       if (column.$_depth === 0) {
@@ -1286,8 +1296,9 @@ function transform(columns) {
         if (depth > 0) column.rowspan = depth + 1;
       }
     });
-  }); // remove $_rowIndex and $_depth
+  });
 
+  // remove $_rowIndex and $_depth
   rows.forEach(row => {
     row.forEach(column => {
       delete column.$_rowIndex;
@@ -1296,6 +1307,7 @@ function transform(columns) {
   });
   return rows;
 }
+
 /**
  * Change Array's String item to Object item.
  * All nested item in children will be changed also.
@@ -1306,22 +1318,19 @@ function transform(columns) {
  * 2. {"X1", children: ["X11", "X12"] polishing to
  *    {label: "X1", children: [{label: "X11"}, {label: "X12"}] }.
  */
-
-
 function polishing(columns) {
   // Polishing String item to Object item
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-
     if (typeof column === "object") {
       if (column.children) column.children = polishing(column.children);
     } else columns[i] = {
       label: column
     };
   }
-
   return columns;
 }
+
 /**
  * Calculate the descendant depth and set to $_depth property.
  *
@@ -1332,26 +1341,22 @@ function polishing(columns) {
  * 2. {label: "X0", children: ["X1"]}.depth = 1
  * 3. {label: "X0", children: [{label: "X1", children: ["X2"]}]}.depth = 2
  */
-
-
 function descendantDepth(column) {
   if (!column.hasOwnProperty("$_rowIndex")) column.$_rowIndex = 0; // parent $_rowIndex
 
   let d;
-
   if (column.children && column.children.length > 0) {
     d = 0;
     column.children.forEach(child => {
       child.$_rowIndex = column.$_rowIndex + 1; // child $_rowIndex
-
       d = Math.max(d, descendantDepth(child));
     });
     d++; // = maxChildDepth + 1
   } else d = 0;
-
   column.$_depth = d;
   return d;
 }
+
 /**
  * Calculate the leaf node count and set to colspan property.
  * If the node has no children, the leaf count equals to 1.
@@ -1365,21 +1370,18 @@ function descendantDepth(column) {
  *      { label: "X12", children: [{label: "X121"}, {label: "X122"}]}
  *    ]}.colspan = 3
  */
-
-
 function leafCount(column) {
   let count;
-
   if (column.children && column.children.length > 0) {
     count = 0;
     column.children.forEach(child => {
       count += leafCount(child);
     });
   } else count = 1;
-
   if (count > 1) column.colspan = count;
   return count;
 }
+
 /**
  * Flatten the array items with itself and its children items.
  *
@@ -1389,8 +1391,6 @@ function leafCount(column) {
  * 1. ["a", "b"] flatten to ["a", "b"]
  * 2. ["a", {children: ["b", "c"]}] flatten to ["a", {children: ["b", "c"]}, "b", "c"]
  */
-
-
 function flattenWithSelf(columns, removeChildren = true) {
   let result = columns.reduce((a, b) => {
     if (b.children) {
@@ -1402,46 +1402,42 @@ function flattenWithSelf(columns, removeChildren = true) {
   });
   return result;
 }
+
 /**
  * Deep copy a object.
  *
  * From https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object#answer-728694
  */
-
-
 function deepClone(obj) {
-  let copy; // Handle the 3 simple types, and null or undefined
+  let copy;
 
-  if (null == obj || "object" !== typeof obj) return obj; // Handle Date
+  // Handle the 3 simple types, and null or undefined
+  if (null == obj || "object" !== typeof obj) return obj;
 
+  // Handle Date
   if (obj instanceof Date) {
     copy = new Date();
     copy.setTime(obj.getTime());
     return copy;
-  } // Handle Array
+  }
 
-
+  // Handle Array
   if (obj instanceof Array) {
     copy = [];
-
     for (let i = 0, len = obj.length; i < len; i++) {
       copy[i] = deepClone(obj[i]);
     }
-
-    return copy;
-  } // Handle Object
-
-
-  if (obj instanceof Object) {
-    copy = {};
-
-    for (let attr in obj) {
-      if (obj.hasOwnProperty(attr)) copy[attr] = deepClone(obj[attr]);
-    }
-
     return copy;
   }
 
+  // Handle Object
+  if (obj instanceof Object) {
+    copy = {};
+    for (let attr in obj) {
+      if (obj.hasOwnProperty(attr)) copy[attr] = deepClone(obj[attr]);
+    }
+    return copy;
+  }
   throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
@@ -1517,20 +1513,25 @@ __vue_render__$8._withStripped = true;
   
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stThead = normalizeComponent_1(
+  const __vue_component__$8 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
     __vue_inject_styles__$8,
     __vue_script__$8,
     __vue_scope_id__$8,
     __vue_is_functional_template__$8,
     __vue_module_identifier__$8,
+    false,
+    undefined,
     undefined,
     undefined
   );
 
 //
+
 /**
  * { empty, value }.
  *
@@ -1541,16 +1542,15 @@ __vue_render__$8._withStripped = true;
  *      if row[column.pid].length <= subRowIndex.
  * Otherwise return `{ empty: false, value: row[column.id] }`.
  */
-
 function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
   return column.pid ? row[column.pid] && row[column.pid].length > subRowIndex ? {
     empty: false,
-    value: row[column.pid][subRowIndex][column.id] // nested cell
-
-  } : {
-    empty: true // empty cell
-
-  } : {
+    value: row[column.pid][subRowIndex][column.id]
+  } // nested cell
+  : {
+    empty: true
+  } // empty cell
+  : {
     empty: false,
     value: row[column.id]
   }; // top cell
@@ -1558,8 +1558,8 @@ function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
 
 var script$7 = {
   components: {
-    stColgroup,
-    stThead,
+    stColgroup: __vue_component__$7,
+    stThead: __vue_component__$8,
     stDataRow
   },
   props: {
@@ -1570,11 +1570,9 @@ var script$7 = {
     rows: {
       type: Array,
       required: false,
-
       default() {
         return [];
       }
-
     },
     // All dom element class
     classes: {
@@ -1606,39 +1604,33 @@ var script$7 = {
     selection() {
       return this.rows.filter(row => row.selected === true);
     },
-
     flattenColumns() {
       return flatten(this.columns);
     },
-
     subColumns() {
       return this.flattenColumns.filter(c => c.pid);
     },
-
     headerTableStyle() {
       return concatStyles(this.styles.headerTable, {
         left: this.v.scrollLeft + "px",
         width: "calc(100% - " + this.v.scrollBarWidth + "px)"
       });
     },
-
     /** DataRow listeners to transfer */
     dataRowListeners() {
       const events = {};
-      Object.keys(this.$listeners).filter(key => key.startsWith("row-") || key.startsWith("cell-")).forEach(key => events[key] = this.$listeners[key]); // deal row-selection-change event
+      Object.keys(this.$listeners).filter(key => key.startsWith("row-") || key.startsWith("cell-")).forEach(key => events[key] = this.$listeners[key]);
 
+      // deal row-selection-change event
       let old = events["row-selection-change"]; // user define listener
-
       if (old) {
         events["row-selection-change"] = data => {
           this.selectRow(data.index, data.selected);
           old.call(this, data);
         };
       } else events["row-selection-change"] = data => this.selectRow(data.index, data.selected);
-
       return events;
     },
-
     // [[tableRows], ...], index follow rows
     tableRows() {
       // DataRow OneToMany TableRow
@@ -1651,14 +1643,14 @@ var script$7 = {
       });
       return all;
     },
-
     // Calculate each row's rowspan by Column.pid config
     rowspans() {
-      let rowspans = {}; // find pid from columns config
+      let rowspans = {};
 
+      // find pid from columns config
       let pids = this.subColumns.map(c => c.pid).filter((v, i, a) => a.indexOf(v) === i); // distinct pid
-      // calculate rowspan value
 
+      // calculate rowspan value
       this.rows.forEach((row, index) => {
         if (typeof row.rowspan === "number") {
           // custom rowspan value
@@ -1671,44 +1663,37 @@ var script$7 = {
       });
       return rowspans;
     }
-
   },
-
   created() {
     // auto judge the last column width config
     this.v.lastColumnIsAutoWidth = !this.flattenColumns[this.flattenColumns.length - 1].width;
   },
-
   mounted() {
     if (!this.v.lastColumnIsAutoWidth) {
       // watch horizon scrollbar size
       this.v.contentEl = this.$el.querySelector(".content"); // cache content el
-
       this.$_watchHorizonScrollBarSize();
     }
   },
-
   destroyed() {
     if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);
   },
-
   methods: {
     columnSelectStateChange(selected, index, column) {
       if (index === 0) {
         // add full selection to the first column
         this.rows.forEach(row => this.$set(row, "selected", selected));
-      } // emit column-select-state-change event
-
-
+      }
+      // emit column-select-state-change event
       this.$emit('column-select-state-change', selected, index, column);
     },
-
     // DataRow OneToMany TableRow
     // TableRow: {index, cells, classes, styles}
     // TableCell: {rowspan, colspan, value, classes, styles}
     dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {
-      let tableRows = []; // main TableRow
+      let tableRows = [];
 
+      // main TableRow
       let nestedIndex = 0;
       tableRows.push({
         tableRowIndex: preTableRowCount,
@@ -1732,10 +1717,10 @@ var script$7 = {
           if (rowspan > 1) c.rowspan = rowspan;
           return c;
         })
-      }); // sub TableRows
+      });
 
+      // sub TableRows
       let len = this.rowspans[dataRowIndex] || 1;
-
       for (let i = 1; i < len; i++) {
         tableRows.push({
           tableRowIndex: preTableRowCount + nestedIndex,
@@ -1758,10 +1743,8 @@ var script$7 = {
           })
         });
       }
-
       return tableRows;
     },
-
     /** DataRow props to transfer */
     dataRowProps(row, index) {
       let props = {
@@ -1769,32 +1752,26 @@ var script$7 = {
       };
       return props;
     },
-
     $_watchHorizonScrollBarSize() {
       let t;
       this.v.timer = g.setInterval(() => {
         t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;
-
         if (t != this.v.scrollBarWidth) {
           // console.log("scrollBarWidth: %s > %s", this.v.scrollBarWidth, t);
           this.v.scrollBarWidth = t;
         }
       }, 100);
     },
-
     selectRow(index, selected) {
       let row = this.rows[index];
       if (row) this.$set(row, "selected", selected);
     },
-
     clearSelection() {
       this.selection.forEach(row => this.$set(row, "selected", false));
     },
-
     deleteSelection() {
       this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));
     }
-
   }
 };
 
@@ -1899,16 +1876,20 @@ __vue_render__$9._withStripped = true;
   const __vue_is_functional_template__$9 = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stGrid = normalizeComponent_1(
+  const __vue_component__$9 = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
     __vue_inject_styles__$9,
     __vue_script__$9,
     __vue_scope_id__$9,
     __vue_is_functional_template__$9,
     __vue_module_identifier__$9,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -1948,7 +1929,6 @@ var script$8 = {
       default: () => getGlobalVariable("simter.button.styles", {})
     }
   },
-
   data() {
     return {
       ui: {
@@ -1957,18 +1937,14 @@ var script$8 = {
       }
     };
   },
-
   computed: {
     rootClass() {
       return concatClasses("st-button", this.classes.root, this.ui.hover ? this.classes.hover || "hover" : undefined, this.ui.selected ? this.classes.selected || "selected" : undefined);
     },
-
     rootStyle() {
       return concatStyles(this.styles.root, this.ui.hover ? this.styles.hover : undefined, this.selectable && this.ui.selected ? this.styles.selected : undefined);
     }
-
   },
-
   created() {
     if (this.selectable) {
       this.$watch("selected", (newVal, _) => {
@@ -1978,17 +1954,14 @@ var script$8 = {
       });
     }
   },
-
   methods: {
     clickMe($event) {
       if (this.selectable && this.ui.selected !== true) {
         this.ui.selected = true;
         this.$emit("update:selected", true);
       }
-
       this.$emit("click", $event);
     }
-
   }
 };
 
@@ -2049,23 +2022,27 @@ __vue_render__$a._withStripped = true;
   const __vue_is_functional_template__$a = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stButton = normalizeComponent_1(
+  const __vue_component__$a = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
     __vue_inject_styles__$a,
     __vue_script__$a,
     __vue_scope_id__$a,
     __vue_is_functional_template__$a,
     __vue_module_identifier__$a,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
 var script$9 = {
   components: {
-    stButton
+    stButton: __vue_component__$a
   },
   props: {
     text: {
@@ -2078,21 +2055,18 @@ var script$9 = {
         last: "Last"
       })
     },
-
     /** The current 1-base page number */
     pageNo: {
       type: Number,
       required: false,
       default: 0
     },
-
     /** The maximal elements count of one page */
     pageSize: {
       type: Number,
       required: false,
       default: () => getGlobalVariable("simter.pagebar.pageSize", 25)
     },
-
     /** The total elements count */
     total: {
       type: Number,
@@ -2115,9 +2089,7 @@ var script$9 = {
     pageCount() {
       return Math.ceil(this.total / this.pageSize);
     }
-
   },
-
   data() {
     return {
       v: {
@@ -2125,15 +2097,12 @@ var script$9 = {
       }
     };
   },
-
   watch: {
     pageNo: {
       immediate: true,
-
       handler(value) {
         if (value !== this.v.pageNo) this.v.pageNo = value;
       }
-
     }
   },
   methods: {
@@ -2144,7 +2113,6 @@ var script$9 = {
         this.$emit("change", pageNo);
       }
     }
-
   }
 };
 
@@ -2257,23 +2225,27 @@ __vue_render__$b._withStripped = true;
   const __vue_is_functional_template__$b = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stPagebar = normalizeComponent_1(
+  const __vue_component__$b = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
     __vue_inject_styles__$b,
     __vue_script__$b,
     __vue_scope_id__$b,
     __vue_is_functional_template__$b,
     __vue_module_identifier__$b,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
 var script$a = {
   components: {
-    stButton
+    stButton: __vue_component__$a
   },
   props: {
     rootClass: {
@@ -2281,13 +2253,11 @@ var script$a = {
       required: false,
       default: "st-button-group"
     },
-
     /** buttons: [String|{text, value, ...}] */
     items: {
       type: Array,
       required: true
     },
-
     /** current value */
     value: {
       required: false
@@ -2308,7 +2278,6 @@ var script$a = {
       default: () => getGlobalVariable("simter.buttonGroup.styles", {})
     }
   },
-
   data() {
     return {
       v: {
@@ -2316,15 +2285,12 @@ var script$a = {
       }
     };
   },
-
   watch: {
     value: {
       immediate: true,
-
       handler(value) {
         if (value !== this.v.value) this.v.value = value;
       }
-
     }
   },
   methods: {
@@ -2332,12 +2298,10 @@ var script$a = {
     itemClass(item, index) {
       return concatClasses(item == this.v.value ? this.classes.selected : undefined, index === 0 ? this.classes.first : undefined, index === this.items.length - 1 ? this.classes.last : undefined);
     },
-
     /** auto judge whether to add first, last or selected style to the relative button */
     itemStyle(item, index) {
       return concatStyles(item == this.v.value ? this.styles.selected : undefined, index === 0 ? this.styles.first : undefined, index === this.items.length - 1 ? this.styles.last : undefined);
     },
-
     clickItem(item, index) {
       if (this.v.value !== item) {
         this.v.value = item;
@@ -2345,7 +2309,6 @@ var script$a = {
         this.$emit("change", item, index);
       }
     }
-
   }
 };
 
@@ -2412,16 +2375,20 @@ __vue_render__$c._withStripped = true;
   const __vue_is_functional_template__$c = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stButtonGroup = normalizeComponent_1(
+  const __vue_component__$c = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
     __vue_inject_styles__$c,
     __vue_script__$c,
     __vue_scope_id__$c,
     __vue_is_functional_template__$c,
     __vue_module_identifier__$c,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -2429,7 +2396,7 @@ __vue_render__$c._withStripped = true;
  * Events: change(newValue, newIndex)
  */
 var script$b = {
-  extends: stButtonGroup,
+  extends: __vue_component__$c,
   props: {
     rootClass: {
       type: String,
@@ -2480,16 +2447,20 @@ const __vue_script__$d = script$b;
   const __vue_is_functional_template__$d = undefined;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stPagebarSizes = normalizeComponent_1(
+  const __vue_component__$d = /*#__PURE__*/normalizeComponent_1(
     {},
     __vue_inject_styles__$d,
     __vue_script__$d,
     __vue_scope_id__$d,
     __vue_is_functional_template__$d,
     __vue_module_identifier__$d,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -2552,37 +2523,77 @@ __vue_render__$d._withStripped = true;
   const __vue_is_functional_template__$e = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stToolbar = normalizeComponent_1(
+  const __vue_component__$e = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
     __vue_inject_styles__$e,
     __vue_script__$e,
     __vue_scope_id__$e,
     __vue_is_functional_template__$e,
     __vue_module_identifier__$e,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
 var script$d = {
   components: {
-    stButton
+    stButton: __vue_component__$a
   },
   props: {
+    quick: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     placeholder: {
       type: String,
       required: false,
-      default: () => getGlobalVariable("simter.search.placeholder")
+      default: () => getGlobalVariable("simter.search.placeholder", "Please input key word")
     },
     value: {
+      type: String,
       required: false
     },
     searchButtonText: {
       type: String,
       required: false,
       default: () => getGlobalVariable("simter.search.searchButtonText", "Go")
+    },
+    advanceButtonText: {
+      type: String,
+      required: false,
+      default: () => getGlobalVariable("simter.search.advanceButtonText", "More")
+    },
+    runButtonText: {
+      type: String,
+      required: false,
+      default: () => getGlobalVariable("simter.search.operations.runButtonText", "Search")
+    },
+    cleanButtonText: {
+      type: String,
+      required: false,
+      default: () => getGlobalVariable("simter.search.operations.cleanButtonText", "Clean")
+    },
+    closeButtonText: {
+      type: String,
+      required: false,
+      default: () => getGlobalVariable("simter.search.operations.closeButtonText", "Close")
+    },
+    clickToShowAdvanceButtonText: {
+      type: String,
+      required: false,
+      default: () => getGlobalVariable("simter.search.clickToShowAdvanceButtonText", "Click to show advance box")
+    },
+    clickToHideAdvanceButtonText: {
+      type: String,
+      required: false,
+      default: () => getGlobalVariable("simter.search.clickToHideAdvanceButtonText", "Click to hide advance box")
     },
     // all dom elements class
     classes: {
@@ -2594,42 +2605,99 @@ var script$d = {
     styles: {
       type: Object,
       required: false,
-
       default() {
         return {};
       }
-
+    },
+    /** Advance condition config json.
+     * 
+     * value format:
+     * ```json
+     * {
+     *   conditions: [
+     *     {
+     *       id: string, 
+     *       label: string,
+     *       [hidden]: boolean, // whether ignore this condition, default false
+     *       [value]: string,   // default value, for multiple values need init to []
+     *       [type]: string,    // backend value type, string|boolean|number|date|month|time|datetime|money|..., default string
+     *       [operator]: string, // compare type, "[]" | "[)" | "=" |..., default "="
+     *       [options]: string[] | [{text: string, value: string}], // extra config for multiple values
+     *       [ui]: string,  // when tag=input set its type attribute value, text|number|datetime-local|date|time|month|radio|checkout, default text
+     *       [tag]: string, // html control type, "input" | "select", default "input"
+     *     },
+     *     ...
+     *   ],
+     *   height: string,    // the box height, "auto" | "15em" | ..., default "auto" fo scroll
+     *   maxHeight: string, // the box height, "15em" | ...
+     *   width: string,
+     *   minWidth: string,
+     * }
+     * ```
+     */
+    advanceConfig: {
+      type: Object,
+      required: false
     }
   },
-
   data() {
     return {
-      ui: {
-        value: undefined
-      }
+      // for radio, checkout control's unique name
+      instanceId: Date.now(),
+      advanceVisable: false,
+      value_: undefined
     };
   },
+  created() {
+    // copy value prop's value
+    this.value_ = this.value;
 
-  watch: {
-    value: {
-      immediate: true,
-
-      handler(value) {
-        if (value !== this.ui.value) this.ui.value = value;
+    // init default advanceConfig value to avoid failed reactive
+    // console.log(this.advanceConfig?.conditions)
+    if (this.advanceConfig && this.advanceConfig.conditions) {
+      this.advanceConfig.conditions.forEach(c => {
+        if (!c.hasOwnProperty("value")) {
+          this.$set(c, "value", ["in", "not in", "[]", "[)", "(]", "()"].includes(c.operator) ? [] : "");
+        }
+      });
+    }
+  },
+  computed: {
+    /**
+     * The advance condition values, has this format:
+     * 
+     * [[$id, $value, $type, $operator], ...]
+     */
+    advanceValue() {
+      const all = this.advanceConfig ? this.advanceConfig.conditions.filter(c => c.value && (Array.isArray(c.value) ? c.value.some(v => v) : true)).map(c => [c.id, c.value, c.type || "string", c.operator || "="]) : [];
+      return all.length ? all : undefined;
+    },
+    /** Mix advanceValue and fuzzyValue */
+    mixValue() {
+      const fuzzyValue = this.value_ ? ["fuzzy", this.value_] : undefined;
+      let v;
+      if (!this.advanceValue) {
+        // no advance value
+        v = fuzzyValue ? [fuzzyValue] : undefined;
+      } else {
+        // has advance value
+        v = fuzzyValue ? [fuzzyValue].concat(this.advanceValue) : this.advanceValue;
       }
-
+      return v;
     }
   },
   methods: {
     doSearch() {
-      this.$emit("search", this.ui.value);
+      // console.log("st-search: ")
+      // console.log("  value=%s", this.value)
+      // console.log("  value_=%s", this.value_)
+      // console.log("  advanceValue=%s", JSON.stringify(this.advanceValue))
+      // console.log("  mixValue=%s", JSON.stringify(this.mixValue))
+      this.$emit("search", this.value_, this.advanceValue, this.mixValue);
     },
-
-    doChange() {
-      this.$emit("update:value", this.ui.value);
-      this.$emit("change", this.ui.value);
+    clearCondition() {
+      this.advanceConfig.conditions.forEach(c => c.value = Array.isArray(c.value) ? [] : undefined);
     }
-
   }
 };
 
@@ -2645,56 +2713,945 @@ var __vue_render__$e = function() {
     "div",
     { class: ["st-search", _vm.classes.root], style: _vm.styles.root },
     [
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.ui.value,
-            expression: "ui.value"
-          }
-        ],
-        class: ["text", _vm.classes.text],
-        attrs: { type: "search", placeholder: _vm.placeholder },
-        domProps: { value: _vm.ui.value },
-        on: {
-          keyup: function($event) {
-            if (
-              !$event.type.indexOf("key") &&
-              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-            ) {
-              return null
-            }
-            $event.stopPropagation();
-            return _vm.doSearch($event)
-          },
-          change: _vm.doChange,
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.$set(_vm.ui, "value", $event.target.value);
-          }
-        }
-      }),
-      _vm._v(" "),
       _c(
-        "st-button",
+        "div",
         {
-          class: "search",
-          attrs: { classes: _vm.classes.search, styles: _vm.styles.search },
-          nativeOn: {
-            click: function($event) {
-              $event.preventDefault();
-              $event.stopPropagation();
-              return _vm.doSearch($event)
-            }
-          }
+          class: ["fuzzy-box", _vm.classes.fuzzyBox],
+          style: _vm.styles.fuzzyBox
         },
-        [_vm._v(_vm._s(_vm.searchButtonText))]
-      )
-    ],
-    1
+        [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.value_,
+                expression: "value_"
+              }
+            ],
+            class: ["text", _vm.classes.text],
+            attrs: { type: "search", placeholder: _vm.placeholder },
+            domProps: { value: _vm.value_ },
+            on: {
+              input: [
+                function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.value_ = $event.target.value;
+                },
+                function($event) {
+                  return _vm.$emit("input", $event.target.value)
+                }
+              ],
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                $event.stopPropagation();
+                return _vm.doSearch.apply(null, arguments)
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "st-button",
+            {
+              class: "search",
+              attrs: { classes: _vm.classes.search, styles: _vm.styles.search },
+              nativeOn: {
+                click: function($event) {
+                  $event.preventDefault();
+                  $event.stopPropagation();
+                  return _vm.doSearch.apply(null, arguments)
+                }
+              }
+            },
+            [_vm._v(_vm._s(_vm.searchButtonText))]
+          ),
+          _vm._v(" "),
+          _vm.advanceConfig && _vm.advanceConfig.conditions.length
+            ? _c(
+                "st-button",
+                {
+                  class: "advance",
+                  attrs: {
+                    iconClass: _vm.advanceVisable
+                      ? _vm.classes.advance.upIcon
+                      : _vm.classes.advance.downIcon,
+                    classes: _vm.classes.advance,
+                    styles: _vm.styles.advance,
+                    title: _vm.advanceVisable
+                      ? _vm.clickToHideAdvanceButtonText
+                      : _vm.clickToShowAdvanceButtonText
+                  },
+                  nativeOn: {
+                    click: function($event) {
+                      $event.preventDefault();
+                      $event.stopPropagation();
+                      _vm.advanceVisable = !_vm.advanceVisable;
+                    }
+                  }
+                },
+                [_vm._v(_vm._s(_vm.advanceButtonText))]
+              )
+            : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _vm.advanceVisable
+        ? _c(
+            "div",
+            {
+              class: ["advance-box", _vm.classes.advanceBox],
+              style: [
+                _vm.styles.advanceBox,
+                {
+                  width: _vm.advanceConfig.width,
+                  minWidth: _vm.advanceConfig.minWidth,
+                  height: _vm.advanceConfig.height,
+                  maxHeight: _vm.advanceConfig.maxHeight
+                }
+              ]
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "conditions" },
+                _vm._l(_vm.advanceConfig.conditions, function(c) {
+                  return _c(
+                    "div",
+                    { staticClass: "condition" },
+                    [
+                      _c("div", { staticClass: "label" }, [
+                        _vm._v(_vm._s(c.label))
+                      ]),
+                      _vm._v(" "),
+                      !c.operator ||
+                      ["=", ">", ">=", "<", "<=", "!=", "<>"].includes(
+                        c.operator
+                      )
+                        ? [
+                            "checkbox" == c.ui
+                              ? _c("label", [
+                                  c.ui === "checkbox"
+                                    ? _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value,
+                                            expression: "c.value"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          name: c.id + "_" + _vm.instanceId,
+                                          type: "checkbox"
+                                        },
+                                        domProps: {
+                                          value: c.options.value || c.options,
+                                          checked: Array.isArray(c.value)
+                                            ? _vm._i(
+                                                c.value,
+                                                c.options.value || c.options
+                                              ) > -1
+                                            : c.value
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            var $$a = c.value,
+                                              $$el = $event.target,
+                                              $$c = $$el.checked ? true : false;
+                                            if (Array.isArray($$a)) {
+                                              var $$v =
+                                                  c.options.value || c.options,
+                                                $$i = _vm._i($$a, $$v);
+                                              if ($$el.checked) {
+                                                $$i < 0 &&
+                                                  _vm.$set(
+                                                    c,
+                                                    "value",
+                                                    $$a.concat([$$v])
+                                                  );
+                                              } else {
+                                                $$i > -1 &&
+                                                  _vm.$set(
+                                                    c,
+                                                    "value",
+                                                    $$a
+                                                      .slice(0, $$i)
+                                                      .concat(
+                                                        $$a.slice($$i + 1)
+                                                      )
+                                                  );
+                                              }
+                                            } else {
+                                              _vm.$set(c, "value", $$c);
+                                            }
+                                          }
+                                        }
+                                      })
+                                    : c.ui === "radio"
+                                    ? _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value,
+                                            expression: "c.value"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          name: c.id + "_" + _vm.instanceId,
+                                          type: "radio"
+                                        },
+                                        domProps: {
+                                          value: c.options.value || c.options,
+                                          checked: _vm._q(
+                                            c.value,
+                                            c.options.value || c.options
+                                          )
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.$set(
+                                              c,
+                                              "value",
+                                              c.options.value || c.options
+                                            )
+                                          }
+                                        }
+                                      })
+                                    : _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value,
+                                            expression: "c.value"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          name: c.id + "_" + _vm.instanceId,
+                                          type: c.ui
+                                        },
+                                        domProps: {
+                                          value: c.options.value || c.options,
+                                          value: c.value
+                                        },
+                                        on: {
+                                          input: function($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              c,
+                                              "value",
+                                              $event.target.value
+                                            );
+                                          }
+                                        }
+                                      }),
+                                  _vm._v(" "),
+                                  _c("span", [
+                                    _vm._v(_vm._s(c.options.text || c.options))
+                                  ])
+                                ])
+                              : "radio" == c.ui
+                              ? _vm._l(c.options, function(o) {
+                                  return _c("label", [
+                                    _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value,
+                                          expression: "c.value"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        type: "radio",
+                                        name: c.id + "_" + _vm.instanceId
+                                      },
+                                      domProps: {
+                                        value: o.value || o,
+                                        checked: _vm._q(c.value, o.value || o)
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.$set(
+                                            c,
+                                            "value",
+                                            o.value || o
+                                          )
+                                        }
+                                      }
+                                    }),
+                                    _vm._v(" "),
+                                    _c("span", [_vm._v(_vm._s(o.text || o))])
+                                  ])
+                                })
+                              : c.tag === "select"
+                              ? _c(
+                                  "select",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: c.value,
+                                        expression: "c.value"
+                                      }
+                                    ],
+                                    class: ["value", _vm.classes.value],
+                                    on: {
+                                      change: function($event) {
+                                        var $$selectedVal = Array.prototype.filter
+                                          .call($event.target.options, function(
+                                            o
+                                          ) {
+                                            return o.selected
+                                          })
+                                          .map(function(o) {
+                                            var val =
+                                              "_value" in o ? o._value : o.value;
+                                            return val
+                                          });
+                                        _vm.$set(
+                                          c,
+                                          "value",
+                                          $event.target.multiple
+                                            ? $$selectedVal
+                                            : $$selectedVal[0]
+                                        );
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("option", { attrs: { value: "" } }),
+                                    _vm._v(" "),
+                                    _vm._l(c.options, function(o) {
+                                      return _c(
+                                        "option",
+                                        { domProps: { value: o.value || o } },
+                                        [_vm._v(_vm._s(o.text || o))]
+                                      )
+                                    })
+                                  ],
+                                  2
+                                )
+                              : (c.ui || "text") === "checkbox"
+                              ? _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: c.value,
+                                      expression: "c.value"
+                                    }
+                                  ],
+                                  class: ["value", _vm.classes.value],
+                                  attrs: {
+                                    step: c.step,
+                                    min: c.min,
+                                    max: c.max,
+                                    type: "checkbox"
+                                  },
+                                  domProps: {
+                                    checked: Array.isArray(c.value)
+                                      ? _vm._i(c.value, null) > -1
+                                      : c.value
+                                  },
+                                  on: {
+                                    change: function($event) {
+                                      var $$a = c.value,
+                                        $$el = $event.target,
+                                        $$c = $$el.checked ? true : false;
+                                      if (Array.isArray($$a)) {
+                                        var $$v = null,
+                                          $$i = _vm._i($$a, $$v);
+                                        if ($$el.checked) {
+                                          $$i < 0 &&
+                                            _vm.$set(
+                                              c,
+                                              "value",
+                                              $$a.concat([$$v])
+                                            );
+                                        } else {
+                                          $$i > -1 &&
+                                            _vm.$set(
+                                              c,
+                                              "value",
+                                              $$a
+                                                .slice(0, $$i)
+                                                .concat($$a.slice($$i + 1))
+                                            );
+                                        }
+                                      } else {
+                                        _vm.$set(c, "value", $$c);
+                                      }
+                                    }
+                                  }
+                                })
+                              : (c.ui || "text") === "radio"
+                              ? _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: c.value,
+                                      expression: "c.value"
+                                    }
+                                  ],
+                                  class: ["value", _vm.classes.value],
+                                  attrs: {
+                                    step: c.step,
+                                    min: c.min,
+                                    max: c.max,
+                                    type: "radio"
+                                  },
+                                  domProps: { checked: _vm._q(c.value, null) },
+                                  on: {
+                                    change: function($event) {
+                                      return _vm.$set(c, "value", null)
+                                    }
+                                  }
+                                })
+                              : _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: c.value,
+                                      expression: "c.value"
+                                    }
+                                  ],
+                                  class: ["value", _vm.classes.value],
+                                  attrs: {
+                                    step: c.step,
+                                    min: c.min,
+                                    max: c.max,
+                                    type: c.ui || "text"
+                                  },
+                                  domProps: { value: c.value },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(c, "value", $event.target.value);
+                                    }
+                                  }
+                                })
+                          ]
+                        : ["in", "not in"].includes(c.operator)
+                        ? [
+                            c.tag === "select"
+                              ? _c(
+                                  "select",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: c.value,
+                                        expression: "c.value"
+                                      }
+                                    ],
+                                    class: ["value", _vm.classes.value],
+                                    style: c.style,
+                                    attrs: { multiple: "" },
+                                    on: {
+                                      change: function($event) {
+                                        var $$selectedVal = Array.prototype.filter
+                                          .call($event.target.options, function(
+                                            o
+                                          ) {
+                                            return o.selected
+                                          })
+                                          .map(function(o) {
+                                            var val =
+                                              "_value" in o ? o._value : o.value;
+                                            return val
+                                          });
+                                        _vm.$set(
+                                          c,
+                                          "value",
+                                          $event.target.multiple
+                                            ? $$selectedVal
+                                            : $$selectedVal[0]
+                                        );
+                                      }
+                                    }
+                                  },
+                                  _vm._l(c.options, function(o) {
+                                    return _c(
+                                      "option",
+                                      { domProps: { value: o.value || o } },
+                                      [_vm._v(_vm._s(o.text || o))]
+                                    )
+                                  }),
+                                  0
+                                )
+                              : "checkbox" == c.ui
+                              ? _vm._l(c.options, function(o) {
+                                  return _c("label", [
+                                    _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value,
+                                          expression: "c.value"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        type: "checkbox",
+                                        name: c.id + "_" + _vm.instanceId
+                                      },
+                                      domProps: {
+                                        value: o.value || o,
+                                        checked: Array.isArray(c.value)
+                                          ? _vm._i(c.value, o.value || o) > -1
+                                          : c.value
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          var $$a = c.value,
+                                            $$el = $event.target,
+                                            $$c = $$el.checked ? true : false;
+                                          if (Array.isArray($$a)) {
+                                            var $$v = o.value || o,
+                                              $$i = _vm._i($$a, $$v);
+                                            if ($$el.checked) {
+                                              $$i < 0 &&
+                                                _vm.$set(
+                                                  c,
+                                                  "value",
+                                                  $$a.concat([$$v])
+                                                );
+                                            } else {
+                                              $$i > -1 &&
+                                                _vm.$set(
+                                                  c,
+                                                  "value",
+                                                  $$a
+                                                    .slice(0, $$i)
+                                                    .concat($$a.slice($$i + 1))
+                                                );
+                                            }
+                                          } else {
+                                            _vm.$set(c, "value", $$c);
+                                          }
+                                        }
+                                      }
+                                    }),
+                                    _vm._v(" "),
+                                    _c("span", [_vm._v(_vm._s(o.text || o))])
+                                  ])
+                                })
+                              : _vm._e()
+                          ]
+                        : ["[]", "[)", "(]", "()"].includes(c.operator)
+                        ? [
+                            _c("div", { staticClass: "range" }, [
+                              _c("div", { staticClass: "left" }, [
+                                c.tag === "select"
+                                  ? _c(
+                                      "select",
+                                      {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[0],
+                                            expression: "c.value[0]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        on: {
+                                          change: function($event) {
+                                            var $$selectedVal = Array.prototype.filter
+                                              .call(
+                                                $event.target.options,
+                                                function(o) {
+                                                  return o.selected
+                                                }
+                                              )
+                                              .map(function(o) {
+                                                var val =
+                                                  "_value" in o
+                                                    ? o._value
+                                                    : o.value;
+                                                return val
+                                              });
+                                            _vm.$set(
+                                              c.value,
+                                              0,
+                                              $event.target.multiple
+                                                ? $$selectedVal
+                                                : $$selectedVal[0]
+                                            );
+                                          }
+                                        }
+                                      },
+                                      _vm._l(c.options, function(o) {
+                                        return _c(
+                                          "option",
+                                          { domProps: { value: o.value || o } },
+                                          [_vm._v(_vm._s(o.text || o))]
+                                        )
+                                      }),
+                                      0
+                                    )
+                                  : (c.ui || "text") === "checkbox"
+                                  ? _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value[0],
+                                          expression: "c.value[0]"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        step: c.step,
+                                        min: c.min,
+                                        max: c.max,
+                                        type: "checkbox"
+                                      },
+                                      domProps: {
+                                        checked: Array.isArray(c.value[0])
+                                          ? _vm._i(c.value[0], null) > -1
+                                          : c.value[0]
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          var $$a = c.value[0],
+                                            $$el = $event.target,
+                                            $$c = $$el.checked ? true : false;
+                                          if (Array.isArray($$a)) {
+                                            var $$v = null,
+                                              $$i = _vm._i($$a, $$v);
+                                            if ($$el.checked) {
+                                              $$i < 0 &&
+                                                _vm.$set(
+                                                  c.value,
+                                                  0,
+                                                  $$a.concat([$$v])
+                                                );
+                                            } else {
+                                              $$i > -1 &&
+                                                _vm.$set(
+                                                  c.value,
+                                                  0,
+                                                  $$a
+                                                    .slice(0, $$i)
+                                                    .concat($$a.slice($$i + 1))
+                                                );
+                                            }
+                                          } else {
+                                            _vm.$set(c.value, 0, $$c);
+                                          }
+                                        }
+                                      }
+                                    })
+                                  : (c.ui || "text") === "radio"
+                                  ? _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value[0],
+                                          expression: "c.value[0]"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        step: c.step,
+                                        min: c.min,
+                                        max: c.max,
+                                        type: "radio"
+                                      },
+                                      domProps: {
+                                        checked: _vm._q(c.value[0], null)
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.$set(c.value, 0, null)
+                                        }
+                                      }
+                                    })
+                                  : _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value[0],
+                                          expression: "c.value[0]"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        step: c.step,
+                                        min: c.min,
+                                        max: c.max,
+                                        type: c.ui || "text"
+                                      },
+                                      domProps: { value: c.value[0] },
+                                      on: {
+                                        input: function($event) {
+                                          if ($event.target.composing) {
+                                            return
+                                          }
+                                          _vm.$set(
+                                            c.value,
+                                            0,
+                                            $event.target.value
+                                          );
+                                        }
+                                      }
+                                    })
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "center" }, [
+                                _vm._v("～")
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "right" }, [
+                                c.tag === "select"
+                                  ? _c(
+                                      "select",
+                                      {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[1],
+                                            expression: "c.value[1]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        on: {
+                                          change: function($event) {
+                                            var $$selectedVal = Array.prototype.filter
+                                              .call(
+                                                $event.target.options,
+                                                function(o) {
+                                                  return o.selected
+                                                }
+                                              )
+                                              .map(function(o) {
+                                                var val =
+                                                  "_value" in o
+                                                    ? o._value
+                                                    : o.value;
+                                                return val
+                                              });
+                                            _vm.$set(
+                                              c.value,
+                                              1,
+                                              $event.target.multiple
+                                                ? $$selectedVal
+                                                : $$selectedVal[0]
+                                            );
+                                          }
+                                        }
+                                      },
+                                      _vm._l(c.options, function(o) {
+                                        return _c(
+                                          "option",
+                                          { domProps: { value: o.value || o } },
+                                          [_vm._v(_vm._s(o.text || o))]
+                                        )
+                                      }),
+                                      0
+                                    )
+                                  : (c.ui || "text") === "checkbox"
+                                  ? _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value[1],
+                                          expression: "c.value[1]"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        step: c.step,
+                                        min: c.min,
+                                        max: c.max,
+                                        type: "checkbox"
+                                      },
+                                      domProps: {
+                                        checked: Array.isArray(c.value[1])
+                                          ? _vm._i(c.value[1], null) > -1
+                                          : c.value[1]
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          var $$a = c.value[1],
+                                            $$el = $event.target,
+                                            $$c = $$el.checked ? true : false;
+                                          if (Array.isArray($$a)) {
+                                            var $$v = null,
+                                              $$i = _vm._i($$a, $$v);
+                                            if ($$el.checked) {
+                                              $$i < 0 &&
+                                                _vm.$set(
+                                                  c.value,
+                                                  1,
+                                                  $$a.concat([$$v])
+                                                );
+                                            } else {
+                                              $$i > -1 &&
+                                                _vm.$set(
+                                                  c.value,
+                                                  1,
+                                                  $$a
+                                                    .slice(0, $$i)
+                                                    .concat($$a.slice($$i + 1))
+                                                );
+                                            }
+                                          } else {
+                                            _vm.$set(c.value, 1, $$c);
+                                          }
+                                        }
+                                      }
+                                    })
+                                  : (c.ui || "text") === "radio"
+                                  ? _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value[1],
+                                          expression: "c.value[1]"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        step: c.step,
+                                        min: c.min,
+                                        max: c.max,
+                                        type: "radio"
+                                      },
+                                      domProps: {
+                                        checked: _vm._q(c.value[1], null)
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.$set(c.value, 1, null)
+                                        }
+                                      }
+                                    })
+                                  : _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value[1],
+                                          expression: "c.value[1]"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      attrs: {
+                                        step: c.step,
+                                        min: c.min,
+                                        max: c.max,
+                                        type: c.ui || "text"
+                                      },
+                                      domProps: { value: c.value[1] },
+                                      on: {
+                                        input: function($event) {
+                                          if ($event.target.composing) {
+                                            return
+                                          }
+                                          _vm.$set(
+                                            c.value,
+                                            1,
+                                            $event.target.value
+                                          );
+                                        }
+                                      }
+                                    })
+                              ])
+                            ])
+                          ]
+                        : _vm._e()
+                    ],
+                    2
+                  )
+                }),
+                0
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { class: ["operations", _vm.classes.operations.class] },
+                [
+                  _c(
+                    "st-button",
+                    {
+                      attrs: { iconClass: _vm.classes.operations.runIcon },
+                      nativeOn: {
+                        click: function($event) {
+                          $event.preventDefault();
+                          $event.stopPropagation();
+                          return _vm.doSearch.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [_vm._v(_vm._s(_vm.runButtonText))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "st-button",
+                    {
+                      attrs: { iconClass: _vm.classes.operations.cleanIcon },
+                      nativeOn: {
+                        click: function($event) {
+                          $event.preventDefault();
+                          $event.stopPropagation();
+                          return _vm.clearCondition.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [_vm._v(_vm._s(_vm.cleanButtonText))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "st-button",
+                    {
+                      attrs: { iconClass: _vm.classes.operations.closeIcon },
+                      nativeOn: {
+                        click: function($event) {
+                          $event.preventDefault();
+                          $event.stopPropagation();
+                          _vm.advanceVisable = false;
+                        }
+                      }
+                    },
+                    [_vm._v(_vm._s(_vm.closeButtonText))]
+                  )
+                ],
+                1
+              )
+            ]
+          )
+        : _vm._e()
+    ]
   )
 };
 var __vue_staticRenderFns__$e = [];
@@ -2703,7 +3660,7 @@ __vue_render__$e._withStripped = true;
   /* style */
   const __vue_inject_styles__$f = function (inject) {
     if (!inject) return
-    inject("data-v-5996be36_0", { source: "\n.st-search {\r\n  position: relative;\r\n  display: inline-flex;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\search.vue"],"names":[],"mappings":";AA+EA;EACA,kBAAA;EACA,oBAAA;AACA","file":"search.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-search', classes.root]\" :style=\"styles.root\">\r\n    <input\r\n      type=\"search\"\r\n      :class=\"['text', classes.text]\"\r\n      :placeholder=\"placeholder\"\r\n      v-model=\"ui.value\"\r\n      @keyup.enter.stop=\"doSearch\"\r\n      @change=\"doChange\"\r\n    />\r\n    <st-button\r\n      :class=\"'search'\"\r\n      :classes=\"classes.search\"\r\n      :styles=\"styles.search\"\r\n      @click.native.prevent.stop=\"doSearch\"\r\n    >{{searchButtonText}}</st-button>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: search(value)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\n\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    placeholder: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.placeholder\")\r\n    },\r\n    value: { required: false },\r\n    searchButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.searchButtonText\", \"Go\")\r\n    },\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.search.classes\", {})\r\n    },\r\n    // all dom elements class\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default() {\r\n        return {};\r\n      }\r\n    }\r\n  },\r\n  data() {\r\n    return { ui: { value: undefined } };\r\n  },\r\n  watch: {\r\n    value: {\r\n      immediate: true,\r\n      handler(value) {\r\n        if (value !== this.ui.value) this.ui.value = value;\r\n      }\r\n    }\r\n  },\r\n  methods: {\r\n    doSearch() {\r\n      this.$emit(\"search\", this.ui.value);\r\n    },\r\n    doChange() {\r\n      this.$emit(\"update:value\", this.ui.value);\r\n      this.$emit(\"change\", this.ui.value);\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-search {\r\n  position: relative;\r\n  display: inline-flex;\r\n}\r\n</style>"]}, media: undefined });
+    inject("data-v-4e05b656_0", { source: "\n.st-search {\r\n  position: relative;\n}\n.st-search>.fuzzy-box {\r\n  position: relative;\r\n  display: inline-flex;\n}\n.st-search>.advance-box {\r\n  position: absolute;\r\n  z-index: 100000;\r\n  display: flex;\r\n  flex-direction: column;\r\n  overflow: hidden;\r\n  right: 0;\r\n  padding: 0;\r\n  margin: 0;\n}\n.st-search>.advance-box>.conditions {\r\n  flex-grow: 1;\r\n  overflow-x: hidden;\r\n  overflow-y: auto;\r\n  padding: 0.4em;\n}\n.st-search>.advance-box>.operations {\r\n  border-width: 1px 0 0 0;\r\n  padding: 0.4em;\n}\n.st-search>.advance-box>.conditions>.condition>.range {\r\n  display: flex;\r\n  flex-direction: row;\n}\n.st-search>.advance-box>.conditions>.condition>.range>:nth-child(odd) {\r\n  flex-grow: 1;\n}\n.st-search>.advance-box>.conditions>.condition>input.value,\r\n.st-search>.advance-box>.conditions>.condition>select.value,\r\n.st-search>.advance-box>.conditions>.condition>.range>.left>input,\r\n.st-search>.advance-box>.conditions>.condition>.range>.right>input {\r\n  box-sizing: border-box;\r\n  padding: 0.45em 0.45em 0.35em 0.45em;\r\n  width: 100%;\n}\n.st-search>.advance-box>.conditions>.condition>label {\r\n  width: fit-content;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\search.vue"],"names":[],"mappings":";AAgRA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;EACA,oBAAA;AACA;AACA;EACA,kBAAA;EACA,eAAA;EACA,aAAA;EACA,sBAAA;EACA,gBAAA;EACA,QAAA;EACA,UAAA;EACA,SAAA;AACA;AACA;EACA,YAAA;EACA,kBAAA;EACA,gBAAA;EACA,cAAA;AACA;AACA;EACA,uBAAA;EACA,cAAA;AACA;AAEA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,YAAA;AACA;AAEA;;;;EAIA,sBAAA;EACA,oCAAA;EACA,WAAA;AACA;AACA;EACA,kBAAA;AACA","file":"search.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-search', classes.root]\" :style=\"styles.root\">\r\n    <div :class=\"['fuzzy-box', classes.fuzzyBox]\" :style=\"styles.fuzzyBox\">\r\n      <input\r\n        type=\"search\"\r\n        :class=\"['text', classes.text]\"\r\n        :placeholder=\"placeholder\"\r\n        v-model=\"value_\" @input=\"$emit('input', $event.target.value)\"\r\n        @keyup.enter.stop=\"doSearch\"\r\n      />\r\n      <st-button\r\n        :class=\"'search'\"\r\n        :classes=\"classes.search\"\r\n        :styles=\"styles.search\"\r\n        @click.native.prevent.stop=\"doSearch\"\r\n      >{{searchButtonText}}</st-button>\r\n      <st-button v-if=\"advanceConfig && advanceConfig.conditions.length\"\r\n        :class=\"'advance'\"\r\n        :iconClass=\"advanceVisable ? classes.advance.upIcon : classes.advance.downIcon\"\r\n        :classes=\"classes.advance\"\r\n        :styles=\"styles.advance\"\r\n        :title=\"advanceVisable ? clickToHideAdvanceButtonText : clickToShowAdvanceButtonText\"\r\n        @click.native.prevent.stop=\"advanceVisable = !advanceVisable\"\r\n      >{{advanceButtonText}}</st-button>\r\n    </div>\r\n    <div v-if=\"advanceVisable\" \r\n      :class=\"['advance-box', classes.advanceBox]\" \r\n      :style=\"[styles.advanceBox, {\r\n        width: advanceConfig.width,\r\n        minWidth: advanceConfig.minWidth,\r\n        height: advanceConfig.height,\r\n        maxHeight: advanceConfig.maxHeight,\r\n      }]\">\r\n      <div class=\"conditions\">\r\n        <div v-for=\"c of advanceConfig.conditions\" class=\"condition\">\r\n          <div class=\"label\">{{c.label}}</div>\r\n          <!-- single value：string, number, date, time, ... -->\r\n          <template v-if=\"!c.operator || ['=', '>', '>=', '<', '<=', '!=', '<>'].includes(c.operator)\">\r\n            <label v-if=\"'checkbox' == c.ui\">\r\n              <input :type=\"c.ui\" :name=\"c.id + '_' + instanceId\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n                :value=\"c.options.value || c.options\"/>\r\n              <span>{{c.options.text || c.options}}</span>\r\n            </label>\r\n            <label v-else-if=\"'radio' == c.ui\" v-for=\"o of c.options\">\r\n              <input type=\"radio\" :name=\"c.id + '_' + instanceId\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n                :value=\"o.value || o\"/>\r\n              <span>{{o.text || o}}</span>\r\n            </label>\r\n            <select v-else-if=\"c.tag === 'select'\" v-model=\"c.value\" :class=\"['value', classes.value]\">\r\n              <option value=\"\"></option>\r\n              <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n            </select>\r\n            <input v-else \r\n              :type=\"c.ui || 'text'\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n              :step=\"c.step\" :min=\"c.min\" :max=\"c.max\"/>\r\n          </template>\r\n          <!-- multiple value for checkout and select -->\r\n          <template v-else-if=\"['in', 'not in'].includes(c.operator)\">\r\n            <select v-if=\"c.tag === 'select'\" multiple v-model=\"c.value\" :class=\"['value', classes.value]\" :style=\"c.style\">\r\n              <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n            </select>\r\n            <label v-else-if=\"'checkbox' == c.ui\" v-for=\"o of c.options\">\r\n              <input type=\"checkbox\" :name=\"c.id + '_' + instanceId\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n                :value=\"o.value || o\"/>\r\n              <span>{{o.text || o}}</span>\r\n            </label>\r\n          </template>\r\n          <!-- range value for [], [), (], () -->\r\n          <template v-else-if=\"['[]', '[)', '(]', '()'].includes(c.operator)\">\r\n            <div class=\"range\">\r\n              <div class=\"left\">\r\n                <select v-if=\"c.tag === 'select'\" v-model=\"c.value[0]\" :class=\"['value', classes.value]\">\r\n                  <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n                </select>\r\n                <input v-else \r\n                  :type=\"c.ui || 'text'\" v-model=\"c.value[0]\" :class=\"['value', classes.value]\"\r\n                  :step=\"c.step\" :min=\"c.min\" :max=\"c.max\"/>\r\n              </div>\r\n              <div class=\"center\">～</div>\r\n              <div class=\"right\">\r\n                <select v-if=\"c.tag === 'select'\" v-model=\"c.value[1]\" :class=\"['value', classes.value]\">\r\n                  <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n                </select>\r\n                <input v-else \r\n                  :type=\"c.ui || 'text'\" v-model=\"c.value[1]\" :class=\"['value', classes.value]\"\r\n                  :step=\"c.step\" :min=\"c.min\" :max=\"c.max\"/>\r\n              </div>\r\n            </div>\r\n          </template>\r\n        </div>\r\n      </div>\r\n      <div :class=\"['operations', classes.operations.class]\">\r\n        <st-button\r\n          :iconClass=\"classes.operations.runIcon\"\r\n          @click.native.prevent.stop=\"doSearch\"\r\n        >{{runButtonText}}</st-button>\r\n        <st-button\r\n          :iconClass=\"classes.operations.cleanIcon\"\r\n          @click.native.prevent.stop=\"clearCondition\"\r\n        >{{cleanButtonText}}</st-button>\r\n        <st-button\r\n          :iconClass=\"classes.operations.closeIcon\"\r\n          @click.native.prevent.stop=\"advanceVisable = false\"\r\n        >{{closeButtonText}}</st-button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: search(value)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\n\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    quick: { type: Boolean, required: false, default: false },\r\n    placeholder: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.placeholder\", \"Please input key word\")\r\n    },\r\n    value: {\r\n      type: String,\r\n      required: false\r\n    },\r\n    searchButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.searchButtonText\", \"Go\")\r\n    },\r\n    advanceButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.advanceButtonText\", \"More\")\r\n    },\r\n    runButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.operations.runButtonText\", \"Search\")\r\n    },\r\n    cleanButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.operations.cleanButtonText\", \"Clean\")\r\n    },\r\n    closeButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.operations.closeButtonText\", \"Close\")\r\n    },\r\n    clickToShowAdvanceButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.clickToShowAdvanceButtonText\", \"Click to show advance box\")\r\n    },\r\n    clickToHideAdvanceButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.clickToHideAdvanceButtonText\", \"Click to hide advance box\")\r\n    },\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.search.classes\", {})\r\n    },\r\n    // all dom elements class\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default() {\r\n        return {};\r\n      }\r\n    },\r\n    /** Advance condition config json.\r\n     * \r\n     * value format:\r\n     * ```json\r\n     * {\r\n     *   conditions: [\r\n     *     {\r\n     *       id: string, \r\n     *       label: string,\r\n     *       [hidden]: boolean, // whether ignore this condition, default false\r\n     *       [value]: string,   // default value, for multiple values need init to []\r\n     *       [type]: string,    // backend value type, string|boolean|number|date|month|time|datetime|money|..., default string\r\n     *       [operator]: string, // compare type, \"[]\" | \"[)\" | \"=\" |..., default \"=\"\r\n     *       [options]: string[] | [{text: string, value: string}], // extra config for multiple values\r\n     *       [ui]: string,  // when tag=input set its type attribute value, text|number|datetime-local|date|time|month|radio|checkout, default text\r\n     *       [tag]: string, // html control type, \"input\" | \"select\", default \"input\"\r\n     *     },\r\n     *     ...\r\n     *   ],\r\n     *   height: string,    // the box height, \"auto\" | \"15em\" | ..., default \"auto\" fo scroll\r\n     *   maxHeight: string, // the box height, \"15em\" | ...\r\n     *   width: string,\r\n     *   minWidth: string,\r\n     * }\r\n     * ```\r\n     */\r\n    advanceConfig: {\r\n      type: Object,\r\n      required: false\r\n    }\r\n  },\r\n  data() {\r\n    return {\r\n      // for radio, checkout control's unique name\r\n      instanceId: Date.now(),\r\n      advanceVisable: false,\r\n      value_: undefined\r\n    };\r\n  },\r\n  created() {\r\n    // copy value prop's value\r\n    this.value_ = this.value\r\n\r\n    // init default advanceConfig value to avoid failed reactive\r\n    // console.log(this.advanceConfig?.conditions)\r\n    if (this.advanceConfig && this.advanceConfig.conditions) {\r\n      this.advanceConfig.conditions.forEach((c) => {\r\n        if (!c.hasOwnProperty(\"value\")) {\r\n          this.$set(c, \"value\", [\"in\", \"not in\", \"[]\", \"[)\", \"(]\", \"()\"].includes(c.operator) ? [] : \"\")\r\n        }\r\n      })\r\n    }\r\n  },\r\n  computed: {\r\n    /**\r\n     * The advance condition values, has this format:\r\n     * \r\n     * [[$id, $value, $type, $operator], ...]\r\n     */\r\n    advanceValue() {\r\n      const all = this.advanceConfig ? this.advanceConfig.conditions\r\n        .filter((c) => c.value && (Array.isArray(c.value) ? c.value.some((v) => v) : true))\r\n        .map((c) => [c.id, c.value, c.type || \"string\", c.operator || \"=\"]) : [];\r\n      return all.length ? all : undefined;\r\n    },\r\n    /** Mix advanceValue and fuzzyValue */\r\n    mixValue() {\r\n      const fuzzyValue = this.value_ ? [\"fuzzy\", this.value_] : undefined;\r\n      let v;\r\n      if (!this.advanceValue) {\t// no advance value\r\n        v = fuzzyValue ? [fuzzyValue] : undefined;\r\n      } else {                  // has advance value\r\n        v = fuzzyValue ? [fuzzyValue].concat(this.advanceValue) : this.advanceValue;\r\n      }\r\n      return v;\r\n    }\r\n  },\r\n  methods: {\r\n    doSearch() {\r\n      // console.log(\"st-search: \")\r\n      // console.log(\"  value=%s\", this.value)\r\n      // console.log(\"  value_=%s\", this.value_)\r\n      // console.log(\"  advanceValue=%s\", JSON.stringify(this.advanceValue))\r\n      // console.log(\"  mixValue=%s\", JSON.stringify(this.mixValue))\r\n      this.$emit(\"search\", this.value_, this.advanceValue, this.mixValue);\r\n    },\r\n    clearCondition() {\r\n      this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-search {\r\n  position: relative;\r\n}\r\n.st-search>.fuzzy-box {\r\n  position: relative;\r\n  display: inline-flex;\r\n}\r\n.st-search>.advance-box {\r\n  position: absolute;\r\n  z-index: 100000;\r\n  display: flex;\r\n  flex-direction: column;\r\n  overflow: hidden;\r\n  right: 0;\r\n  padding: 0;\r\n  margin: 0;\r\n}\r\n.st-search>.advance-box>.conditions {\r\n  flex-grow: 1;\r\n  overflow-x: hidden;\r\n  overflow-y: auto;\r\n  padding: 0.4em;\r\n}\r\n.st-search>.advance-box>.operations {\r\n  border-width: 1px 0 0 0;\r\n  padding: 0.4em;\r\n}\r\n\r\n.st-search>.advance-box>.conditions>.condition>.range {\r\n  display: flex;\r\n  flex-direction: row;\r\n}\r\n.st-search>.advance-box>.conditions>.condition>.range>:nth-child(odd) {\r\n  flex-grow: 1;\r\n}\r\n\r\n.st-search>.advance-box>.conditions>.condition>input.value,\r\n.st-search>.advance-box>.conditions>.condition>select.value,\r\n.st-search>.advance-box>.conditions>.condition>.range>.left>input,\r\n.st-search>.advance-box>.conditions>.condition>.range>.right>input {\r\n  box-sizing: border-box;\r\n  padding: 0.45em 0.45em 0.35em 0.45em;\r\n  width: 100%;\r\n}\r\n.st-search>.advance-box>.conditions>.condition>label {\r\n  width: fit-content;\r\n}\r\n</style>"]}, media: undefined });
 
   };
   /* scoped */
@@ -2714,16 +3671,20 @@ __vue_render__$e._withStripped = true;
   const __vue_is_functional_template__$f = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stSearch = normalizeComponent_1(
+  const __vue_component__$f = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$e, staticRenderFns: __vue_staticRenderFns__$e },
     __vue_inject_styles__$f,
     __vue_script__$f,
     __vue_scope_id__$f,
     __vue_is_functional_template__$f,
     __vue_module_identifier__$f,
+    false,
     browser,
+    undefined,
     undefined
   );
 
@@ -2813,62 +3774,58 @@ __vue_render__$f._withStripped = true;
   const __vue_is_functional_template__$g = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stProgressbar = normalizeComponent_1(
+  const __vue_component__$g = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$f, staticRenderFns: __vue_staticRenderFns__$f },
     __vue_inject_styles__$g,
     __vue_script__$g,
     __vue_scope_id__$g,
     __vue_is_functional_template__$g,
     __vue_module_identifier__$g,
+    false,
     browser,
+    undefined,
     undefined
   );
 
 //
-
 function entryToFiles(entry, dir = '') {
   return new Promise((resolve, recject) => {
     if (entry.isFile) {
       entry.file(file => {
         file.dir = dir; // mark full dir
-
         resolve(file);
       });
     } else if (entry.isDirectory) {
       let dirReader = entry.createReader();
       dirReader.readEntries(entries => {
         let promises = [];
-
         for (let i = 0; i < entries.length; i++) {
           promises.push(entryToFiles(entries[i], dir ? dir + "/" + entry.name : entry.name));
         }
-
         resolve(Promise.all(promises));
       });
     }
   });
 }
-
 function dataTransferItemsToFiles(items) {
   return new Promise((resolve, reject) => {
     let promises = [];
-
     for (let i = 0; i < items.length; i++) promises.push(entryToFiles(items[i].webkitGetAsEntry()));
-
     Promise.all(promises).then(files => resolve(files));
   });
-} // [a, [b, c]] flatten to [a, b, c]
+}
 
-
+// [a, [b, c]] flatten to [a, b, c]
 function flattenArray(array) {
   return array.reduce((a, b) => a.concat(Array.isArray(b) ? flattenArray(b) : b), []);
 }
-
 var script$f = {
   components: {
-    stProgressbar
+    stProgressbar: __vue_component__$g
   },
   props: {
     /**
@@ -2982,40 +3939,38 @@ var script$f = {
           // upload percent: 0~100
           percent: 0
         });
-      }); // auto upload
+      });
 
+      // auto upload
       if (this.auto) this.startUpload();
     },
-
     removeFile(index) {
       this.files.splice(index, 1);
     },
-
     // manual start the upload
     startUpload() {
       if (this.toUploadCount === 0) {
         if (this.count === 0) {
           return alert(this.text.selectFileFirst);
         } else return; // no file to upload
+      }
 
-      } // emits upload start event
-
-
+      // emits upload start event
       this.$emit("start", this.toUploadFiles.map(f => ({
         dir: f.dir,
         name: f.name,
         size: f.size,
         percent: f.percent
-      }))); // upload file one by one
+      })));
 
+      // upload file one by one
       let p = Promise.resolve();
       let results = [];
-
       for (let i = 0; i < this.toUploadFiles.length; i++) {
-        let f = this.toUploadFiles[i]; // get server url
+        let f = this.toUploadFiles[i];
 
+        // get server url
         let serverUrl;
-
         if (typeof this.url === 'function') {
           serverUrl = this.url.call(this, {
             index: i,
@@ -3025,15 +3980,14 @@ var script$f = {
             type: getFileExtension(f.name)
           });
         } else serverUrl = this.url;
-
         p = p.then(() => uploadOneFile.call(null, Object.assign({
           index: i,
           dir: f.dir,
           file: f.file,
           url: serverUrl,
           progress: data => {
-            f.percent = data.percent; // emits upload progress event
-
+            f.percent = data.percent;
+            // emits upload progress event
             this.$emit("progress", data);
           },
           start: xhr => {
@@ -3043,7 +3997,6 @@ var script$f = {
           results.push(result);
         }));
       }
-
       p.then(result => {
         // emits upload success event
         this.$emit("success", results);
@@ -3055,7 +4008,6 @@ var script$f = {
         console.log("upload: No dropped items");
         return;
       }
-
       dataTransferItemsToFiles(e.dataTransfer.items).then(files => {
         this.afterSelectedFile(flattenArray(files));
       });
@@ -3085,7 +4037,7 @@ var __vue_render__$g = function() {
           on: {
             click: function($event) {
               $event.stopPropagation();
-              return _vm.selectFile($event)
+              return _vm.selectFile.apply(null, arguments)
             }
           }
         },
@@ -3223,49 +4175,52 @@ __vue_render__$g._withStripped = true;
   const __vue_is_functional_template__$h = false;
   /* style inject SSR */
   
+  /* style inject shadow dom */
+  
 
   
-  var stUpload = normalizeComponent_1(
+  const __vue_component__$h = /*#__PURE__*/normalizeComponent_1(
     { render: __vue_render__$g, staticRenderFns: __vue_staticRenderFns__$g },
     __vue_inject_styles__$h,
     __vue_script__$h,
     __vue_scope_id__$h,
     __vue_is_functional_template__$h,
     __vue_module_identifier__$h,
+    false,
     browser,
+    undefined,
     undefined
   );
 
+// global register all components
 const components = {
-  "st-loader": [version, stLoader],
-  "st-grid": [version, stGrid],
-  "st-colgroup": ["0.3.0", stColgroup],
-  "st-thead": ["0.4.2", stThead],
-  "st-table-row": [version, stTableRow],
+  "st-loader": [version, __vue_component__],
+  "st-grid": [version, __vue_component__$9],
+  "st-colgroup": ["0.3.0", __vue_component__$7],
+  "st-thead": ["0.4.2", __vue_component__$8],
+  "st-table-row": [version, __vue_component__$6],
   "st-data-row": [version, stDataRow],
-  "st-cell-index": [version, stCellIndex],
-  "st-cell-sn": [version, stCellSn],
-  "st-cell-sn-selectable": [version, stCellSnSelectable],
-  "st-cell-text": [version, stCellText],
-  "st-cell-html": [version, stCellHtml],
-  "st-pagebar": [version, stPagebar],
-  "st-pagebar-sizes": [version, stPagebarSizes],
-  "st-toolbar": [version, stToolbar],
-  "st-button": [version, stButton],
-  "st-button-group": [version, stButtonGroup],
-  "st-search": [version, stSearch],
-  "st-upload": [version, stUpload],
-  "st-progress-bar": [version, stProgressbar]
+  "st-cell-index": [version, __vue_component__$1],
+  "st-cell-sn": [version, __vue_component__$2],
+  "st-cell-sn-selectable": [version, __vue_component__$3],
+  "st-cell-text": [version, __vue_component__$4],
+  "st-cell-html": [version, __vue_component__$5],
+  "st-pagebar": [version, __vue_component__$b],
+  "st-pagebar-sizes": [version, __vue_component__$d],
+  "st-toolbar": [version, __vue_component__$e],
+  "st-button": [version, __vue_component__$a],
+  "st-button-group": [version, __vue_component__$c],
+  "st-search": [version, __vue_component__$f],
+  "st-upload": [version, __vue_component__$h],
+  "st-progress-bar": [version, __vue_component__$g]
 };
 const keyVersions = {};
 let value;
-
 for (let key in components) {
   value = components[key];
   Vue.component(key, value[1]);
   keyVersions[key] = value[0];
 }
-
 var components$1 = {
   version,
   components: keyVersions

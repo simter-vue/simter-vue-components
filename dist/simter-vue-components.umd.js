@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v1.0.0
+* simter-vue-components v1.1.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -12,9 +12,96 @@
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "1.0.0";
+  var version = "1.1.0";
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+      return typeof obj;
+    } : function (obj) {
+      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    }, _typeof(obj);
+  }
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  }
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+  }
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+    return arr2;
+  }
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _createForOfIteratorHelper(o, allowArrayLike) {
+    var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+    if (!it) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+        if (it) o = it;
+        var i = 0;
+        var F = function () {};
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+    var normalCompletion = true,
+      didErr = false,
+      err;
+    return {
+      s: function () {
+        it = it.call(o);
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
+  }
 
   var g = window || global;
+
   /**
    * Flatten all leaf object to simple object array.
    *
@@ -29,25 +116,21 @@
    *    flatten to
    *    [{id: 1}, {id: 2}, {id: 3}, {id: 4}]
    */
-
   function flatten(columns) {
     return columns.reduce(function (a, b) {
       return a.concat(b.children ? flatten(b.children) : b);
     }, []);
   }
+
   /** Get global key's value */
-
-
   function getGlobalVariable(key, defaultValue) {
     if (g.hasOwnProperty(key)) return g[key];
     var p = g,
-        value;
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
+      value;
+    var _iterator = _createForOfIteratorHelper(key.split(".")),
+      _step;
     try {
-      for (var _iterator = key.split(".")[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var k = _step.value;
         if (p.hasOwnProperty(k)) value = p = p[k];else {
           value = undefined;
@@ -55,34 +138,22 @@
         }
       }
     } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
+      _iterator.e(err);
     } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-          _iterator["return"]();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+      _iterator.f();
     }
-
     return typeof value === "undefined" ? defaultValue : value;
   }
+
   /** 
    * concat all class.
    * 
    * each class is String, Array or undefined.
    */
-
-
   function concatClasses() {
     for (var _len = arguments.length, classes = new Array(_len), _key = 0; _key < _len; _key++) {
       classes[_key] = arguments[_key];
     }
-
     return classes.reduce(function (a, b) {
       if (typeof b === "undefined") return a;else {
         a = a.concat(b);
@@ -90,45 +161,42 @@
       }
     }, []);
   }
+
   /** 
    * concat all style.
    * 
    * each style is Json-Object or undefined.
    */
-
-
   function concatStyles() {
     for (var _len2 = arguments.length, styles = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
       styles[_key2] = arguments[_key2];
     }
-
     return styles.reduce(function (a, b) {
       if (typeof b === "undefined") return a;else return Object.assign(a, b);
     }, {});
   }
+
   /**
    * Get the file extension.
    * 
    * @param {String} filename the file name with extension, sucs as 'my.png'.
    * @returns the extension, such as 'png'
    */
-
-
   function getFileExtension(filename) {
     var i = filename.lastIndexOf(".");
     if (i !== -1) return filename.substring(i + 1);else return '';
   }
+
   /**
    * Format the byte size to a human reading size.
    * 
    * @param {Number} size the byte size
    * @returns human reading size, such as '2 KB'
    */
-
-
   function getPrettySize(size) {
     if (size < 1024) return "".concat(size, " B");else if (size < 1024 * 1024) return "".concat(Math.round(size / 1024), " KB");else if (size < 1024 * 1024 * 1024) return "".concat(Math.round(size / 1024 / 1024), " MB");else return "".concat(Math.round(size / 1024 / 1024 / 1024), " GB");
   }
+
   /**
    * Upload one file.
    *  
@@ -138,16 +206,14 @@
    * @options {Array} headers - external headers to send
    * @returns {Promise}
    */
-
-
   function uploadOneFile(options) {
     return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest(); // upload progress
-      // don't use `xhr.addEventListener("progress", function (e) {...})`
+      var xhr = new XMLHttpRequest();
 
+      // upload progress
+      // don't use `xhr.addEventListener("progress", function (e) {...})`
       xhr.upload.addEventListener("progress", function (e) {
         var percent = Math.round(e.loaded / e.total * 100); // 0~100
-
         if (options.progress) options.progress.call(this, {
           index: options.index,
           dir: options.dir,
@@ -155,36 +221,39 @@
           size: options.file.size,
           percent: percent
         });
-      }); // cancel upload
+      });
 
+      // cancel upload
       xhr.addEventListener("abort", function (e) {
         reject(e);
-      }); // upload finished
+      });
 
+      // upload finished
       xhr.addEventListener("load", function (e) {
         var contentType = xhr.getResponseHeader('Content-Type');
         var result;
-
         if (contentType) {
           contentType = contentType.toLowerCase();
           if (contentType.indexOf('application/json') !== -1) {
               // json
               if (xhr.responseText) result = JSON.parse(xhr.responseText);else result = null;
-          } else if (contentType.startsWith('text/')) // text/plain、text/html
-            result = xhr.responseText;else // default text
+          } else if (contentType.startsWith('text/'))
+            // text/plain、text/html
+            result = xhr.responseText;else
+            // default text
             result = xhr.responseText;
         } else result = xhr.responseText; // default text
 
-
         if (xhr.readyState === 4) resolve(result);else reject(result);
-      }); // upload error
+      });
 
+      // upload error
       xhr.addEventListener("error", function (e) {
         reject(e);
-      }); // start upload
+      });
 
+      // start upload
       xhr.open(options.method || "POST", options.url);
-
       if (options.headers) {
         options.headers.forEach(function (h) {
           return xhr.setRequestHeader(h.name, h.value);
@@ -192,7 +261,6 @@
       } else {
         xhr.setRequestHeader('Content-Type', 'application/octet-stream');
       }
-
       xhr.send(options.file);
     });
   }
@@ -270,14 +338,13 @@
     },
     created: function created() {
       var _this = this;
-
       var max = 60;
       this.timer = setInterval(function () {
         // show timer if timeout
-        if (++_this.totalSeconds >= _this.timeout && !_this.showTimer) _this.showTimer = true; // calculate timer's minutes and seconds
+        if (++_this.totalSeconds >= _this.timeout && !_this.showTimer) _this.showTimer = true;
 
+        // calculate timer's minutes and seconds
         _this.seconds++;
-
         if (_this.seconds == max) {
           _this.seconds = 0;
           _this.minutes++;
@@ -296,7 +363,6 @@
       },
       concatStyles: function concatStyles$1() {
         var t = concatStyles.apply(void 0, arguments);
-
         console.log(t);
         return t;
       }
@@ -495,52 +561,22 @@
     const __vue_is_functional_template__ = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stLoader = normalizeComponent_1(
+    const __vue_component__ = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__, staticRenderFns: __vue_staticRenderFns__ },
       __vue_inject_styles__,
       __vue_script__,
       __vue_scope_id__,
       __vue_is_functional_template__,
       __vue_module_identifier__,
+      false,
       browser,
+      undefined,
       undefined
     );
-
-  function _typeof(obj) {
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
-  }
-
-  function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
-  }
 
   var cellBase = {
     props: {
@@ -602,7 +638,6 @@
       content: function content() {
         var t = this.empty ? "" : this.column && this.column.pid ? this.index // nested index
         : this.dataRowIndex; // dataRow index
-
         return t;
       }
     }
@@ -635,15 +670,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stCellIndex = normalizeComponent_1(
+    const __vue_component__$1 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
       __vue_inject_styles__$1,
       __vue_script__$1,
       __vue_scope_id__$1,
       __vue_is_functional_template__$1,
       __vue_module_identifier__$1,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -680,15 +719,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stCellSn = normalizeComponent_1(
+    const __vue_component__$2 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
       __vue_inject_styles__$2,
       __vue_script__$2,
       __vue_scope_id__$2,
       __vue_is_functional_template__$2,
       __vue_module_identifier__$2,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -731,15 +774,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stCellSnSelectable = normalizeComponent_1(
+    const __vue_component__$3 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$3, staticRenderFns: __vue_staticRenderFns__$3 },
       __vue_inject_styles__$3,
       __vue_script__$3,
       __vue_scope_id__$3,
       __vue_is_functional_template__$3,
       __vue_module_identifier__$3,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -776,15 +823,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stCellText = normalizeComponent_1(
+    const __vue_component__$4 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$4, staticRenderFns: __vue_staticRenderFns__$4 },
       __vue_inject_styles__$4,
       __vue_script__$4,
       __vue_scope_id__$4,
       __vue_is_functional_template__$4,
       __vue_module_identifier__$4,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -823,15 +874,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stCellHtml = normalizeComponent_1(
+    const __vue_component__$5 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$5, staticRenderFns: __vue_staticRenderFns__$5 },
       __vue_inject_styles__$5,
       __vue_script__$5,
       __vue_scope_id__$5,
       __vue_is_functional_template__$5,
       __vue_module_identifier__$5,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -840,11 +895,11 @@
   var script$6 = {
     // register all inner cell components
     components: {
-      stCellIndex: stCellIndex,
-      stCellSn: stCellSn,
-      stCellSnSelectable: stCellSnSelectable,
-      stCellText: stCellText,
-      stCellHtml: stCellHtml
+      stCellIndex: __vue_component__$1,
+      stCellSn: __vue_component__$2,
+      stCellSnSelectable: __vue_component__$3,
+      stCellText: __vue_component__$4,
+      stCellHtml: __vue_component__$5
     },
     props: {
       // DataRow.value
@@ -903,25 +958,28 @@
     },
     computed: {
       rowClass: function rowClass() {
-        return concatClasses("st-row", // always
-        this.classes.row, // custom
-        this.v.hover ? this.classes.rowHover || "hover" : undefined, // custom or default
+        return concatClasses("st-row",
+        // always
+        this.classes.row,
+        // custom
+        this.v.hover ? this.classes.rowHover || "hover" : undefined,
+        // custom or default
         this.selected ? this.classes.rowSelected || "selected" : undefined // custom or default
         );
       },
       rowStyle: function rowStyle() {
-        return concatStyles(this.styles.row, // custom
-        this.v.hover ? this.styles.rowHover : undefined, // custom or default
+        return concatStyles(this.styles.row,
+        // custom
+        this.v.hover ? this.styles.rowHover : undefined,
+        // custom or default
         this.selected ? this.styles.rowSelected : undefined // custom or default
         );
       },
       // refactor column.cell (String|{}|Function) to standard structure ({})
       columnCellRefactors: function columnCellRefactors() {
         var _this = this;
-
         var toStandardCell = function toStandardCell(cell, cfg) {
           var t = _typeof(cfg);
-
           if (t === "undefined") return {
             component: DEFAULT_CELL_COMPONENT
           };else if (t === "string") return {
@@ -938,7 +996,6 @@
             component: DEFAULT_CELL_COMPONENT
           };
         };
-
         return this.cells.map(function (cell) {
           if (!cell.column) return {
             component: DEFAULT_CELL_COMPONENT
@@ -949,8 +1006,10 @@
     },
     methods: {
       cellClass: function cellClass(cell) {
-        return concatClasses("st-cell", // always
-        this.classes.cell, // define in Grid.classes.contentRow
+        return concatClasses("st-cell",
+        // always
+        this.classes.cell,
+        // define in Grid.classes.contentRow
         cell.column && cell.column["class"] || "text" // define in Grid.columns[index].class
         );
       },
@@ -971,33 +1030,30 @@
       },
       clickRow: function clickRow(targetEl) {
         var _this2 = this;
-
         // delay click event for dblclick event to clear it
         if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
         this.v.clickTimer = g.setTimeout(function () {
           // find cell
           var td = targetEl.closest("td");
-
           if (!td) {
             alert("This browser not support Element.closest method");
             return;
           }
-
           var cell = _this2.cells[td.cellIndex];
-
           if (!cell) {
             alert("Error to find cell config");
             return;
-          } // 1. do actual work for click
+          }
+
+          // 1. do actual work for click
+
           // 1.1. emit row-selection-change event
-
-
           _this2.$emit("row-selection-change", {
             selected: !_this2.selected,
             index: _this2.dataRowIndex
-          }); // 1.2. invoke column.cell.on.click function
+          });
 
-
+          // 1.2. invoke column.cell.on.click function
           var t = _this2.columnCellRefactors[td.cellIndex];
           if (typeof t.click === "function") t.click.call(_this2.$root, {
             target: targetEl,
@@ -1006,8 +1062,9 @@
             nestedRowIndex: _this2.index,
             tableRowIndex: _this2.tableRowIndex,
             dataRowIndex: _this2.dataRowIndex
-          }); // 1.3. emit row-click event
+          });
 
+          // 1.3. emit row-click event
           _this2.$emit("row-click", {
             row: _this2.row,
             index: _this2.dataRowIndex,
@@ -1017,14 +1074,17 @@
       },
       dblclickRow: function dblclickRow() {
         // clear click event
-        if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer); // 1. do actual work for dblclick
-        // 1.1. emit row-selection-change event
+        if (this.v.clickTimer) g.clearTimeout(this.v.clickTimer);
 
+        // 1. do actual work for dblclick
+
+        // 1.1. emit row-selection-change event
         if (!this.selected) this.$emit("row-selection-change", {
           selected: this.selected,
           index: this.dataRowIndex
-        }); // 1.2. emit row-dblclick event
+        });
 
+        // 1.2. emit row-dblclick event
         this.$emit("row-dblclick", {
           row: this.row,
           index: this.dataRowIndex
@@ -1060,7 +1120,7 @@
           dblclick: function($event) {
             $event.stopPropagation();
             $event.preventDefault();
-            return _vm.dblclickRow($event)
+            return _vm.dblclickRow.apply(null, arguments)
           }
         }
       },
@@ -1109,15 +1169,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stTableRow = normalizeComponent_1(
+    const __vue_component__$6 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$6, staticRenderFns: __vue_staticRenderFns__$6 },
       __vue_inject_styles__$6,
       __vue_script__$6,
       __vue_scope_id__$6,
       __vue_is_functional_template__$6,
       __vue_module_identifier__$6,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -1133,7 +1197,7 @@
     },
     render: function render(createElement, context) {
       return context.props.tableRows.map(function (tableRow) {
-        return createElement(stTableRow, {
+        return createElement(__vue_component__$6, {
           props: tableRow,
           on: context.listeners
         });
@@ -1147,6 +1211,7 @@
   //
   //
   //
+
   var component = {
     replace: true,
     props: {
@@ -1165,6 +1230,7 @@
       }
     }
   };
+
   /**
    * Flatten complex object array to simple string array.
    *
@@ -1176,7 +1242,6 @@
    * 3. [{width: '20px'}, {children: [{width: '40px'}, {width: '60px'}]}, ...]
    *    flatten to ['20px', '40px', '60px', ...]
    */
-
   var flatten$1 = function flatten(columns) {
     return columns.reduce(function (a, b) {
       return a.concat(b.children ? flatten(b.children) : b.width || b);
@@ -1216,15 +1281,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stColgroup = normalizeComponent_1(
+    const __vue_component__$7 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$7, staticRenderFns: __vue_staticRenderFns__$7 },
       __vue_inject_styles__$7,
       __vue_script__$7,
       __vue_scope_id__$7,
       __vue_is_functional_template__$7,
       __vue_module_identifier__$7,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -1249,6 +1318,7 @@
   //
   //
   //
+
   var component$1 = {
     replace: true,
     props: {
@@ -1283,6 +1353,7 @@
       }
     }
   };
+
   /**
    * Transform the origin string or lable/children config to matched trs array config.
    *
@@ -1318,22 +1389,24 @@
    *      [{label: "X211"}, {label: "X212"}]
    *    ]
    */
-
   function transform(columns) {
     // Polishing String item to Object item
     columns = polishing(columns);
     columns.forEach(function (column) {
       // set $_rowIndex and $_depth
-      descendantDepth(column); // set colspan
+      descendantDepth(column);
 
+      // set colspan
       leafCount(column);
-    }); // group by $_rowIndex
+    });
 
+    // group by $_rowIndex
     var rows = flattenWithSelf(columns, true).reduce(function (result, column) {
       if (!result[column.$_rowIndex]) result[column.$_rowIndex] = [column];else result[column.$_rowIndex].push(column);
       return result;
-    }, []); // calculate each column's rowspan
+    }, []);
 
+    // calculate each column's rowspan
     rows.forEach(function (row) {
       row.forEach(function (column) {
         if (column.$_depth === 0) {
@@ -1347,8 +1420,9 @@
           if (depth > 0) column.rowspan = depth + 1;
         }
       });
-    }); // remove $_rowIndex and $_depth
+    });
 
+    // remove $_rowIndex and $_depth
     rows.forEach(function (row) {
       row.forEach(function (column) {
         delete column.$_rowIndex;
@@ -1357,6 +1431,7 @@
     });
     return rows;
   }
+
   /**
    * Change Array's String item to Object item.
    * All nested item in children will be changed also.
@@ -1367,22 +1442,19 @@
    * 2. {"X1", children: ["X11", "X12"] polishing to
    *    {label: "X1", children: [{label: "X11"}, {label: "X12"}] }.
    */
-
-
   function polishing(columns) {
     // Polishing String item to Object item
     for (var i = 0; i < columns.length; i++) {
       var column = columns[i];
-
       if (_typeof(column) === "object") {
         if (column.children) column.children = polishing(column.children);
       } else columns[i] = {
         label: column
       };
     }
-
     return columns;
   }
+
   /**
    * Calculate the descendant depth and set to $_depth property.
    *
@@ -1393,26 +1465,22 @@
    * 2. {label: "X0", children: ["X1"]}.depth = 1
    * 3. {label: "X0", children: [{label: "X1", children: ["X2"]}]}.depth = 2
    */
-
-
   function descendantDepth(column) {
     if (!column.hasOwnProperty("$_rowIndex")) column.$_rowIndex = 0; // parent $_rowIndex
 
     var d;
-
     if (column.children && column.children.length > 0) {
       d = 0;
       column.children.forEach(function (child) {
         child.$_rowIndex = column.$_rowIndex + 1; // child $_rowIndex
-
         d = Math.max(d, descendantDepth(child));
       });
       d++; // = maxChildDepth + 1
     } else d = 0;
-
     column.$_depth = d;
     return d;
   }
+
   /**
    * Calculate the leaf node count and set to colspan property.
    * If the node has no children, the leaf count equals to 1.
@@ -1426,21 +1494,18 @@
    *      { label: "X12", children: [{label: "X121"}, {label: "X122"}]}
    *    ]}.colspan = 3
    */
-
-
   function leafCount(column) {
     var count;
-
     if (column.children && column.children.length > 0) {
       count = 0;
       column.children.forEach(function (child) {
         count += leafCount(child);
       });
     } else count = 1;
-
     if (count > 1) column.colspan = count;
     return count;
   }
+
   /**
    * Flatten the array items with itself and its children items.
    *
@@ -1450,8 +1515,6 @@
    * 1. ["a", "b"] flatten to ["a", "b"]
    * 2. ["a", {children: ["b", "c"]}] flatten to ["a", {children: ["b", "c"]}, "b", "c"]
    */
-
-
   function flattenWithSelf(columns) {
     var removeChildren = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     var result = columns.reduce(function (a, b) {
@@ -1464,46 +1527,42 @@
     });
     return result;
   }
+
   /**
    * Deep copy a object.
    *
    * From https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object#answer-728694
    */
-
-
   function deepClone(obj) {
-    var copy; // Handle the 3 simple types, and null or undefined
+    var copy;
 
-    if (null == obj || "object" !== _typeof(obj)) return obj; // Handle Date
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" !== _typeof(obj)) return obj;
 
+    // Handle Date
     if (obj instanceof Date) {
       copy = new Date();
       copy.setTime(obj.getTime());
       return copy;
-    } // Handle Array
+    }
 
-
+    // Handle Array
     if (obj instanceof Array) {
       copy = [];
-
       for (var i = 0, len = obj.length; i < len; i++) {
         copy[i] = deepClone(obj[i]);
       }
-
-      return copy;
-    } // Handle Object
-
-
-    if (obj instanceof Object) {
-      copy = {};
-
-      for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = deepClone(obj[attr]);
-      }
-
       return copy;
     }
 
+    // Handle Object
+    if (obj instanceof Object) {
+      copy = {};
+      for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = deepClone(obj[attr]);
+      }
+      return copy;
+    }
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
 
@@ -1579,15 +1638,19 @@
     
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stThead = normalizeComponent_1(
+    const __vue_component__$8 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$8, staticRenderFns: __vue_staticRenderFns__$8 },
       __vue_inject_styles__$8,
       __vue_script__$8,
       __vue_scope_id__$8,
       __vue_is_functional_template__$8,
       __vue_module_identifier__$8,
+      false,
+      undefined,
       undefined,
       undefined
     );
@@ -1602,16 +1665,15 @@
    *      if row[column.pid].length <= subRowIndex.
    * Otherwise return `{ empty: false, value: row[column.id] }`.
    */
-
   function getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {
     return column.pid ? row[column.pid] && row[column.pid].length > subRowIndex ? {
       empty: false,
-      value: row[column.pid][subRowIndex][column.id] // nested cell
-
-    } : {
-      empty: true // empty cell
-
-    } : {
+      value: row[column.pid][subRowIndex][column.id]
+    } // nested cell
+    : {
+      empty: true
+    } // empty cell
+    : {
       empty: false,
       value: row[column.id]
     }; // top cell
@@ -1619,8 +1681,8 @@
 
   var script$7 = {
     components: {
-      stColgroup: stColgroup,
-      stThead: stThead,
+      stColgroup: __vue_component__$7,
+      stThead: __vue_component__$8,
       stDataRow: stDataRow
     },
     props: {
@@ -1685,42 +1747,35 @@
           width: "calc(100% - " + this.v.scrollBarWidth + "px)"
         });
       },
-
-      /** DataRow listeners to transfer */
-      dataRowListeners: function dataRowListeners() {
+      /** DataRow listeners to transfer */dataRowListeners: function dataRowListeners() {
         var _this = this;
-
         var events = {};
         Object.keys(this.$listeners).filter(function (key) {
           return key.startsWith("row-") || key.startsWith("cell-");
         }).forEach(function (key) {
           return events[key] = _this.$listeners[key];
-        }); // deal row-selection-change event
+        });
 
+        // deal row-selection-change event
         var old = events["row-selection-change"]; // user define listener
-
         if (old) {
           events["row-selection-change"] = function (data) {
             _this.selectRow(data.index, data.selected);
-
             old.call(_this, data);
           };
         } else events["row-selection-change"] = function (data) {
           return _this.selectRow(data.index, data.selected);
         };
-
         return events;
       },
       // [[tableRows], ...], index follow rows
       tableRows: function tableRows() {
         var _this2 = this;
-
         // DataRow OneToMany TableRow
         var all = [];
         var preTableRowCount = 0;
         this.rows.forEach(function (dataRow, dataRowIndex) {
           var subTableRows = _this2.dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount);
-
           all.push(subTableRows);
           preTableRowCount += subTableRows.length;
         });
@@ -1728,15 +1783,16 @@
       },
       // Calculate each row's rowspan by Column.pid config
       rowspans: function rowspans() {
-        var rowspans = {}; // find pid from columns config
+        var rowspans = {};
 
+        // find pid from columns config
         var pids = this.subColumns.map(function (c) {
           return c.pid;
         }).filter(function (v, i, a) {
           return a.indexOf(v) === i;
         }); // distinct pid
-        // calculate rowspan value
 
+        // calculate rowspan value
         this.rows.forEach(function (row, index) {
           if (typeof row.rowspan === "number") {
             // custom rowspan value
@@ -1760,7 +1816,6 @@
       if (!this.v.lastColumnIsAutoWidth) {
         // watch horizon scrollbar size
         this.v.contentEl = this.$el.querySelector(".content"); // cache content el
-
         this.$_watchHorizonScrollBarSize();
       }
     },
@@ -1770,15 +1825,13 @@
     methods: {
       columnSelectStateChange: function columnSelectStateChange(selected, index, column) {
         var _this3 = this;
-
         if (index === 0) {
           // add full selection to the first column
           this.rows.forEach(function (row) {
             return _this3.$set(row, "selected", selected);
           });
-        } // emit column-select-state-change event
-
-
+        }
+        // emit column-select-state-change event
         this.$emit('column-select-state-change', selected, index, column);
       },
       // DataRow OneToMany TableRow
@@ -1786,9 +1839,9 @@
       // TableCell: {rowspan, colspan, value, classes, styles}
       dataRowToTableRow: function dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {
         var _this4 = this;
+        var tableRows = [];
 
-        var tableRows = []; // main TableRow
-
+        // main TableRow
         var nestedIndex = 0;
         tableRows.push({
           tableRowIndex: preTableRowCount,
@@ -1800,9 +1853,8 @@
           selected: dataRow.selected === true,
           cells: this.flattenColumns.map(function (column, i) {
             var _getCellConfigInfo = getCellConfigInfo(dataRow, column, 0),
-                empty = _getCellConfigInfo.empty,
-                value = _getCellConfigInfo.value;
-
+              empty = _getCellConfigInfo.empty,
+              value = _getCellConfigInfo.value;
             var c = {
               column: column,
               empty: empty
@@ -1812,10 +1864,10 @@
             if (rowspan > 1) c.rowspan = rowspan;
             return c;
           })
-        }); // sub TableRows
+        });
 
+        // sub TableRows
         var len = this.rowspans[dataRowIndex] || 1;
-
         var _loop = function _loop(i) {
           tableRows.push({
             tableRowIndex: preTableRowCount + nestedIndex,
@@ -1826,9 +1878,8 @@
             styles: _this4.styles.contentRow,
             cells: _this4.subColumns.map(function (column) {
               var _getCellConfigInfo2 = getCellConfigInfo(dataRow, column, i),
-                  empty = _getCellConfigInfo2.empty,
-                  value = _getCellConfigInfo2.value;
-
+                empty = _getCellConfigInfo2.empty,
+                value = _getCellConfigInfo2.value;
               var c = {
                 column: column,
                 empty: empty
@@ -1838,16 +1889,12 @@
             })
           });
         };
-
         for (var i = 1; i < len; i++) {
           _loop(i);
         }
-
         return tableRows;
       },
-
-      /** DataRow props to transfer */
-      dataRowProps: function dataRowProps(row, index) {
+      /** DataRow props to transfer */dataRowProps: function dataRowProps(row, index) {
         var props = {
           tableRows: this.tableRows[index]
         };
@@ -1855,11 +1902,9 @@
       },
       $_watchHorizonScrollBarSize: function $_watchHorizonScrollBarSize() {
         var _this5 = this;
-
         var t;
         this.v.timer = g.setInterval(function () {
           t = _this5.v.contentEl.offsetWidth - _this5.v.contentEl.clientWidth;
-
           if (t != _this5.v.scrollBarWidth) {
             // console.log("scrollBarWidth: %s > %s", this.v.scrollBarWidth, t);
             _this5.v.scrollBarWidth = t;
@@ -1872,14 +1917,12 @@
       },
       clearSelection: function clearSelection() {
         var _this6 = this;
-
         this.selection.forEach(function (row) {
           return _this6.$set(row, "selected", false);
         });
       },
       deleteSelection: function deleteSelection() {
         var _this7 = this;
-
         this.selection.forEach(function (row) {
           return _this7.rows.splice(_this7.rows.indexOf(row), 1);
         });
@@ -1988,16 +2031,20 @@
     const __vue_is_functional_template__$9 = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stGrid = normalizeComponent_1(
+    const __vue_component__$9 = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$9, staticRenderFns: __vue_staticRenderFns__$9 },
       __vue_inject_styles__$9,
       __vue_script__$9,
       __vue_scope_id__$9,
       __vue_is_functional_template__$9,
       __vue_module_identifier__$9,
+      false,
       browser,
+      undefined,
       undefined
     );
 
@@ -2061,7 +2108,6 @@
     },
     created: function created() {
       var _this = this;
-
       if (this.selectable) {
         this.$watch("selected", function (newVal, _) {
           if (_this.ui.selected !== newVal) _this.ui.selected = newVal;
@@ -2076,7 +2122,6 @@
           this.ui.selected = true;
           this.$emit("update:selected", true);
         }
-
         this.$emit("click", $event);
       }
     }
@@ -2139,23 +2184,27 @@
     const __vue_is_functional_template__$a = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stButton = normalizeComponent_1(
+    const __vue_component__$a = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$a, staticRenderFns: __vue_staticRenderFns__$a },
       __vue_inject_styles__$a,
       __vue_script__$a,
       __vue_scope_id__$a,
       __vue_is_functional_template__$a,
       __vue_module_identifier__$a,
+      false,
       browser,
+      undefined,
       undefined
     );
 
   //
   var script$9 = {
     components: {
-      stButton: stButton
+      stButton: __vue_component__$a
     },
     props: {
       text: {
@@ -2170,14 +2219,12 @@
           });
         }
       },
-
       /** The current 1-base page number */
       pageNo: {
         type: Number,
         required: false,
         "default": 0
       },
-
       /** The maximal elements count of one page */
       pageSize: {
         type: Number,
@@ -2186,7 +2233,6 @@
           return getGlobalVariable("simter.pagebar.pageSize", 25);
         }
       },
-
       /** The total elements count */
       total: {
         type: Number,
@@ -2349,23 +2395,27 @@
     const __vue_is_functional_template__$b = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stPagebar = normalizeComponent_1(
+    const __vue_component__$b = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$b, staticRenderFns: __vue_staticRenderFns__$b },
       __vue_inject_styles__$b,
       __vue_script__$b,
       __vue_scope_id__$b,
       __vue_is_functional_template__$b,
       __vue_module_identifier__$b,
+      false,
       browser,
+      undefined,
       undefined
     );
 
   //
   var script$a = {
     components: {
-      stButton: stButton
+      stButton: __vue_component__$a
     },
     props: {
       rootClass: {
@@ -2373,13 +2423,11 @@
         required: false,
         "default": "st-button-group"
       },
-
       /** buttons: [String|{text, value, ...}] */
       items: {
         type: Array,
         required: true
       },
-
       /** current value */
       value: {
         required: false
@@ -2420,13 +2468,10 @@
       }
     },
     methods: {
-      /** auto judge whether to add first, last or selected class to the relative button */
-      itemClass: function itemClass(item, index) {
+      /** auto judge whether to add first, last or selected class to the relative button */itemClass: function itemClass(item, index) {
         return concatClasses(item == this.v.value ? this.classes.selected : undefined, index === 0 ? this.classes.first : undefined, index === this.items.length - 1 ? this.classes.last : undefined);
       },
-
-      /** auto judge whether to add first, last or selected style to the relative button */
-      itemStyle: function itemStyle(item, index) {
+      /** auto judge whether to add first, last or selected style to the relative button */itemStyle: function itemStyle(item, index) {
         return concatStyles(item == this.v.value ? this.styles.selected : undefined, index === 0 ? this.styles.first : undefined, index === this.items.length - 1 ? this.styles.last : undefined);
       },
       clickItem: function clickItem(item, index) {
@@ -2502,16 +2547,20 @@
     const __vue_is_functional_template__$c = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stButtonGroup = normalizeComponent_1(
+    const __vue_component__$c = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$c, staticRenderFns: __vue_staticRenderFns__$c },
       __vue_inject_styles__$c,
       __vue_script__$c,
       __vue_scope_id__$c,
       __vue_is_functional_template__$c,
       __vue_module_identifier__$c,
+      false,
       browser,
+      undefined,
       undefined
     );
 
@@ -2519,7 +2568,7 @@
    * Events: change(newValue, newIndex)
    */
   var script$b = {
-    "extends": stButtonGroup,
+    "extends": __vue_component__$c,
     props: {
       rootClass: {
         type: String,
@@ -2578,16 +2627,20 @@
     const __vue_is_functional_template__$d = undefined;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stPagebarSizes = normalizeComponent_1(
+    const __vue_component__$d = /*#__PURE__*/normalizeComponent_1(
       {},
       __vue_inject_styles__$d,
       __vue_script__$d,
       __vue_scope_id__$d,
       __vue_is_functional_template__$d,
       __vue_module_identifier__$d,
+      false,
       browser,
+      undefined,
       undefined
     );
 
@@ -2652,33 +2705,43 @@
     const __vue_is_functional_template__$e = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stToolbar = normalizeComponent_1(
+    const __vue_component__$e = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$d, staticRenderFns: __vue_staticRenderFns__$d },
       __vue_inject_styles__$e,
       __vue_script__$e,
       __vue_scope_id__$e,
       __vue_is_functional_template__$e,
       __vue_module_identifier__$e,
+      false,
       browser,
+      undefined,
       undefined
     );
 
   //
   var script$d = {
     components: {
-      stButton: stButton
+      stButton: __vue_component__$a
     },
     props: {
+      quick: {
+        type: Boolean,
+        required: false,
+        "default": false
+      },
       placeholder: {
         type: String,
         required: false,
         "default": function _default() {
-          return getGlobalVariable("simter.search.placeholder");
+          return getGlobalVariable("simter.search.placeholder", "Please input key word");
         }
       },
       value: {
+        type: String,
         required: false
       },
       searchButtonText: {
@@ -2686,6 +2749,48 @@
         required: false,
         "default": function _default() {
           return getGlobalVariable("simter.search.searchButtonText", "Go");
+        }
+      },
+      advanceButtonText: {
+        type: String,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.search.advanceButtonText", "More");
+        }
+      },
+      runButtonText: {
+        type: String,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.search.operations.runButtonText", "Search");
+        }
+      },
+      cleanButtonText: {
+        type: String,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.search.operations.cleanButtonText", "Clean");
+        }
+      },
+      closeButtonText: {
+        type: String,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.search.operations.closeButtonText", "Close");
+        }
+      },
+      clickToShowAdvanceButtonText: {
+        type: String,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.search.clickToShowAdvanceButtonText", "Click to show advance box");
+        }
+      },
+      clickToHideAdvanceButtonText: {
+        type: String,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.search.clickToHideAdvanceButtonText", "Click to hide advance box");
         }
       },
       // all dom elements class
@@ -2703,30 +2808,103 @@
         "default": function _default() {
           return {};
         }
+      },
+      /** Advance condition config json.
+       * 
+       * value format:
+       * ```json
+       * {
+       *   conditions: [
+       *     {
+       *       id: string, 
+       *       label: string,
+       *       [hidden]: boolean, // whether ignore this condition, default false
+       *       [value]: string,   // default value, for multiple values need init to []
+       *       [type]: string,    // backend value type, string|boolean|number|date|month|time|datetime|money|..., default string
+       *       [operator]: string, // compare type, "[]" | "[)" | "=" |..., default "="
+       *       [options]: string[] | [{text: string, value: string}], // extra config for multiple values
+       *       [ui]: string,  // when tag=input set its type attribute value, text|number|datetime-local|date|time|month|radio|checkout, default text
+       *       [tag]: string, // html control type, "input" | "select", default "input"
+       *     },
+       *     ...
+       *   ],
+       *   height: string,    // the box height, "auto" | "15em" | ..., default "auto" fo scroll
+       *   maxHeight: string, // the box height, "15em" | ...
+       *   width: string,
+       *   minWidth: string,
+       * }
+       * ```
+       */
+      advanceConfig: {
+        type: Object,
+        required: false
       }
     },
     data: function data() {
       return {
-        ui: {
-          value: undefined
-        }
+        // for radio, checkout control's unique name
+        instanceId: Date.now(),
+        advanceVisable: false,
+        value_: undefined
       };
     },
-    watch: {
-      value: {
-        immediate: true,
-        handler: function handler(value) {
-          if (value !== this.ui.value) this.ui.value = value;
+    created: function created() {
+      var _this = this;
+      // copy value prop's value
+      this.value_ = this.value;
+
+      // init default advanceConfig value to avoid failed reactive
+      // console.log(this.advanceConfig?.conditions)
+      if (this.advanceConfig && this.advanceConfig.conditions) {
+        this.advanceConfig.conditions.forEach(function (c) {
+          if (!c.hasOwnProperty("value")) {
+            _this.$set(c, "value", ["in", "not in", "[]", "[)", "(]", "()"].includes(c.operator) ? [] : "");
+          }
+        });
+      }
+    },
+    computed: {
+      /**
+       * The advance condition values, has this format:
+       * 
+       * [[$id, $value, $type, $operator], ...]
+       */
+      advanceValue: function advanceValue() {
+        var all = this.advanceConfig ? this.advanceConfig.conditions.filter(function (c) {
+          return c.value && (Array.isArray(c.value) ? c.value.some(function (v) {
+            return v;
+          }) : true);
+        }).map(function (c) {
+          return [c.id, c.value, c.type || "string", c.operator || "="];
+        }) : [];
+        return all.length ? all : undefined;
+      },
+      /** Mix advanceValue and fuzzyValue */mixValue: function mixValue() {
+        var fuzzyValue = this.value_ ? ["fuzzy", this.value_] : undefined;
+        var v;
+        if (!this.advanceValue) {
+          // no advance value
+          v = fuzzyValue ? [fuzzyValue] : undefined;
+        } else {
+          // has advance value
+          v = fuzzyValue ? [fuzzyValue].concat(this.advanceValue) : this.advanceValue;
         }
+        return v;
       }
     },
     methods: {
       doSearch: function doSearch() {
-        this.$emit("search", this.ui.value);
+        // console.log("st-search: ")
+        // console.log("  value=%s", this.value)
+        // console.log("  value_=%s", this.value_)
+        // console.log("  advanceValue=%s", JSON.stringify(this.advanceValue))
+        // console.log("  mixValue=%s", JSON.stringify(this.mixValue))
+        this.$emit("search", this.value_, this.advanceValue, this.mixValue);
       },
-      doChange: function doChange() {
-        this.$emit("update:value", this.ui.value);
-        this.$emit("change", this.ui.value);
+      clearCondition: function clearCondition() {
+        this.advanceConfig.conditions.forEach(function (c) {
+          return c.value = Array.isArray(c.value) ? [] : undefined;
+        });
       }
     }
   };
@@ -2743,56 +2921,945 @@
       "div",
       { class: ["st-search", _vm.classes.root], style: _vm.styles.root },
       [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.ui.value,
-              expression: "ui.value"
-            }
-          ],
-          class: ["text", _vm.classes.text],
-          attrs: { type: "search", placeholder: _vm.placeholder },
-          domProps: { value: _vm.ui.value },
-          on: {
-            keyup: function($event) {
-              if (
-                !$event.type.indexOf("key") &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
-              }
-              $event.stopPropagation();
-              return _vm.doSearch($event)
-            },
-            change: _vm.doChange,
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.$set(_vm.ui, "value", $event.target.value);
-            }
-          }
-        }),
-        _vm._v(" "),
         _c(
-          "st-button",
+          "div",
           {
-            class: "search",
-            attrs: { classes: _vm.classes.search, styles: _vm.styles.search },
-            nativeOn: {
-              click: function($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                return _vm.doSearch($event)
-              }
-            }
+            class: ["fuzzy-box", _vm.classes.fuzzyBox],
+            style: _vm.styles.fuzzyBox
           },
-          [_vm._v(_vm._s(_vm.searchButtonText))]
-        )
-      ],
-      1
+          [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.value_,
+                  expression: "value_"
+                }
+              ],
+              class: ["text", _vm.classes.text],
+              attrs: { type: "search", placeholder: _vm.placeholder },
+              domProps: { value: _vm.value_ },
+              on: {
+                input: [
+                  function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.value_ = $event.target.value;
+                  },
+                  function($event) {
+                    return _vm.$emit("input", $event.target.value)
+                  }
+                ],
+                keyup: function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  $event.stopPropagation();
+                  return _vm.doSearch.apply(null, arguments)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c(
+              "st-button",
+              {
+                class: "search",
+                attrs: { classes: _vm.classes.search, styles: _vm.styles.search },
+                nativeOn: {
+                  click: function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    return _vm.doSearch.apply(null, arguments)
+                  }
+                }
+              },
+              [_vm._v(_vm._s(_vm.searchButtonText))]
+            ),
+            _vm._v(" "),
+            _vm.advanceConfig && _vm.advanceConfig.conditions.length
+              ? _c(
+                  "st-button",
+                  {
+                    class: "advance",
+                    attrs: {
+                      iconClass: _vm.advanceVisable
+                        ? _vm.classes.advance.upIcon
+                        : _vm.classes.advance.downIcon,
+                      classes: _vm.classes.advance,
+                      styles: _vm.styles.advance,
+                      title: _vm.advanceVisable
+                        ? _vm.clickToHideAdvanceButtonText
+                        : _vm.clickToShowAdvanceButtonText
+                    },
+                    nativeOn: {
+                      click: function($event) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        _vm.advanceVisable = !_vm.advanceVisable;
+                      }
+                    }
+                  },
+                  [_vm._v(_vm._s(_vm.advanceButtonText))]
+                )
+              : _vm._e()
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _vm.advanceVisable
+          ? _c(
+              "div",
+              {
+                class: ["advance-box", _vm.classes.advanceBox],
+                style: [
+                  _vm.styles.advanceBox,
+                  {
+                    width: _vm.advanceConfig.width,
+                    minWidth: _vm.advanceConfig.minWidth,
+                    height: _vm.advanceConfig.height,
+                    maxHeight: _vm.advanceConfig.maxHeight
+                  }
+                ]
+              },
+              [
+                _c(
+                  "div",
+                  { staticClass: "conditions" },
+                  _vm._l(_vm.advanceConfig.conditions, function(c) {
+                    return _c(
+                      "div",
+                      { staticClass: "condition" },
+                      [
+                        _c("div", { staticClass: "label" }, [
+                          _vm._v(_vm._s(c.label))
+                        ]),
+                        _vm._v(" "),
+                        !c.operator ||
+                        ["=", ">", ">=", "<", "<=", "!=", "<>"].includes(
+                          c.operator
+                        )
+                          ? [
+                              "checkbox" == c.ui
+                                ? _c("label", [
+                                    c.ui === "checkbox"
+                                      ? _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: c.value,
+                                              expression: "c.value"
+                                            }
+                                          ],
+                                          class: ["value", _vm.classes.value],
+                                          attrs: {
+                                            name: c.id + "_" + _vm.instanceId,
+                                            type: "checkbox"
+                                          },
+                                          domProps: {
+                                            value: c.options.value || c.options,
+                                            checked: Array.isArray(c.value)
+                                              ? _vm._i(
+                                                  c.value,
+                                                  c.options.value || c.options
+                                                ) > -1
+                                              : c.value
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              var $$a = c.value,
+                                                $$el = $event.target,
+                                                $$c = $$el.checked ? true : false;
+                                              if (Array.isArray($$a)) {
+                                                var $$v =
+                                                    c.options.value || c.options,
+                                                  $$i = _vm._i($$a, $$v);
+                                                if ($$el.checked) {
+                                                  $$i < 0 &&
+                                                    _vm.$set(
+                                                      c,
+                                                      "value",
+                                                      $$a.concat([$$v])
+                                                    );
+                                                } else {
+                                                  $$i > -1 &&
+                                                    _vm.$set(
+                                                      c,
+                                                      "value",
+                                                      $$a
+                                                        .slice(0, $$i)
+                                                        .concat(
+                                                          $$a.slice($$i + 1)
+                                                        )
+                                                    );
+                                                }
+                                              } else {
+                                                _vm.$set(c, "value", $$c);
+                                              }
+                                            }
+                                          }
+                                        })
+                                      : c.ui === "radio"
+                                      ? _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: c.value,
+                                              expression: "c.value"
+                                            }
+                                          ],
+                                          class: ["value", _vm.classes.value],
+                                          attrs: {
+                                            name: c.id + "_" + _vm.instanceId,
+                                            type: "radio"
+                                          },
+                                          domProps: {
+                                            value: c.options.value || c.options,
+                                            checked: _vm._q(
+                                              c.value,
+                                              c.options.value || c.options
+                                            )
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.$set(
+                                                c,
+                                                "value",
+                                                c.options.value || c.options
+                                              )
+                                            }
+                                          }
+                                        })
+                                      : _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: c.value,
+                                              expression: "c.value"
+                                            }
+                                          ],
+                                          class: ["value", _vm.classes.value],
+                                          attrs: {
+                                            name: c.id + "_" + _vm.instanceId,
+                                            type: c.ui
+                                          },
+                                          domProps: {
+                                            value: c.options.value || c.options,
+                                            value: c.value
+                                          },
+                                          on: {
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                c,
+                                                "value",
+                                                $event.target.value
+                                              );
+                                            }
+                                          }
+                                        }),
+                                    _vm._v(" "),
+                                    _c("span", [
+                                      _vm._v(_vm._s(c.options.text || c.options))
+                                    ])
+                                  ])
+                                : "radio" == c.ui
+                                ? _vm._l(c.options, function(o) {
+                                    return _c("label", [
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value,
+                                            expression: "c.value"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          type: "radio",
+                                          name: c.id + "_" + _vm.instanceId
+                                        },
+                                        domProps: {
+                                          value: o.value || o,
+                                          checked: _vm._q(c.value, o.value || o)
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.$set(
+                                              c,
+                                              "value",
+                                              o.value || o
+                                            )
+                                          }
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("span", [_vm._v(_vm._s(o.text || o))])
+                                    ])
+                                  })
+                                : c.tag === "select"
+                                ? _c(
+                                    "select",
+                                    {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value,
+                                          expression: "c.value"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      on: {
+                                        change: function($event) {
+                                          var $$selectedVal = Array.prototype.filter
+                                            .call($event.target.options, function(
+                                              o
+                                            ) {
+                                              return o.selected
+                                            })
+                                            .map(function(o) {
+                                              var val =
+                                                "_value" in o ? o._value : o.value;
+                                              return val
+                                            });
+                                          _vm.$set(
+                                            c,
+                                            "value",
+                                            $event.target.multiple
+                                              ? $$selectedVal
+                                              : $$selectedVal[0]
+                                          );
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("option", { attrs: { value: "" } }),
+                                      _vm._v(" "),
+                                      _vm._l(c.options, function(o) {
+                                        return _c(
+                                          "option",
+                                          { domProps: { value: o.value || o } },
+                                          [_vm._v(_vm._s(o.text || o))]
+                                        )
+                                      })
+                                    ],
+                                    2
+                                  )
+                                : (c.ui || "text") === "checkbox"
+                                ? _c("input", {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: c.value,
+                                        expression: "c.value"
+                                      }
+                                    ],
+                                    class: ["value", _vm.classes.value],
+                                    attrs: {
+                                      step: c.step,
+                                      min: c.min,
+                                      max: c.max,
+                                      type: "checkbox"
+                                    },
+                                    domProps: {
+                                      checked: Array.isArray(c.value)
+                                        ? _vm._i(c.value, null) > -1
+                                        : c.value
+                                    },
+                                    on: {
+                                      change: function($event) {
+                                        var $$a = c.value,
+                                          $$el = $event.target,
+                                          $$c = $$el.checked ? true : false;
+                                        if (Array.isArray($$a)) {
+                                          var $$v = null,
+                                            $$i = _vm._i($$a, $$v);
+                                          if ($$el.checked) {
+                                            $$i < 0 &&
+                                              _vm.$set(
+                                                c,
+                                                "value",
+                                                $$a.concat([$$v])
+                                              );
+                                          } else {
+                                            $$i > -1 &&
+                                              _vm.$set(
+                                                c,
+                                                "value",
+                                                $$a
+                                                  .slice(0, $$i)
+                                                  .concat($$a.slice($$i + 1))
+                                              );
+                                          }
+                                        } else {
+                                          _vm.$set(c, "value", $$c);
+                                        }
+                                      }
+                                    }
+                                  })
+                                : (c.ui || "text") === "radio"
+                                ? _c("input", {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: c.value,
+                                        expression: "c.value"
+                                      }
+                                    ],
+                                    class: ["value", _vm.classes.value],
+                                    attrs: {
+                                      step: c.step,
+                                      min: c.min,
+                                      max: c.max,
+                                      type: "radio"
+                                    },
+                                    domProps: { checked: _vm._q(c.value, null) },
+                                    on: {
+                                      change: function($event) {
+                                        return _vm.$set(c, "value", null)
+                                      }
+                                    }
+                                  })
+                                : _c("input", {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: c.value,
+                                        expression: "c.value"
+                                      }
+                                    ],
+                                    class: ["value", _vm.classes.value],
+                                    attrs: {
+                                      step: c.step,
+                                      min: c.min,
+                                      max: c.max,
+                                      type: c.ui || "text"
+                                    },
+                                    domProps: { value: c.value },
+                                    on: {
+                                      input: function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(c, "value", $event.target.value);
+                                      }
+                                    }
+                                  })
+                            ]
+                          : ["in", "not in"].includes(c.operator)
+                          ? [
+                              c.tag === "select"
+                                ? _c(
+                                    "select",
+                                    {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: c.value,
+                                          expression: "c.value"
+                                        }
+                                      ],
+                                      class: ["value", _vm.classes.value],
+                                      style: c.style,
+                                      attrs: { multiple: "" },
+                                      on: {
+                                        change: function($event) {
+                                          var $$selectedVal = Array.prototype.filter
+                                            .call($event.target.options, function(
+                                              o
+                                            ) {
+                                              return o.selected
+                                            })
+                                            .map(function(o) {
+                                              var val =
+                                                "_value" in o ? o._value : o.value;
+                                              return val
+                                            });
+                                          _vm.$set(
+                                            c,
+                                            "value",
+                                            $event.target.multiple
+                                              ? $$selectedVal
+                                              : $$selectedVal[0]
+                                          );
+                                        }
+                                      }
+                                    },
+                                    _vm._l(c.options, function(o) {
+                                      return _c(
+                                        "option",
+                                        { domProps: { value: o.value || o } },
+                                        [_vm._v(_vm._s(o.text || o))]
+                                      )
+                                    }),
+                                    0
+                                  )
+                                : "checkbox" == c.ui
+                                ? _vm._l(c.options, function(o) {
+                                    return _c("label", [
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value,
+                                            expression: "c.value"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          type: "checkbox",
+                                          name: c.id + "_" + _vm.instanceId
+                                        },
+                                        domProps: {
+                                          value: o.value || o,
+                                          checked: Array.isArray(c.value)
+                                            ? _vm._i(c.value, o.value || o) > -1
+                                            : c.value
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            var $$a = c.value,
+                                              $$el = $event.target,
+                                              $$c = $$el.checked ? true : false;
+                                            if (Array.isArray($$a)) {
+                                              var $$v = o.value || o,
+                                                $$i = _vm._i($$a, $$v);
+                                              if ($$el.checked) {
+                                                $$i < 0 &&
+                                                  _vm.$set(
+                                                    c,
+                                                    "value",
+                                                    $$a.concat([$$v])
+                                                  );
+                                              } else {
+                                                $$i > -1 &&
+                                                  _vm.$set(
+                                                    c,
+                                                    "value",
+                                                    $$a
+                                                      .slice(0, $$i)
+                                                      .concat($$a.slice($$i + 1))
+                                                  );
+                                              }
+                                            } else {
+                                              _vm.$set(c, "value", $$c);
+                                            }
+                                          }
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("span", [_vm._v(_vm._s(o.text || o))])
+                                    ])
+                                  })
+                                : _vm._e()
+                            ]
+                          : ["[]", "[)", "(]", "()"].includes(c.operator)
+                          ? [
+                              _c("div", { staticClass: "range" }, [
+                                _c("div", { staticClass: "left" }, [
+                                  c.tag === "select"
+                                    ? _c(
+                                        "select",
+                                        {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: c.value[0],
+                                              expression: "c.value[0]"
+                                            }
+                                          ],
+                                          class: ["value", _vm.classes.value],
+                                          on: {
+                                            change: function($event) {
+                                              var $$selectedVal = Array.prototype.filter
+                                                .call(
+                                                  $event.target.options,
+                                                  function(o) {
+                                                    return o.selected
+                                                  }
+                                                )
+                                                .map(function(o) {
+                                                  var val =
+                                                    "_value" in o
+                                                      ? o._value
+                                                      : o.value;
+                                                  return val
+                                                });
+                                              _vm.$set(
+                                                c.value,
+                                                0,
+                                                $event.target.multiple
+                                                  ? $$selectedVal
+                                                  : $$selectedVal[0]
+                                              );
+                                            }
+                                          }
+                                        },
+                                        _vm._l(c.options, function(o) {
+                                          return _c(
+                                            "option",
+                                            { domProps: { value: o.value || o } },
+                                            [_vm._v(_vm._s(o.text || o))]
+                                          )
+                                        }),
+                                        0
+                                      )
+                                    : (c.ui || "text") === "checkbox"
+                                    ? _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[0],
+                                            expression: "c.value[0]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          step: c.step,
+                                          min: c.min,
+                                          max: c.max,
+                                          type: "checkbox"
+                                        },
+                                        domProps: {
+                                          checked: Array.isArray(c.value[0])
+                                            ? _vm._i(c.value[0], null) > -1
+                                            : c.value[0]
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            var $$a = c.value[0],
+                                              $$el = $event.target,
+                                              $$c = $$el.checked ? true : false;
+                                            if (Array.isArray($$a)) {
+                                              var $$v = null,
+                                                $$i = _vm._i($$a, $$v);
+                                              if ($$el.checked) {
+                                                $$i < 0 &&
+                                                  _vm.$set(
+                                                    c.value,
+                                                    0,
+                                                    $$a.concat([$$v])
+                                                  );
+                                              } else {
+                                                $$i > -1 &&
+                                                  _vm.$set(
+                                                    c.value,
+                                                    0,
+                                                    $$a
+                                                      .slice(0, $$i)
+                                                      .concat($$a.slice($$i + 1))
+                                                  );
+                                              }
+                                            } else {
+                                              _vm.$set(c.value, 0, $$c);
+                                            }
+                                          }
+                                        }
+                                      })
+                                    : (c.ui || "text") === "radio"
+                                    ? _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[0],
+                                            expression: "c.value[0]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          step: c.step,
+                                          min: c.min,
+                                          max: c.max,
+                                          type: "radio"
+                                        },
+                                        domProps: {
+                                          checked: _vm._q(c.value[0], null)
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.$set(c.value, 0, null)
+                                          }
+                                        }
+                                      })
+                                    : _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[0],
+                                            expression: "c.value[0]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          step: c.step,
+                                          min: c.min,
+                                          max: c.max,
+                                          type: c.ui || "text"
+                                        },
+                                        domProps: { value: c.value[0] },
+                                        on: {
+                                          input: function($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              c.value,
+                                              0,
+                                              $event.target.value
+                                            );
+                                          }
+                                        }
+                                      })
+                                ]),
+                                _vm._v(" "),
+                                _c("div", { staticClass: "center" }, [
+                                  _vm._v("～")
+                                ]),
+                                _vm._v(" "),
+                                _c("div", { staticClass: "right" }, [
+                                  c.tag === "select"
+                                    ? _c(
+                                        "select",
+                                        {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: c.value[1],
+                                              expression: "c.value[1]"
+                                            }
+                                          ],
+                                          class: ["value", _vm.classes.value],
+                                          on: {
+                                            change: function($event) {
+                                              var $$selectedVal = Array.prototype.filter
+                                                .call(
+                                                  $event.target.options,
+                                                  function(o) {
+                                                    return o.selected
+                                                  }
+                                                )
+                                                .map(function(o) {
+                                                  var val =
+                                                    "_value" in o
+                                                      ? o._value
+                                                      : o.value;
+                                                  return val
+                                                });
+                                              _vm.$set(
+                                                c.value,
+                                                1,
+                                                $event.target.multiple
+                                                  ? $$selectedVal
+                                                  : $$selectedVal[0]
+                                              );
+                                            }
+                                          }
+                                        },
+                                        _vm._l(c.options, function(o) {
+                                          return _c(
+                                            "option",
+                                            { domProps: { value: o.value || o } },
+                                            [_vm._v(_vm._s(o.text || o))]
+                                          )
+                                        }),
+                                        0
+                                      )
+                                    : (c.ui || "text") === "checkbox"
+                                    ? _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[1],
+                                            expression: "c.value[1]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          step: c.step,
+                                          min: c.min,
+                                          max: c.max,
+                                          type: "checkbox"
+                                        },
+                                        domProps: {
+                                          checked: Array.isArray(c.value[1])
+                                            ? _vm._i(c.value[1], null) > -1
+                                            : c.value[1]
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            var $$a = c.value[1],
+                                              $$el = $event.target,
+                                              $$c = $$el.checked ? true : false;
+                                            if (Array.isArray($$a)) {
+                                              var $$v = null,
+                                                $$i = _vm._i($$a, $$v);
+                                              if ($$el.checked) {
+                                                $$i < 0 &&
+                                                  _vm.$set(
+                                                    c.value,
+                                                    1,
+                                                    $$a.concat([$$v])
+                                                  );
+                                              } else {
+                                                $$i > -1 &&
+                                                  _vm.$set(
+                                                    c.value,
+                                                    1,
+                                                    $$a
+                                                      .slice(0, $$i)
+                                                      .concat($$a.slice($$i + 1))
+                                                  );
+                                              }
+                                            } else {
+                                              _vm.$set(c.value, 1, $$c);
+                                            }
+                                          }
+                                        }
+                                      })
+                                    : (c.ui || "text") === "radio"
+                                    ? _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[1],
+                                            expression: "c.value[1]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          step: c.step,
+                                          min: c.min,
+                                          max: c.max,
+                                          type: "radio"
+                                        },
+                                        domProps: {
+                                          checked: _vm._q(c.value[1], null)
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.$set(c.value, 1, null)
+                                          }
+                                        }
+                                      })
+                                    : _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: c.value[1],
+                                            expression: "c.value[1]"
+                                          }
+                                        ],
+                                        class: ["value", _vm.classes.value],
+                                        attrs: {
+                                          step: c.step,
+                                          min: c.min,
+                                          max: c.max,
+                                          type: c.ui || "text"
+                                        },
+                                        domProps: { value: c.value[1] },
+                                        on: {
+                                          input: function($event) {
+                                            if ($event.target.composing) {
+                                              return
+                                            }
+                                            _vm.$set(
+                                              c.value,
+                                              1,
+                                              $event.target.value
+                                            );
+                                          }
+                                        }
+                                      })
+                                ])
+                              ])
+                            ]
+                          : _vm._e()
+                      ],
+                      2
+                    )
+                  }),
+                  0
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { class: ["operations", _vm.classes.operations.class] },
+                  [
+                    _c(
+                      "st-button",
+                      {
+                        attrs: { iconClass: _vm.classes.operations.runIcon },
+                        nativeOn: {
+                          click: function($event) {
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            return _vm.doSearch.apply(null, arguments)
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(_vm.runButtonText))]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "st-button",
+                      {
+                        attrs: { iconClass: _vm.classes.operations.cleanIcon },
+                        nativeOn: {
+                          click: function($event) {
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            return _vm.clearCondition.apply(null, arguments)
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(_vm.cleanButtonText))]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "st-button",
+                      {
+                        attrs: { iconClass: _vm.classes.operations.closeIcon },
+                        nativeOn: {
+                          click: function($event) {
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            _vm.advanceVisable = false;
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(_vm.closeButtonText))]
+                    )
+                  ],
+                  1
+                )
+              ]
+            )
+          : _vm._e()
+      ]
     )
   };
   var __vue_staticRenderFns__$e = [];
@@ -2801,7 +3868,7 @@
     /* style */
     const __vue_inject_styles__$f = function (inject) {
       if (!inject) return
-      inject("data-v-5996be36_0", { source: "\n.st-search {\r\n  position: relative;\r\n  display: inline-flex;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\search.vue"],"names":[],"mappings":";AA+EA;EACA,kBAAA;EACA,oBAAA;AACA","file":"search.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-search', classes.root]\" :style=\"styles.root\">\r\n    <input\r\n      type=\"search\"\r\n      :class=\"['text', classes.text]\"\r\n      :placeholder=\"placeholder\"\r\n      v-model=\"ui.value\"\r\n      @keyup.enter.stop=\"doSearch\"\r\n      @change=\"doChange\"\r\n    />\r\n    <st-button\r\n      :class=\"'search'\"\r\n      :classes=\"classes.search\"\r\n      :styles=\"styles.search\"\r\n      @click.native.prevent.stop=\"doSearch\"\r\n    >{{searchButtonText}}</st-button>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: search(value)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\n\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    placeholder: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.placeholder\")\r\n    },\r\n    value: { required: false },\r\n    searchButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.searchButtonText\", \"Go\")\r\n    },\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.search.classes\", {})\r\n    },\r\n    // all dom elements class\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default() {\r\n        return {};\r\n      }\r\n    }\r\n  },\r\n  data() {\r\n    return { ui: { value: undefined } };\r\n  },\r\n  watch: {\r\n    value: {\r\n      immediate: true,\r\n      handler(value) {\r\n        if (value !== this.ui.value) this.ui.value = value;\r\n      }\r\n    }\r\n  },\r\n  methods: {\r\n    doSearch() {\r\n      this.$emit(\"search\", this.ui.value);\r\n    },\r\n    doChange() {\r\n      this.$emit(\"update:value\", this.ui.value);\r\n      this.$emit(\"change\", this.ui.value);\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-search {\r\n  position: relative;\r\n  display: inline-flex;\r\n}\r\n</style>"]}, media: undefined });
+      inject("data-v-4e05b656_0", { source: "\n.st-search {\r\n  position: relative;\n}\n.st-search>.fuzzy-box {\r\n  position: relative;\r\n  display: inline-flex;\n}\n.st-search>.advance-box {\r\n  position: absolute;\r\n  z-index: 100000;\r\n  display: flex;\r\n  flex-direction: column;\r\n  overflow: hidden;\r\n  right: 0;\r\n  padding: 0;\r\n  margin: 0;\n}\n.st-search>.advance-box>.conditions {\r\n  flex-grow: 1;\r\n  overflow-x: hidden;\r\n  overflow-y: auto;\r\n  padding: 0.4em;\n}\n.st-search>.advance-box>.operations {\r\n  border-width: 1px 0 0 0;\r\n  padding: 0.4em;\n}\n.st-search>.advance-box>.conditions>.condition>.range {\r\n  display: flex;\r\n  flex-direction: row;\n}\n.st-search>.advance-box>.conditions>.condition>.range>:nth-child(odd) {\r\n  flex-grow: 1;\n}\n.st-search>.advance-box>.conditions>.condition>input.value,\r\n.st-search>.advance-box>.conditions>.condition>select.value,\r\n.st-search>.advance-box>.conditions>.condition>.range>.left>input,\r\n.st-search>.advance-box>.conditions>.condition>.range>.right>input {\r\n  box-sizing: border-box;\r\n  padding: 0.45em 0.45em 0.35em 0.45em;\r\n  width: 100%;\n}\n.st-search>.advance-box>.conditions>.condition>label {\r\n  width: fit-content;\n}\r\n", map: {"version":3,"sources":["D:\\work\\github-simter-vue\\simter-vue-components\\src\\search.vue"],"names":[],"mappings":";AAgRA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;EACA,oBAAA;AACA;AACA;EACA,kBAAA;EACA,eAAA;EACA,aAAA;EACA,sBAAA;EACA,gBAAA;EACA,QAAA;EACA,UAAA;EACA,SAAA;AACA;AACA;EACA,YAAA;EACA,kBAAA;EACA,gBAAA;EACA,cAAA;AACA;AACA;EACA,uBAAA;EACA,cAAA;AACA;AAEA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,YAAA;AACA;AAEA;;;;EAIA,sBAAA;EACA,oCAAA;EACA,WAAA;AACA;AACA;EACA,kBAAA;AACA","file":"search.vue","sourcesContent":["<template>\r\n  <div :class=\"['st-search', classes.root]\" :style=\"styles.root\">\r\n    <div :class=\"['fuzzy-box', classes.fuzzyBox]\" :style=\"styles.fuzzyBox\">\r\n      <input\r\n        type=\"search\"\r\n        :class=\"['text', classes.text]\"\r\n        :placeholder=\"placeholder\"\r\n        v-model=\"value_\" @input=\"$emit('input', $event.target.value)\"\r\n        @keyup.enter.stop=\"doSearch\"\r\n      />\r\n      <st-button\r\n        :class=\"'search'\"\r\n        :classes=\"classes.search\"\r\n        :styles=\"styles.search\"\r\n        @click.native.prevent.stop=\"doSearch\"\r\n      >{{searchButtonText}}</st-button>\r\n      <st-button v-if=\"advanceConfig && advanceConfig.conditions.length\"\r\n        :class=\"'advance'\"\r\n        :iconClass=\"advanceVisable ? classes.advance.upIcon : classes.advance.downIcon\"\r\n        :classes=\"classes.advance\"\r\n        :styles=\"styles.advance\"\r\n        :title=\"advanceVisable ? clickToHideAdvanceButtonText : clickToShowAdvanceButtonText\"\r\n        @click.native.prevent.stop=\"advanceVisable = !advanceVisable\"\r\n      >{{advanceButtonText}}</st-button>\r\n    </div>\r\n    <div v-if=\"advanceVisable\" \r\n      :class=\"['advance-box', classes.advanceBox]\" \r\n      :style=\"[styles.advanceBox, {\r\n        width: advanceConfig.width,\r\n        minWidth: advanceConfig.minWidth,\r\n        height: advanceConfig.height,\r\n        maxHeight: advanceConfig.maxHeight,\r\n      }]\">\r\n      <div class=\"conditions\">\r\n        <div v-for=\"c of advanceConfig.conditions\" class=\"condition\">\r\n          <div class=\"label\">{{c.label}}</div>\r\n          <!-- single value：string, number, date, time, ... -->\r\n          <template v-if=\"!c.operator || ['=', '>', '>=', '<', '<=', '!=', '<>'].includes(c.operator)\">\r\n            <label v-if=\"'checkbox' == c.ui\">\r\n              <input :type=\"c.ui\" :name=\"c.id + '_' + instanceId\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n                :value=\"c.options.value || c.options\"/>\r\n              <span>{{c.options.text || c.options}}</span>\r\n            </label>\r\n            <label v-else-if=\"'radio' == c.ui\" v-for=\"o of c.options\">\r\n              <input type=\"radio\" :name=\"c.id + '_' + instanceId\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n                :value=\"o.value || o\"/>\r\n              <span>{{o.text || o}}</span>\r\n            </label>\r\n            <select v-else-if=\"c.tag === 'select'\" v-model=\"c.value\" :class=\"['value', classes.value]\">\r\n              <option value=\"\"></option>\r\n              <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n            </select>\r\n            <input v-else \r\n              :type=\"c.ui || 'text'\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n              :step=\"c.step\" :min=\"c.min\" :max=\"c.max\"/>\r\n          </template>\r\n          <!-- multiple value for checkout and select -->\r\n          <template v-else-if=\"['in', 'not in'].includes(c.operator)\">\r\n            <select v-if=\"c.tag === 'select'\" multiple v-model=\"c.value\" :class=\"['value', classes.value]\" :style=\"c.style\">\r\n              <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n            </select>\r\n            <label v-else-if=\"'checkbox' == c.ui\" v-for=\"o of c.options\">\r\n              <input type=\"checkbox\" :name=\"c.id + '_' + instanceId\" v-model=\"c.value\" :class=\"['value', classes.value]\"\r\n                :value=\"o.value || o\"/>\r\n              <span>{{o.text || o}}</span>\r\n            </label>\r\n          </template>\r\n          <!-- range value for [], [), (], () -->\r\n          <template v-else-if=\"['[]', '[)', '(]', '()'].includes(c.operator)\">\r\n            <div class=\"range\">\r\n              <div class=\"left\">\r\n                <select v-if=\"c.tag === 'select'\" v-model=\"c.value[0]\" :class=\"['value', classes.value]\">\r\n                  <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n                </select>\r\n                <input v-else \r\n                  :type=\"c.ui || 'text'\" v-model=\"c.value[0]\" :class=\"['value', classes.value]\"\r\n                  :step=\"c.step\" :min=\"c.min\" :max=\"c.max\"/>\r\n              </div>\r\n              <div class=\"center\">～</div>\r\n              <div class=\"right\">\r\n                <select v-if=\"c.tag === 'select'\" v-model=\"c.value[1]\" :class=\"['value', classes.value]\">\r\n                  <option v-for=\"o of c.options\" :value=\"o.value || o\">{{o.text || o}}</option>\r\n                </select>\r\n                <input v-else \r\n                  :type=\"c.ui || 'text'\" v-model=\"c.value[1]\" :class=\"['value', classes.value]\"\r\n                  :step=\"c.step\" :min=\"c.min\" :max=\"c.max\"/>\r\n              </div>\r\n            </div>\r\n          </template>\r\n        </div>\r\n      </div>\r\n      <div :class=\"['operations', classes.operations.class]\">\r\n        <st-button\r\n          :iconClass=\"classes.operations.runIcon\"\r\n          @click.native.prevent.stop=\"doSearch\"\r\n        >{{runButtonText}}</st-button>\r\n        <st-button\r\n          :iconClass=\"classes.operations.cleanIcon\"\r\n          @click.native.prevent.stop=\"clearCondition\"\r\n        >{{cleanButtonText}}</st-button>\r\n        <st-button\r\n          :iconClass=\"classes.operations.closeIcon\"\r\n          @click.native.prevent.stop=\"advanceVisable = false\"\r\n        >{{closeButtonText}}</st-button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\n/**\r\n * Events: search(value)\r\n */\r\nimport { gv } from \"./utils\";\r\nimport stButton from \"./button.vue\";\r\n\r\nexport default {\r\n  components: { stButton },\r\n  props: {\r\n    quick: { type: Boolean, required: false, default: false },\r\n    placeholder: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.placeholder\", \"Please input key word\")\r\n    },\r\n    value: {\r\n      type: String,\r\n      required: false\r\n    },\r\n    searchButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.searchButtonText\", \"Go\")\r\n    },\r\n    advanceButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.advanceButtonText\", \"More\")\r\n    },\r\n    runButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.operations.runButtonText\", \"Search\")\r\n    },\r\n    cleanButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.operations.cleanButtonText\", \"Clean\")\r\n    },\r\n    closeButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.operations.closeButtonText\", \"Close\")\r\n    },\r\n    clickToShowAdvanceButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.clickToShowAdvanceButtonText\", \"Click to show advance box\")\r\n    },\r\n    clickToHideAdvanceButtonText: {\r\n      type: String,\r\n      required: false,\r\n      default: () => gv(\"simter.search.clickToHideAdvanceButtonText\", \"Click to hide advance box\")\r\n    },\r\n    // all dom elements class\r\n    classes: {\r\n      type: Object,\r\n      required: false,\r\n      default: () => gv(\"simter.search.classes\", {})\r\n    },\r\n    // all dom elements class\r\n    styles: {\r\n      type: Object,\r\n      required: false,\r\n      default() {\r\n        return {};\r\n      }\r\n    },\r\n    /** Advance condition config json.\r\n     * \r\n     * value format:\r\n     * ```json\r\n     * {\r\n     *   conditions: [\r\n     *     {\r\n     *       id: string, \r\n     *       label: string,\r\n     *       [hidden]: boolean, // whether ignore this condition, default false\r\n     *       [value]: string,   // default value, for multiple values need init to []\r\n     *       [type]: string,    // backend value type, string|boolean|number|date|month|time|datetime|money|..., default string\r\n     *       [operator]: string, // compare type, \"[]\" | \"[)\" | \"=\" |..., default \"=\"\r\n     *       [options]: string[] | [{text: string, value: string}], // extra config for multiple values\r\n     *       [ui]: string,  // when tag=input set its type attribute value, text|number|datetime-local|date|time|month|radio|checkout, default text\r\n     *       [tag]: string, // html control type, \"input\" | \"select\", default \"input\"\r\n     *     },\r\n     *     ...\r\n     *   ],\r\n     *   height: string,    // the box height, \"auto\" | \"15em\" | ..., default \"auto\" fo scroll\r\n     *   maxHeight: string, // the box height, \"15em\" | ...\r\n     *   width: string,\r\n     *   minWidth: string,\r\n     * }\r\n     * ```\r\n     */\r\n    advanceConfig: {\r\n      type: Object,\r\n      required: false\r\n    }\r\n  },\r\n  data() {\r\n    return {\r\n      // for radio, checkout control's unique name\r\n      instanceId: Date.now(),\r\n      advanceVisable: false,\r\n      value_: undefined\r\n    };\r\n  },\r\n  created() {\r\n    // copy value prop's value\r\n    this.value_ = this.value\r\n\r\n    // init default advanceConfig value to avoid failed reactive\r\n    // console.log(this.advanceConfig?.conditions)\r\n    if (this.advanceConfig && this.advanceConfig.conditions) {\r\n      this.advanceConfig.conditions.forEach((c) => {\r\n        if (!c.hasOwnProperty(\"value\")) {\r\n          this.$set(c, \"value\", [\"in\", \"not in\", \"[]\", \"[)\", \"(]\", \"()\"].includes(c.operator) ? [] : \"\")\r\n        }\r\n      })\r\n    }\r\n  },\r\n  computed: {\r\n    /**\r\n     * The advance condition values, has this format:\r\n     * \r\n     * [[$id, $value, $type, $operator], ...]\r\n     */\r\n    advanceValue() {\r\n      const all = this.advanceConfig ? this.advanceConfig.conditions\r\n        .filter((c) => c.value && (Array.isArray(c.value) ? c.value.some((v) => v) : true))\r\n        .map((c) => [c.id, c.value, c.type || \"string\", c.operator || \"=\"]) : [];\r\n      return all.length ? all : undefined;\r\n    },\r\n    /** Mix advanceValue and fuzzyValue */\r\n    mixValue() {\r\n      const fuzzyValue = this.value_ ? [\"fuzzy\", this.value_] : undefined;\r\n      let v;\r\n      if (!this.advanceValue) {\t// no advance value\r\n        v = fuzzyValue ? [fuzzyValue] : undefined;\r\n      } else {                  // has advance value\r\n        v = fuzzyValue ? [fuzzyValue].concat(this.advanceValue) : this.advanceValue;\r\n      }\r\n      return v;\r\n    }\r\n  },\r\n  methods: {\r\n    doSearch() {\r\n      // console.log(\"st-search: \")\r\n      // console.log(\"  value=%s\", this.value)\r\n      // console.log(\"  value_=%s\", this.value_)\r\n      // console.log(\"  advanceValue=%s\", JSON.stringify(this.advanceValue))\r\n      // console.log(\"  mixValue=%s\", JSON.stringify(this.mixValue))\r\n      this.$emit(\"search\", this.value_, this.advanceValue, this.mixValue);\r\n    },\r\n    clearCondition() {\r\n      this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);\r\n    }\r\n  }\r\n};\r\n</script>\r\n\r\n<style>\r\n.st-search {\r\n  position: relative;\r\n}\r\n.st-search>.fuzzy-box {\r\n  position: relative;\r\n  display: inline-flex;\r\n}\r\n.st-search>.advance-box {\r\n  position: absolute;\r\n  z-index: 100000;\r\n  display: flex;\r\n  flex-direction: column;\r\n  overflow: hidden;\r\n  right: 0;\r\n  padding: 0;\r\n  margin: 0;\r\n}\r\n.st-search>.advance-box>.conditions {\r\n  flex-grow: 1;\r\n  overflow-x: hidden;\r\n  overflow-y: auto;\r\n  padding: 0.4em;\r\n}\r\n.st-search>.advance-box>.operations {\r\n  border-width: 1px 0 0 0;\r\n  padding: 0.4em;\r\n}\r\n\r\n.st-search>.advance-box>.conditions>.condition>.range {\r\n  display: flex;\r\n  flex-direction: row;\r\n}\r\n.st-search>.advance-box>.conditions>.condition>.range>:nth-child(odd) {\r\n  flex-grow: 1;\r\n}\r\n\r\n.st-search>.advance-box>.conditions>.condition>input.value,\r\n.st-search>.advance-box>.conditions>.condition>select.value,\r\n.st-search>.advance-box>.conditions>.condition>.range>.left>input,\r\n.st-search>.advance-box>.conditions>.condition>.range>.right>input {\r\n  box-sizing: border-box;\r\n  padding: 0.45em 0.45em 0.35em 0.45em;\r\n  width: 100%;\r\n}\r\n.st-search>.advance-box>.conditions>.condition>label {\r\n  width: fit-content;\r\n}\r\n</style>"]}, media: undefined });
 
     };
     /* scoped */
@@ -2812,16 +3879,20 @@
     const __vue_is_functional_template__$f = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stSearch = normalizeComponent_1(
+    const __vue_component__$f = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$e, staticRenderFns: __vue_staticRenderFns__$e },
       __vue_inject_styles__$f,
       __vue_script__$f,
       __vue_scope_id__$f,
       __vue_is_functional_template__$f,
       __vue_module_identifier__$f,
+      false,
       browser,
+      undefined,
       undefined
     );
 
@@ -2915,69 +3986,63 @@
     const __vue_is_functional_template__$g = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stProgressbar = normalizeComponent_1(
+    const __vue_component__$g = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$f, staticRenderFns: __vue_staticRenderFns__$f },
       __vue_inject_styles__$g,
       __vue_script__$g,
       __vue_scope_id__$g,
       __vue_is_functional_template__$g,
       __vue_module_identifier__$g,
+      false,
       browser,
+      undefined,
       undefined
     );
 
   //
-
   function entryToFiles(entry) {
     var dir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     return new Promise(function (resolve, recject) {
       if (entry.isFile) {
         entry.file(function (file) {
           file.dir = dir; // mark full dir
-
           resolve(file);
         });
       } else if (entry.isDirectory) {
         var dirReader = entry.createReader();
         dirReader.readEntries(function (entries) {
           var promises = [];
-
           for (var i = 0; i < entries.length; i++) {
             promises.push(entryToFiles(entries[i], dir ? dir + "/" + entry.name : entry.name));
           }
-
           resolve(Promise.all(promises));
         });
       }
     });
   }
-
   function dataTransferItemsToFiles(items) {
     return new Promise(function (resolve, reject) {
       var promises = [];
-
-      for (var i = 0; i < items.length; i++) {
-        promises.push(entryToFiles(items[i].webkitGetAsEntry()));
-      }
-
+      for (var i = 0; i < items.length; i++) promises.push(entryToFiles(items[i].webkitGetAsEntry()));
       Promise.all(promises).then(function (files) {
         return resolve(files);
       });
     });
-  } // [a, [b, c]] flatten to [a, b, c]
+  }
 
-
+  // [a, [b, c]] flatten to [a, b, c]
   function flattenArray(array) {
     return array.reduce(function (a, b) {
       return a.concat(Array.isArray(b) ? flattenArray(b) : b);
     }, []);
   }
-
   var script$f = {
     components: {
-      stProgressbar: stProgressbar
+      stProgressbar: __vue_component__$g
     },
     props: {
       /**
@@ -3087,7 +4152,6 @@
       },
       afterSelectedFile: function afterSelectedFile(files) {
         var _this = this;
-
         // cache files
         Array.from(files).forEach(function (file) {
           if (_this.files.every(function (f) {
@@ -3105,8 +4169,9 @@
             // upload percent: 0~100
             percent: 0
           });
-        }); // auto upload
+        });
 
+        // auto upload
         if (this.auto) this.startUpload();
       },
       removeFile: function removeFile(index) {
@@ -3115,15 +4180,13 @@
       // manual start the upload
       startUpload: function startUpload() {
         var _this2 = this;
-
         if (this.toUploadCount === 0) {
           if (this.count === 0) {
             return alert(this.text.selectFileFirst);
           } else return; // no file to upload
+        }
 
-        } // emits upload start event
-
-
+        // emits upload start event
         this.$emit("start", this.toUploadFiles.map(function (f) {
           return {
             dir: f.dir,
@@ -3131,16 +4194,16 @@
             size: f.size,
             percent: f.percent
           };
-        })); // upload file one by one
+        }));
 
+        // upload file one by one
         var p = Promise.resolve();
         var results = [];
-
         var _loop = function _loop(i) {
-          var f = _this2.toUploadFiles[i]; // get server url
+          var f = _this2.toUploadFiles[i];
 
-          var serverUrl = void 0;
-
+          // get server url
+          var serverUrl;
           if (typeof _this2.url === 'function') {
             serverUrl = _this2.url.call(_this2, {
               index: i,
@@ -3150,7 +4213,6 @@
               type: getFileExtension(f.name)
             });
           } else serverUrl = _this2.url;
-
           p = p.then(function () {
             return uploadOneFile.call(null, Object.assign({
               index: i,
@@ -3158,8 +4220,8 @@
               file: f.file,
               url: serverUrl,
               progress: function progress(data) {
-                f.percent = data.percent; // emits upload progress event
-
+                f.percent = data.percent;
+                // emits upload progress event
                 _this2.$emit("progress", data);
               },
               start: function start(xhr) {
@@ -3170,11 +4232,9 @@
             });
           });
         };
-
         for (var i = 0; i < this.toUploadFiles.length; i++) {
           _loop(i);
         }
-
         p.then(function (result) {
           // emits upload success event
           _this2.$emit("success", results);
@@ -3182,14 +4242,13 @@
           return _this2.$emit("error", e);
         }); // emits upload failed event
       },
+
       dropFiles: function dropFiles(e) {
         var _this3 = this;
-
         if (e.dataTransfer.items === null || e.dataTransfer.items.length === 0) {
           console.log("upload: No dropped items");
           return;
         }
-
         dataTransferItemsToFiles(e.dataTransfer.items).then(function (files) {
           _this3.afterSelectedFile(flattenArray(files));
         });
@@ -3219,7 +4278,7 @@
             on: {
               click: function($event) {
                 $event.stopPropagation();
-                return _vm.selectFile($event)
+                return _vm.selectFile.apply(null, arguments)
               }
             }
           },
@@ -3357,49 +4416,52 @@
     const __vue_is_functional_template__$h = false;
     /* style inject SSR */
     
+    /* style inject shadow dom */
+    
 
     
-    var stUpload = normalizeComponent_1(
+    const __vue_component__$h = /*#__PURE__*/normalizeComponent_1(
       { render: __vue_render__$g, staticRenderFns: __vue_staticRenderFns__$g },
       __vue_inject_styles__$h,
       __vue_script__$h,
       __vue_scope_id__$h,
       __vue_is_functional_template__$h,
       __vue_module_identifier__$h,
+      false,
       browser,
+      undefined,
       undefined
     );
 
+  // global register all components
   var components = {
-    "st-loader": [version, stLoader],
-    "st-grid": [version, stGrid],
-    "st-colgroup": ["0.3.0", stColgroup],
-    "st-thead": ["0.4.2", stThead],
-    "st-table-row": [version, stTableRow],
+    "st-loader": [version, __vue_component__],
+    "st-grid": [version, __vue_component__$9],
+    "st-colgroup": ["0.3.0", __vue_component__$7],
+    "st-thead": ["0.4.2", __vue_component__$8],
+    "st-table-row": [version, __vue_component__$6],
     "st-data-row": [version, stDataRow],
-    "st-cell-index": [version, stCellIndex],
-    "st-cell-sn": [version, stCellSn],
-    "st-cell-sn-selectable": [version, stCellSnSelectable],
-    "st-cell-text": [version, stCellText],
-    "st-cell-html": [version, stCellHtml],
-    "st-pagebar": [version, stPagebar],
-    "st-pagebar-sizes": [version, stPagebarSizes],
-    "st-toolbar": [version, stToolbar],
-    "st-button": [version, stButton],
-    "st-button-group": [version, stButtonGroup],
-    "st-search": [version, stSearch],
-    "st-upload": [version, stUpload],
-    "st-progress-bar": [version, stProgressbar]
+    "st-cell-index": [version, __vue_component__$1],
+    "st-cell-sn": [version, __vue_component__$2],
+    "st-cell-sn-selectable": [version, __vue_component__$3],
+    "st-cell-text": [version, __vue_component__$4],
+    "st-cell-html": [version, __vue_component__$5],
+    "st-pagebar": [version, __vue_component__$b],
+    "st-pagebar-sizes": [version, __vue_component__$d],
+    "st-toolbar": [version, __vue_component__$e],
+    "st-button": [version, __vue_component__$a],
+    "st-button-group": [version, __vue_component__$c],
+    "st-search": [version, __vue_component__$f],
+    "st-upload": [version, __vue_component__$h],
+    "st-progress-bar": [version, __vue_component__$g]
   };
   var keyVersions = {};
   var value;
-
   for (var key in components) {
     value = components[key];
     Vue.component(key, value[1]);
     keyVersions[key] = value[0];
   }
-
   var components$1 = {
     version: version,
     components: keyVersions
