@@ -1,5 +1,12 @@
 # simter-vue-components changelog
 
+## 1.1.0 2023-08-15
+
+- Add advance conditions for search component
+  - Usage: `<st-search v-model="fuzzyValue" @search="doSearch" :advanceConfig="advanceConfig"></st-search>`
+  - Document: <https://github.com/simter-vue/simter-vue-components/blob/master/src/search.vue#L181>
+  - Example: <https://github.com/simter-vue/simter-vue-components/blob/master/demo/app.vue#L43>
+
 ## 1.0.0 2022-07-11
 
 - Display `cell.label` as html
