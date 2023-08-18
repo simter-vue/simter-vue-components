@@ -117,6 +117,7 @@ import stButton from "./button.vue";
 export default {
   components: { stButton },
   props: {
+    /** Whether immediately trigger 'search' event when condition value changed */
     quick: { type: Boolean, required: false, default: false },
     placeholder: {
       type: String,
@@ -263,6 +264,7 @@ export default {
     mixValue(newValue) {
       // console.log("watch: mixValue=" + JSON.stringify(newValue))
       this.$emit("change", this.value_, this.advanceValue, this.mixValue);
+      if (this.quick) this.$emit("search", this.value_, this.advanceValue, this.mixValue);
     }
   },
   methods: {
