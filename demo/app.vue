@@ -40,7 +40,9 @@
           <st-button @click="showSelection">Show</st-button>
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
           <template #right>
-            <st-search v-model="fuzzyValue" @search="doSearch" :advanceConfig="advanceConfig"></st-search>
+            <st-search :value.sync="fuzzyValueSync" v-model="fuzzyValue" :advanceConfig="advanceConfig"
+              @search="doSearch" @change="onSearchValueChange"
+            ></st-search>
           </template>
         </st-toolbar>
       </template>
@@ -115,6 +117,7 @@ export default {
       statuses: ["Enabled", "Disabled", "All"],
       status: "All",
       fuzzyValue: "test",
+      fuzzyValueSync: "sync",
 
       // grid columns
       columns: [
@@ -260,13 +263,16 @@ export default {
       );
     },
     doSearch(fuzzyValue, advanceValue, mixValue) {
-      console.log("doSearch: origin fuzzyValue=%s", this.fuzzyValue);
+      console.log("doSearch: origin fuzzyValue=%s, fuzzyValueSync=%s", this.fuzzyValue, this.fuzzyValueSync);
       console.log("  [0]fuzzyValue=%s", fuzzyValue);
       console.log("  [1]advanceValue=%s", JSON.stringify(advanceValue));
       console.log("  [2]mixValue=%s", JSON.stringify(mixValue));
     },
-    doSearchChange(value) {
-      console.log("doChange: value=%s, fuzzy=%s", value, this.fuzzyValue);
+    onSearchValueChange(fuzzyValue, advanceValue, mixValue) {
+      console.log("onSearchValueChange: origin fuzzyValue=%s, fuzzyValueSync=%s", this.fuzzyValue, this.fuzzyValueSync);
+      console.log("  [0]fuzzyValue=%s", fuzzyValue);
+      console.log("  [1]advanceValue=%s", JSON.stringify(advanceValue));
+      console.log("  [2]mixValue=%s", JSON.stringify(mixValue));
     },
     changePageNo(pageNo) {
       console.log("changePageNo: pageNo=%s", pageNo);

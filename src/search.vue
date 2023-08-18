@@ -5,7 +5,7 @@
         type="search"
         :class="['text', classes.text]"
         :placeholder="placeholder"
-        v-model="value_" @input="$emit('input', $event.target.value)"
+        v-model="value_"
         @keyup.enter.stop="doSearch"
       />
       <st-button
@@ -251,6 +251,18 @@ export default {
         v = fuzzyValue ? [fuzzyValue].concat(this.advanceValue) : this.advanceValue;
       }
       return v;
+    }
+  },
+  watch: {
+    value_(newValue) {
+      // for <st-search v-model="myVar" ...>
+      this.$emit("input", newValue);
+      // for <st-search :value.sync="myVar" ...>
+      this.$emit("update:value", newValue);
+    },
+    mixValue(newValue) {
+      // console.log("watch: mixValue=" + JSON.stringify(newValue))
+      this.$emit("change", this.value_, this.advanceValue, this.mixValue);
     }
   },
   methods: {
