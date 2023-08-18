@@ -41,7 +41,7 @@
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
           <template #right>
             <st-search :value.sync="fuzzyValueSync" v-model="fuzzyValue" :advanceConfig="advanceConfig"
-              @search="doSearch" @change="onSearchValueChange"
+              @search="doSearch" @change="onSearchValueChange" :quick="false" :clean-to-search="true" :close-to-clean="false"
             ></st-search>
           </template>
         </st-toolbar>

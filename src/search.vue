@@ -100,7 +100,7 @@
         >{{cleanButtonText}}</st-button>
         <st-button
           :iconClass="classes.operations.closeIcon"
-          @click.native.prevent.stop="advanceVisable = false"
+          @click.native.prevent.stop="closeCondition"
         >{{closeButtonText}}</st-button>
       </div>
     </div>
@@ -121,6 +121,8 @@ export default {
     quick: { type: Boolean, required: false, default: false },
     /** Whether trigger 'search' event when click clean button */
     cleanToSearch: { type: Boolean, required: false, default: true },
+    /** Whether clean condition when click close button */
+    closeToClean: { type: Boolean, required: false, default: false },
     placeholder: {
       type: String,
       required: false,
@@ -281,6 +283,10 @@ export default {
     cleanCondition() {
       this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);
       if (this.cleanToSearch) this.$emit("search", this.value_, this.advanceValue, this.mixValue);
+    },
+    closeCondition() {
+      this.advanceVisable = false;
+      if (this.closeToClean) this.cleanCondition();
     }
   }
 };
