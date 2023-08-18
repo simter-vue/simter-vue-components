@@ -96,7 +96,7 @@
         >{{runButtonText}}</st-button>
         <st-button
           :iconClass="classes.operations.cleanIcon"
-          @click.native.prevent.stop="clearCondition"
+          @click.native.prevent.stop="cleanCondition"
         >{{cleanButtonText}}</st-button>
         <st-button
           :iconClass="classes.operations.closeIcon"
@@ -276,7 +276,7 @@ export default {
       // console.log("  mixValue=%s", JSON.stringify(this.mixValue))
       this.$emit("search", this.value_, this.advanceValue, this.mixValue);
     },
-    clearCondition() {
+    cleanCondition() {
       this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);
     }
   }
