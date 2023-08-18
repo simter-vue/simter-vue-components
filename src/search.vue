@@ -278,11 +278,11 @@ export default {
       // console.log("  value_=%s", this.value_)
       // console.log("  advanceValue=%s", JSON.stringify(this.advanceValue))
       // console.log("  mixValue=%s", JSON.stringify(this.mixValue))
-      this.$emit("search", this.value_, this.advanceValue, this.mixValue);
+      this.$nextTick(() => this.$emit("search", this.value_, this.advanceValue, this.mixValue));
     },
     cleanCondition() {
       this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);
-      if (this.cleanToSearch) this.$emit("search", this.value_, this.advanceValue, this.mixValue);
+      if (this.cleanToSearch) this.doSearch();
     },
     closeCondition() {
       this.advanceVisable = false;
