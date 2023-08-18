@@ -119,6 +119,8 @@ export default {
   props: {
     /** Whether immediately trigger 'search' event when condition value changed */
     quick: { type: Boolean, required: false, default: false },
+    /** Whether trigger 'search' event when click clean button */
+    cleanToSearch: { type: Boolean, required: false, default: true },
     placeholder: {
       type: String,
       required: false,
@@ -278,6 +280,7 @@ export default {
     },
     cleanCondition() {
       this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);
+      if (this.cleanToSearch) this.$emit("search", this.value_, this.advanceValue, this.mixValue);
     }
   }
 };
