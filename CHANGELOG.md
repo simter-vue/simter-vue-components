@@ -1,6 +1,14 @@
 # simter-vue-components changelog
 
-## 1.1.0 2023-08-15
+## 1.2.0 2023-08-18
+
+- Make component st-search compatible with `<st-search :value.sync="myVar" ...>`
+  > Because since 1.1.0 st-search change to `<st-search v-model="myVar" ...>` 
+- Use prop quick to control st-search trigger search event when condition changed
+- Use prop cleanToSearch to control st-search trigger search event when click clean button
+- Use prop closeToClean to control st-search clean condition when click close button
+
+## 1.1.0 2023-08-16
 
 - Add advance conditions for search component
   - Usage: `<st-search v-model="fuzzyValue" @search="doSearch" :advanceConfig="advanceConfig"></st-search>`
