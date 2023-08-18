@@ -5,7 +5,7 @@
         type="search"
         :class="['text', classes.text]"
         :placeholder="placeholder"
-        v-model="value_" @input="$emit('input', $event.target.value)"
+        v-model="value_"
         @keyup.enter.stop="doSearch"
       />
       <st-button
@@ -96,11 +96,11 @@
         >{{runButtonText}}</st-button>
         <st-button
           :iconClass="classes.operations.cleanIcon"
-          @click.native.prevent.stop="clearCondition"
+          @click.native.prevent.stop="cleanCondition"
         >{{cleanButtonText}}</st-button>
         <st-button
           :iconClass="classes.operations.closeIcon"
-          @click.native.prevent.stop="advanceVisable = false"
+          @click.native.prevent.stop="closeCondition"
         >{{closeButtonText}}</st-button>
       </div>
     </div>
@@ -117,7 +117,12 @@ import stButton from "./button.vue";
 export default {
   components: { stButton },
   props: {
+    /** Whether immediately trigger 'search' event when condition value changed */
     quick: { type: Boolean, required: false, default: false },
+    /** Whether trigger 'search' event when click clean button */
+    cleanToSearch: { type: Boolean, required: false, default: true },
+    /** Whether clean condition when click close button */
+    closeToClean: { type: Boolean, required: false, default: false },
     placeholder: {
       type: String,
       required: false,
@@ -253,6 +258,19 @@ export default {
       return v;
     }
   },
+  watch: {
+    value_(newValue) {
+      // for <st-search v-model="myVar" ...>
+      this.$emit("input", newValue);
+      // for <st-search :value.sync="myVar" ...>
+      this.$emit("update:value", newValue);
+    },
+    mixValue(newValue) {
+      // console.log("watch: mixValue=" + JSON.stringify(newValue))
+      this.$emit("change", this.value_, this.advanceValue, this.mixValue);
+      if (this.quick) this.$emit("search", this.value_, this.advanceValue, this.mixValue);
+    }
+  },
   methods: {
     doSearch() {
       // console.log("st-search: ")
@@ -260,10 +278,15 @@ export default {
       // console.log("  value_=%s", this.value_)
       // console.log("  advanceValue=%s", JSON.stringify(this.advanceValue))
       // console.log("  mixValue=%s", JSON.stringify(this.mixValue))
-      this.$emit("search", this.value_, this.advanceValue, this.mixValue);
+      this.$nextTick(() => this.$emit("search", this.value_, this.advanceValue, this.mixValue));
     },
-    clearCondition() {
+    cleanCondition() {
       this.advanceConfig.conditions.forEach((c) => c.value = Array.isArray(c.value) ? [] : undefined);
+      if (this.cleanToSearch) this.doSearch();
+    },
+    closeCondition() {
+      this.advanceVisable = false;
+      if (this.closeToClean) this.cleanCondition();
     }
   }
 };
