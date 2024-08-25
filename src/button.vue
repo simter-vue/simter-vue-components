@@ -12,6 +12,7 @@
     <span v-if="$slots.default" :class="classes.text">
       <slot></slot>
     </span>
+    <i v-if="rightIconClass || classes.rightIcon" :class="[rightIconClass, classes.rightIcon]"></i>
   </component>
 </template>
 
@@ -30,6 +31,7 @@ export default {
       default: () => gv("simter.button.tag", "button")
     },
     iconClass: { type: String, required: false },
+    rightIconClass: { type: String, required: false },
     selectable: { type: Boolean, required: false, default: false },
     // only use when selectable === true
     selected: { type: Boolean, required: false, default: false },

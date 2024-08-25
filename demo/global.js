@@ -29,6 +29,26 @@ window.simter = {
       selected: { "color": "blue" }
     }
   },
+  buttonMenu: {
+    classes: {
+      button: {
+        root: "ui-state-default",
+        hover: "ui-state-hover",
+        selected: "ui-state-active",
+        rightIconClass: "ui-button-icon-secondary ui-icon ui-icon-triangle-1-s"
+      },
+      menu: "ui-widget-content ui-corner-all",
+      item: {
+        root: "ui-widget-content ui-corner-all",
+        hover: "ui-state-hover",
+      }
+    },
+    styles: {
+      item: {
+        hover: { "text-decoration": "underline" }
+      }
+    }
+  },
   loader: {
     styles: {
       actor: { 

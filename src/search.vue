@@ -171,7 +171,7 @@ export default {
     classes: {
       type: Object,
       required: false,
-      default: () => gv("simter.search.classes", {})
+      default: () => gv("simter.search.classes", { advance: {}})
     },
     // all dom elements class
     styles: {

@@ -39,6 +39,7 @@
           <st-button @click="clearSelection">Clear</st-button>
           <st-button @click="showSelection">Show</st-button>
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
+          <st-button-menu :items='menuItems' @select="selectMenuItem">Menu</st-button-menu>
           <template #right>
             <st-search :value.sync="fuzzyValueSync" v-model="fuzzyValue" :advanceConfig="advanceConfig"
               @search="doSearch" @change="onSearchValueChange" :quick="false" :clean-to-search="true" :close-to-clean="false"
@@ -80,6 +81,7 @@ import stPagebar from "../src/pagebar.vue";
 import stPagebarSizes from "../src/pagebar-sizes.vue";
 import stButton from "../src/button.vue";
 import stButtonGroup from "../src/button-group.vue";
+import stButtonMenu from "../src/button-menu.vue";
 import stSearch from "../src/search.vue";
 import stUpload from "../src/upload.vue";
 import stToolbar from "../src/toolbar.vue";
@@ -91,6 +93,7 @@ export default {
     stPagebarSizes,
     stButton,
     stButtonGroup,
+    stButtonMenu,
     stToolbar,
     stSearch,
     stUpload
@@ -101,7 +104,7 @@ export default {
       loaderSize: 3.2,
       unit: "em",
       customWidth: true,
-      widthValue: 44,
+      widthValue: 50,
       customHeight: false,
       heightValue: 15,
       autoStartUpload: false,
@@ -115,6 +118,7 @@ export default {
 
       // toolbar
       statuses: ["Enabled", "Disabled", "All"],
+      menuItems: ["Menu Item 1", "Go Go Go", {text: "Help", method: "callback"}],
       status: "All",
       fuzzyValue: "test",
       fuzzyValueSync: "sync",
@@ -254,6 +258,9 @@ export default {
     }
   },
   methods: {
+    selectMenuItem(item, index) {
+      console.log(`index=${index}, item=${JSON.stringify(item)}`)
+    },
     changeStatus(status, index) {
       console.log(
         "changeStatus: status=%s, index=%s, this.status=%s",
