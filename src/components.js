@@ -27,6 +27,7 @@ import stPagebarSizes from "./pagebar-sizes.vue";
 import stToolbar from "./toolbar.vue";
 import stButton from "./button.vue"
 import stButtonGroup from "./button-group.vue"
+import stButtonMenu from "./button-menu.vue"
 import stSearch from "./search.vue";
 import stUpload from "./upload.vue";
 import stProgressbar from "./progressbar.vue";
@@ -54,6 +55,7 @@ const components = {
   "st-toolbar": [version, stToolbar],
   "st-button": [version, stButton],
   "st-button-group": [version, stButtonGroup],
+  "st-button-menu": [version, stButtonMenu],
   "st-search": [version, stSearch],
   "st-upload": [version, stUpload],
   "st-progress-bar": [version, stProgressbar]

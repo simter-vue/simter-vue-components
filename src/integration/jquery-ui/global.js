@@ -40,6 +40,21 @@ window.simter = {
       },
     }
   },
+  buttonMenu: {
+    classes: {
+      button: {
+        root: "ui-corner-all ui-state-default",
+        hover: "ui-state-hover",
+        selected: "ui-state-active",
+        rightIconClass: "ui-button-icon-secondary ui-icon ui-icon-triangle-1-s"
+      },
+      menu: "ui-widget-content ui-corner-all",
+      item: {
+        root: "ui-corner-all",
+        hover: "ui-state-hover",
+      }
+    }
+  },
   pagebar: {
     classes: {
       root: "ui-state-default ui-corner-all",

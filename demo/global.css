@@ -30,3 +30,22 @@ h3, b, .template {
   height: 16px;
   background-color: #ccc;
 }
+
+.st-button-menu {
+  position: relative;
+}
+.st-button-menu > .st-menu {
+  position: absolute;
+  left: 0;
+  z-index: 100000;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  cursor: default;
+  min-width: 5em;
+}
+.st-button-menu > .st-menu > .st-menu-item {
+  padding: 0.25em;
+  margin: 0.25em;
+  border-width: 0;
+}
