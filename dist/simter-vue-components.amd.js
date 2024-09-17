@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v1.3.0
+* simter-vue-components v1.3.1
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -8,7 +8,7 @@ define(['vue'], function (Vue) { 'use strict';
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "1.3.0";
+  var version = "1.3.1";
 
   function _arrayLikeToArray(r, a) {
     (null == a || a > r.length) && (a = r.length);
@@ -2427,6 +2427,11 @@ define(['vue'], function (Vue) { 'use strict';
         type: Array,
         required: true
       },
+      /** is multiple selected */
+      multiple: {
+        type: Boolean,
+        required: false
+      },
       /** current value */
       value: {
         required: false
@@ -2474,10 +2479,19 @@ define(['vue'], function (Vue) { 'use strict';
         return concatStyles(item == this.v.value ? this.styles.selected : undefined, index === 0 ? this.styles.first : undefined, index === this.items.length - 1 ? this.styles.last : undefined);
       },
       clickItem: function clickItem(item, index) {
-        if (this.v.value !== item) {
-          this.v.value = item;
-          this.$emit("update:value", item);
-          this.$emit("change", item, index);
+        if (!this.multiple) {
+          if (this.v.value !== item) {
+            this.v.value = item;
+            this.$emit("update:value", item);
+            this.$emit("change", item, index);
+          }
+        } else {
+          var i = this.value.findIndex(function (t) {
+            return t == item;
+          });
+          if (i != -1) this.value.splice(i, 1);else this.value.push(item);
+          this.$emit("update:value", this.value);
+          this.$emit("change", this.value, index);
         }
       }
     }
@@ -2505,7 +2519,9 @@ define(['vue'], function (Vue) { 'use strict';
               classes: _vm.classes.button,
               styles: _vm.styles.button,
               selectable: true,
-              selected: item === _vm.value
+              selected: _vm.multiple
+                ? (_vm.value || []).includes(item)
+                : item === _vm.value
             },
             on: {
               click: function($event) {
@@ -2514,14 +2530,69 @@ define(['vue'], function (Vue) { 'use strict';
             }
           },
           [
+            _c("span", { staticStyle: { position: "relative" } }, [
+              _vm.multiple
+                ? _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.value,
+                        expression: "value"
+                      }
+                    ],
+                    staticClass: "ui-widget-content",
+                    attrs: { type: "checkbox" },
+                    domProps: {
+                      value: item,
+                      checked: Array.isArray(_vm.value)
+                        ? _vm._i(_vm.value, item) > -1
+                        : _vm.value
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.value,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false;
+                        if (Array.isArray($$a)) {
+                          var $$v = item,
+                            $$i = _vm._i($$a, $$v);
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.value = $$a.concat([$$v]));
+                          } else {
+                            $$i > -1 &&
+                              (_vm.value = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)));
+                          }
+                        } else {
+                          _vm.value = $$c;
+                        }
+                      }
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _c("span", {
+                staticStyle: {
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  left: "0",
+                  top: "0"
+                }
+              })
+            ]),
             _vm._v(
-              _vm._s(
-                typeof item === "string"
-                  ? item
-                  : typeof item === "object"
-                  ? item.text || item.value
-                  : item
-              )
+              "\n    " +
+                _vm._s(
+                  typeof item === "string"
+                    ? item
+                    : typeof item === "object"
+                    ? item.text || item.value
+                    : item
+                ) +
+                "\n  "
             )
           ]
         )
@@ -2535,7 +2606,7 @@ define(['vue'], function (Vue) { 'use strict';
     /* style */
     const __vue_inject_styles__$c = function (inject) {
       if (!inject) return
-      inject("data-v-7d588fcd_0", { source: "\n.st-button-group {\n  display: inline-flex;\n}\n.st-button-group > * {\n  margin: 0;\n}\n", map: {"version":3,"sources":["/Volumes/macdata/work/simter/simter-vue-components/src/button-group.vue"],"names":[],"mappings":";AAuFA;EACA,oBAAA;AACA;AACA;EACA,SAAA;AACA","file":"button-group.vue","sourcesContent":["<template>\n  <span :class=\"[rootClass, classes.root]\">\n    <st-button\n      v-for=\"(item, index) in items\"\n      :key=\"index\"\n      :classes=\"classes.button\"\n      :styles=\"styles.button\"\n      :class=\"itemClass(item, index)\"\n      :style=\"itemStyle(item, index)\"\n      :selectable=\"true\"\n      :selected=\"item === value\"\n      @click=\"clickItem(item, index)\"\n    >{{typeof item === \"string\" ? item : (typeof item === \"object\" ? item.text || item.value : item)}}</st-button>\n  </span>\n</template>\n\n<script>\n/**\n * Events: change(newValue, newIndex)\n */\nimport { gv, concatClasses, concatStyles } from \"./utils\";\nimport stButton from \"./button.vue\";\nexport default {\n  components: { stButton },\n  props: {\n    rootClass: { type: String, required: false, default: \"st-button-group\" },\n    /** buttons: [String|{text, value, ...}] */\n    items: { type: Array, required: true },\n    /** current value */\n    value: { required: false },\n    // all dom elements class\n    classes: {\n      type: Object,\n      required: false,\n      default: () =>\n        gv(\"simter.buttonGroup.classes\", {\n          first: \"first\",\n          last: \"last\"\n        })\n    },\n    // all dom elements class\n    styles: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.buttonGroup.styles\", {})\n    }\n  },\n  data() {\n    return { v: { value: undefined } };\n  },\n  watch: {\n    value: {\n      immediate: true,\n      handler(value) {\n        if (value !== this.v.value) this.v.value = value;\n      }\n    }\n  },\n  methods: {\n    /** auto judge whether to add first, last or selected class to the relative button */\n    itemClass(item, index) {\n      return concatClasses(\n        item == this.v.value ? this.classes.selected : undefined,\n        index === 0 ? this.classes.first : undefined,\n        index === this.items.length - 1 ? this.classes.last : undefined\n      );\n    },\n    /** auto judge whether to add first, last or selected style to the relative button */\n    itemStyle(item, index) {\n      return concatStyles(\n        item == this.v.value ? this.styles.selected : undefined,\n        index === 0 ? this.styles.first : undefined,\n        index === this.items.length - 1 ? this.styles.last : undefined\n      );\n    },\n    clickItem(item, index) {\n      if (this.v.value !== item) {\n        this.v.value = item;\n        this.$emit(\"update:value\", item);\n        this.$emit(\"change\", item, index);\n      }\n    }\n  }\n};\n</script>\n\n<style>\n.st-button-group {\n  display: inline-flex;\n}\n.st-button-group > * {\n  margin: 0;\n}\n</style>"]}, media: undefined });
+      inject("data-v-ac4d31dc_0", { source: "\n.st-button-group {\n  display: inline-flex;\n}\n.st-button-group > * {\n  margin: 0;\n}\n", map: {"version":3,"sources":["/Volumes/macdata/work/simter/simter-vue-components/src/button-group.vue"],"names":[],"mappings":";AAsGA;EACA,oBAAA;AACA;AACA;EACA,SAAA;AACA","file":"button-group.vue","sourcesContent":["<template>\n  <span :class=\"[rootClass, classes.root]\">\n    <st-button\n      v-for=\"(item, index) in items\"\n      :key=\"index\"\n      :classes=\"classes.button\"\n      :styles=\"styles.button\"\n      :class=\"itemClass(item, index)\"\n      :style=\"itemStyle(item, index)\"\n      :selectable=\"true\"\n      :selected=\"multiple ? (value || []).includes(item) : item === value\"\n      @click=\"clickItem(item, index)\">\n      <span style=\"position:relative\">\n        <input v-if=\"multiple\" type=\"checkbox\" class=\"ui-widget-content\" :value=\"item\" v-model=\"value\">\n        <span style=\"position:absolute;width:100%;height:100%;left:0;top:0;\"></span>\n      </span>\n      {{typeof item === \"string\" ? item : (typeof item === \"object\" ? item.text || item.value : item)}}\n    </st-button>\n  </span>\n</template>\n\n<script>\n/**\n * Events: change(newValue, newIndex)\n */\nimport { gv, concatClasses, concatStyles } from \"./utils\";\nimport stButton from \"./button.vue\";\nexport default {\n  components: { stButton },\n  props: {\n    rootClass: { type: String, required: false, default: \"st-button-group\" },\n    /** buttons: [String|{text, value, ...}] */\n    items: { type: Array, required: true },\n    /** is multiple selected */\n    multiple: { type: Boolean, required: false },\n    /** current value */\n    value: { required: false },\n    // all dom elements class\n    classes: {\n      type: Object,\n      required: false,\n      default: () =>\n        gv(\"simter.buttonGroup.classes\", {\n          first: \"first\",\n          last: \"last\"\n        })\n    },\n    // all dom elements class\n    styles: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.buttonGroup.styles\", {})\n    }\n  },\n  data() {\n    return { v: { value: undefined } };\n  },\n  watch: {\n    value: {\n      immediate: true,\n      handler(value) {\n        if (value !== this.v.value) this.v.value = value;\n      }\n    }\n  },\n  methods: {\n    /** auto judge whether to add first, last or selected class to the relative button */\n    itemClass(item, index) {\n      return concatClasses(\n        item == this.v.value ? this.classes.selected : undefined,\n        index === 0 ? this.classes.first : undefined,\n        index === this.items.length - 1 ? this.classes.last : undefined\n      );\n    },\n    /** auto judge whether to add first, last or selected style to the relative button */\n    itemStyle(item, index) {\n      return concatStyles(\n        item == this.v.value ? this.styles.selected : undefined,\n        index === 0 ? this.styles.first : undefined,\n        index === this.items.length - 1 ? this.styles.last : undefined\n      );\n    },\n    clickItem(item, index) {\n      if (!this.multiple){\n        if (this.v.value !== item) {\n          this.v.value = item;\n          this.$emit(\"update:value\", item);\n          this.$emit(\"change\", item, index);\n        }\n      } else {\n        const i = this.value.findIndex(t => t == item)\n        if (i != -1) this.value.splice(i, 1)\n        else this.value.push(item)\n        this.$emit(\"update:value\", this.value);\n        this.$emit(\"change\", this.value, index);\n      }\n    }\n  }\n};\n</script>\n\n<style>\n.st-button-group {\n  display: inline-flex;\n}\n.st-button-group > * {\n  margin: 0;\n}\n</style>"]}, media: undefined });
 
     };
     /* scoped */
