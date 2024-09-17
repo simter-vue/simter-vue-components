@@ -8,9 +8,14 @@
       :class="itemClass(item, index)"
       :style="itemStyle(item, index)"
       :selectable="true"
-      :selected="item === value"
-      @click="clickItem(item, index)"
-    >{{typeof item === "string" ? item : (typeof item === "object" ? item.text || item.value : item)}}</st-button>
+      :selected="multiple ? (value || []).includes(item) : item === value"
+      @click="clickItem(item, index)">
+      <span style="position:relative">
+        <input v-if="multiple" type="checkbox" class="ui-widget-content" :value="item" v-model="value">
+        <span style="position:absolute;width:100%;height:100%;left:0;top:0;"></span>
+      </span>
+      {{typeof item === "string" ? item : (typeof item === "object" ? item.text || item.value : item)}}
+    </st-button>
   </span>
 </template>
 
@@ -26,6 +31,8 @@ export default {
     rootClass: { type: String, required: false, default: "st-button-group" },
     /** buttons: [String|{text, value, ...}] */
     items: { type: Array, required: true },
+    /** is multiple selected */
+    multiple: { type: Boolean, required: false },
     /** current value */
     value: { required: false },
     // all dom elements class
@@ -74,10 +81,18 @@ export default {
       );
     },
     clickItem(item, index) {
-      if (this.v.value !== item) {
-        this.v.value = item;
-        this.$emit("update:value", item);
-        this.$emit("change", item, index);
+      if (!this.multiple){
+        if (this.v.value !== item) {
+          this.v.value = item;
+          this.$emit("update:value", item);
+          this.$emit("change", item, index);
+        }
+      } else {
+        const i = this.value.findIndex(t => t == item)
+        if (i != -1) this.value.splice(i, 1)
+        else this.value.push(item)
+        this.$emit("update:value", this.value);
+        this.$emit("change", this.value, index);
       }
     }
   }

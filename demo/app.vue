@@ -40,6 +40,7 @@
           <st-button @click="showSelection">Show</st-button>
           <st-button-group :items="statuses" :value.sync="status" @change="changeStatus"></st-button-group>
           <st-button-menu :items='menuItems' @select="selectMenuItem">Menu</st-button-menu>
+          <st-button-group :items="status2es" :value.sync="status2" @change="changeStatus2" :multiple="true"></st-button-group>
           <template #right>
             <st-search :value.sync="fuzzyValueSync" v-model="fuzzyValue" :advanceConfig="advanceConfig"
               @search="doSearch" @change="onSearchValueChange" :quick="false" :clean-to-search="true" :close-to-clean="false"
@@ -104,7 +105,7 @@ export default {
       loaderSize: 3.2,
       unit: "em",
       customWidth: true,
-      widthValue: 50,
+      widthValue: 60,
       customHeight: false,
       heightValue: 15,
       autoStartUpload: false,
@@ -118,8 +119,10 @@ export default {
 
       // toolbar
       statuses: ["Enabled", "Disabled", "All"],
-      menuItems: ["Menu Item 1", "Go Go Go", {text: "Help", method: "callback"}],
       status: "All",
+      menuItems: ["Menu Item 1", "Go Go Go", {text: "Help", method: "callback"}],
+      status2es: ["A", "B", "C"],
+      status2: [],
       fuzzyValue: "test",
       fuzzyValueSync: "sync",
 
@@ -267,6 +270,14 @@ export default {
         status,
         index,
         this.status
+      );
+    },
+    changeStatus2(status2, index) {
+      console.log(
+        "changeStatus2: status2=%s, index=%s, this.status2=%s",
+        JSON.stringify(status2),
+        index,
+        JSON.stringify(this.status2)
       );
     },
     doSearch(fuzzyValue, advanceValue, mixValue) {
