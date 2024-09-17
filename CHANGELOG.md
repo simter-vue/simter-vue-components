@@ -1,5 +1,10 @@
 # simter-vue-components changelog
 
+## 1.3.0 2024-08-25
+
+- Add right icon to st-button
+- Add new component st-button-menu
+
 ## 1.2.0 2023-08-18
 
 - Make component st-search compatible with `<st-search :value.sync="myVar" ...>`
