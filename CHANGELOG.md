@@ -1,5 +1,9 @@
 # simter-vue-components changelog
 
+## 1.3.1 2024-09-17
+
+- Support multiple selected on st-button-group
+
 ## 1.3.0 2024-08-25
 
 - Add right icon to st-button
