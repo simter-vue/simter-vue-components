@@ -37,18 +37,18 @@
     "dev": "rollup -c -w",
     "test": "ava",
     "min-js": "yarn min-amd && yarn min-umd",
-    "min-bc-js": "uglifyjs --comments /^!/ D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.bc.js -o D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.bc.min.js --source-map=url",
+    "min-bc-js": "uglifyjs --comments /^!/ /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.bc.js -o /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.bc.min.js --source-map=url",
     "min-amd": "uglifyjs --comments /^!/ dist/simter-vue-components.amd.js -o dist/simter-vue-components.amd.min.js --source-map=url",
     "min-umd": "uglifyjs --comments /^!/ dist/simter-vue-components.umd.js -o dist/simter-vue-components.umd.min.js --source-map=url",
     "build4bc": "rollup -c && yarn min-js && yarn copy4bc && yarn min-bc-js",
     "dev4bc": "rollup -c && yarn sed-amd-js",
     "copy4bc": "yarn sed-amd-js && yarn sed-amd-min-js && yarn cp-amd-min-js-map && yarn sed-umd-js && yarn sed-umd-min-js && yarn cp-umd-min-js-map",
-    "sed-amd-js": "sed \"s/'vue'/'vue2'/i\" dist/simter-vue-components.amd.js > D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.amd.js",
-    "sed-amd-min-js": "sed 's/\"vue\"/\"vue2\"/i' dist/simter-vue-components.amd.min.js > D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.amd.min.js",
-    "cp-amd-min-js-map": "cp -f dist/simter-vue-components.amd.min.js.map D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.amd.min.js.map",
-    "sed-umd-js": "sed \"s/'vue'/'vue2'/i\" dist/simter-vue-components.umd.js > D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.umd.js",
-    "sed-umd-min-js": "sed 's/\"vue\"/\"vue2\"/i' dist/simter-vue-components.umd.min.js > D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.umd.min.js",
-    "cp-umd-min-js-map": "cp -f dist/simter-vue-components.umd.min.js.map D:/work/gitee-bctaxi/bctaxi-build/bc-system/src/main/webapp/simter/vue/simter-vue-components.umd.min.js.map"
+    "sed-amd-js": "sed \"s/'vue'/'vue2'/i\" dist/simter-vue-components.amd.js > /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.amd.js",
+    "sed-amd-min-js": "sed 's/\"vue\"/\"vue2\"/i' dist/simter-vue-components.amd.min.js > /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.amd.min.js",
+    "cp-amd-min-js-map": "cp -f dist/simter-vue-components.amd.min.js.map /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.amd.min.js.map",
+    "sed-umd-js": "sed \"s/'vue'/'vue2'/i\" dist/simter-vue-components.umd.js > /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.umd.js",
+    "sed-umd-min-js": "sed 's/\"vue\"/\"vue2\"/i' dist/simter-vue-components.umd.min.js > /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.umd.min.js",
+    "cp-umd-min-js-map": "cp -f dist/simter-vue-components.umd.min.js.map /Volumes/macdata/work/bc/bctaxi-maven-projects/bc-system/src/main/webapp/simter/vue/simter-vue-components.umd.min.js.map"
   },
   "ava": {
     "require": [
