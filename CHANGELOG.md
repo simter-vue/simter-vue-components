@@ -1,5 +1,10 @@
 # simter-vue-components changelog
 
+## 1.4.0 2024-10-29
+
+- Add new component st-tree
+    > Initial only with jquery-ui
+
 ## 1.3.1 2024-09-17
 
 - Support multiple selected on st-button-group
