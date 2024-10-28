@@ -1,5 +1,5 @@
 /*!
-* simter-vue-components v1.3.1
+* simter-vue-components v1.4.0
 * https://github.com/simter-vue/simter-vue-components.git 
 * @author RJ.Hwang <rongjihuang@gmail.com>
 * @license MIT
@@ -12,7 +12,7 @@
 
   Vue = Vue && Vue.hasOwnProperty('default') ? Vue['default'] : Vue;
 
-  var version = "1.3.1";
+  var version = "1.4.0";
 
   function _arrayLikeToArray(r, a) {
     (null == a || a > r.length) && (a = r.length);
@@ -2015,7 +2015,7 @@
     /* style */
     const __vue_inject_styles__$9 = function (inject) {
       if (!inject) return
-      inject("data-v-1e616974_0", { source: "\n.st-grid {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n}\n.st-grid > .content {\n  flex: 1 1 0%;\n  overflow: auto;\n}\n.st-grid > .header {\n  overflow: hidden;\n  position: relative;\n  text-align: center;\n}\n.st-grid > .header > table {\n  position: relative;\n}\n.st-grid > .content > table,\n.st-grid > .header > table {\n  width: 100%;\n  table-layout: fixed;\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\n.st-grid > .content > table > tbody > tr > td {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\n.st-grid > .content > table > tbody > tr {\n  min-height: 2em;\n}\n.st-grid > .bottom {\n  display: flex;\n  flex-direction: row;\n}\n.st-grid > .bottom > * {\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\n  cursor: default;\n}\n.st-cell {\n  padding: 0.25rem;\n}\n.st-cell.number {\n  text-align: right;\n}\n", map: {"version":3,"sources":["/Volumes/macdata/work/simter/simter-vue-components/src/grid.vue"],"names":[],"mappings":";AAuRA;EACA,kBAAA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;AACA;AACA;;EAEA,WAAA;EACA,mBAAA;EACA,yBAAA;AACA;AACA;;EAEA,gBAAA;EACA,uBAAA;AACA;AACA;;EAEA,eAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,gBAAA;AACA;AACA;EACA,iBAAA;AACA","file":"grid.vue","sourcesContent":["<template>\n  <div :class=\"['st-grid', classes.root]\">\n    <div :class=\"['top', classes.top]\" v-if=\"$slots.top && $slots.top.length > 0\">\n      <slot name=\"top\"></slot>\n    </div>\n    <div :class=\"['header', classes.header]\">\n      <table :class=\"classes.headerTable\" :style=\"headerTableStyle\">\n        <st-colgroup :columns=\"columns\"></st-colgroup>\n        <st-thead :columns=\"columns\" :classes=\"classes.headerRow\" :styles=\"styles.headerRow\"\n          @column-select-state-change=\"columnSelectStateChange\"></st-thead>\n      </table>\n    </div>\n    <div\n      :class=\"['content', classes.content]\"\n      @scroll=\"v.scrollLeft = -1 * $event.target.scrollLeft\"\n    >\n      <table :class=\"classes.contentTable\" :style=\"styles.contentTable\">\n        <st-colgroup :columns=\"columns\"></st-colgroup>\n        <tbody>\n          <st-data-row\n            v-for=\"(row, index) in rows\"\n            :key=\"index\"\n            v-bind=\"dataRowProps(row, index)\"\n            v-on=\"dataRowListeners\"\n          ></st-data-row>\n        </tbody>\n      </table>\n    </div>\n    <div :class=\"['bottom', classes.bottom]\" v-if=\"$slots.bottom && $slots.bottom.length > 0\">\n      <slot name=\"bottom\"></slot>\n    </div>\n  </div>\n</template>\n\n<script>\nimport { g, gv, flatten, concatStyles } from \"./utils\";\nimport stDataRow from \"./row/data-row\";\nimport stColgroup from \"./colgroup.vue\";\nimport stThead from \"./thead.vue\";\nimport tableRowVue from \"./row/table-row.vue\";\n\n/**\n * { empty, value }.\n *\n * If column has a pid, then:\n *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`\n *      if row[column.pid].length > subRowIndex,\n *   2. or return { empty: true }\n *      if row[column.pid].length <= subRowIndex.\n * Otherwise return `{ empty: false, value: row[column.id] }`.\n */\nfunction getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {\n  return column.pid\n    ? row[column.pid] && row[column.pid].length > subRowIndex\n      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell\n      : { empty: true } // empty cell\n    : { empty: false, value: row[column.id] }; // top cell\n}\n\nexport default {\n  components: { stColgroup, stThead, stDataRow },\n  props: {\n    columns: { type: Array, required: true },\n    rows: {\n      type: Array,\n      required: false,\n      default() {\n        return [];\n      }\n    },\n    // All dom element class\n    classes: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.grid.classes\", {})\n    },\n    // All dom element style\n    styles: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.grid.styles\", {})\n    }\n  },\n  data: function() {\n    return {\n      // some params use in ui\n      v: {\n        scrollLeft: 0,\n        scrollBarWidth: 0,\n        timer: null,\n        contentEl: null,\n        lastColumnIsAutoWidth: false\n      }\n    };\n  },\n  computed: {\n    // all selected rows\n    selection() {\n      return this.rows.filter(row => row.selected === true);\n    },\n    flattenColumns() {\n      return flatten(this.columns);\n    },\n    subColumns() {\n      return this.flattenColumns.filter(c => c.pid);\n    },\n    headerTableStyle() {\n      return concatStyles(this.styles.headerTable, {\n        left: this.v.scrollLeft + \"px\",\n        width: \"calc(100% - \" + this.v.scrollBarWidth + \"px)\"\n      });\n    },\n    /** DataRow listeners to transfer */\n    dataRowListeners() {\n      const events = {};\n      Object.keys(this.$listeners)\n        .filter(key => key.startsWith(\"row-\") || key.startsWith(\"cell-\"))\n        .forEach(key => (events[key] = this.$listeners[key]));\n\n      // deal row-selection-change event\n      let old = events[\"row-selection-change\"]; // user define listener\n      if (old) {\n        events[\"row-selection-change\"] = data => {\n          this.selectRow(data.index, data.selected);\n          old.call(this, data);\n        }\n      } else events[\"row-selection-change\"] = data => this.selectRow(data.index, data.selected);\n\n      return events;\n    },\n    // [[tableRows], ...], index follow rows\n    tableRows() {\n      // DataRow OneToMany TableRow\n      let all = [];\n      let preTableRowCount = 0;\n      this.rows.forEach((dataRow, dataRowIndex) => {\n        let subTableRows = this.dataRowToTableRow(\n          dataRow,\n          dataRowIndex,\n          preTableRowCount\n        );\n        all.push(subTableRows);\n        preTableRowCount += subTableRows.length;\n      });\n      return all;\n    },\n    // Calculate each row's rowspan by Column.pid config\n    rowspans() {\n      let rowspans = {};\n\n      // find pid from columns config\n      let pids = this.subColumns\n        .map(c => c.pid)\n        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid\n\n      // calculate rowspan value\n      this.rows.forEach((row, index) => {\n        if (typeof row.rowspan === \"number\") {\n          // custom rowspan value\n          rowspans[index] = row.rowspan;\n        } else {\n          // auto calculate rowspan value\n          let maxSize = Math.max(\n            ...pids.map(pid => (row[pid] ? row[pid].length : 1))\n          );\n          if (maxSize > 1) rowspans[index] = maxSize;\n        }\n      });\n\n      return rowspans;\n    }\n  },\n  created() {\n    // auto judge the last column width config\n    this.v.lastColumnIsAutoWidth = !this.flattenColumns[\n      this.flattenColumns.length - 1\n    ].width;\n  },\n  mounted() {\n    if (!this.v.lastColumnIsAutoWidth) {\n      // watch horizon scrollbar size\n      this.v.contentEl = this.$el.querySelector(\".content\"); // cache content el\n      this.$_watchHorizonScrollBarSize();\n    }\n  },\n  destroyed() {\n    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);\n  },\n  methods: {\n    columnSelectStateChange(selected, index, column) {\n      if (index === 0) { // add full selection to the first column\n        this.rows.forEach(row => this.$set(row, \"selected\", selected));\n      }\n      // emit column-select-state-change event\n      this.$emit('column-select-state-change', selected, index, column);\n    },\n    // DataRow OneToMany TableRow\n    // TableRow: {index, cells, classes, styles}\n    // TableCell: {rowspan, colspan, value, classes, styles}\n    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {\n      let tableRows = [];\n\n      // main TableRow\n      let nestedIndex = 0;\n      tableRows.push({\n        tableRowIndex: preTableRowCount,\n        dataRowIndex: dataRowIndex,\n        index: nestedIndex++,\n        row: dataRow,\n        classes: this.classes.contentRow,\n        styles: this.styles.contentRow,\n        selected: dataRow.selected === true,\n        cells: this.flattenColumns.map((column, i) => {\n          let { empty, value } = getCellConfigInfo(\n            dataRow,\n            column,\n            0,\n            dataRowIndex\n          );\n          let c = { column: column, empty: empty };\n          if (!empty) c.value = value;\n          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];\n          if (rowspan > 1) c.rowspan = rowspan;\n          return c;\n        })\n      });\n\n      // sub TableRows\n      let len = this.rowspans[dataRowIndex] || 1;\n      for (let i = 1; i < len; i++) {\n        tableRows.push({\n          tableRowIndex: preTableRowCount + nestedIndex,\n          dataRowIndex: dataRowIndex,\n          index: nestedIndex++,\n          row: dataRow,\n          classes: this.classes.contentRow,\n          styles: this.styles.contentRow,\n          cells: this.subColumns.map(column => {\n            let { empty, value } = getCellConfigInfo(dataRow, column, i);\n            let c = { column: column, empty: empty };\n            if (!empty) c.value = value;\n            return c;\n          })\n        });\n      }\n      return tableRows;\n    },\n    /** DataRow props to transfer */\n    dataRowProps(row, index) {\n      let props = {\n        tableRows: this.tableRows[index]\n      };\n      return props;\n    },\n    $_watchHorizonScrollBarSize() {\n      let t;\n      this.v.timer = g.setInterval(() => {\n        t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;\n        if (t != this.v.scrollBarWidth) {\n          // console.log(\"scrollBarWidth: %s > %s\", this.v.scrollBarWidth, t);\n          this.v.scrollBarWidth = t;\n        }\n      }, 100);\n    },\n    selectRow(index, selected) {\n      let row = this.rows[index];\n      if (row) this.$set(row, \"selected\", selected);\n    },\n    clearSelection() {\n      this.selection.forEach(row => this.$set(row, \"selected\", false));\n    },\n    deleteSelection() {\n      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));\n    }\n  }\n};\n</script>\n\n<style>\n.st-grid {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n}\n.st-grid > .content {\n  flex: 1 1 0%;\n  overflow: auto;\n}\n.st-grid > .header {\n  overflow: hidden;\n  position: relative;\n  text-align: center;\n}\n.st-grid > .header > table {\n  position: relative;\n}\n.st-grid > .content > table,\n.st-grid > .header > table {\n  width: 100%;\n  table-layout: fixed;\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\n.st-grid > .content > table > tbody > tr > td {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\n.st-grid > .content > table > tbody > tr {\n  min-height: 2em;\n}\n.st-grid > .bottom {\n  display: flex;\n  flex-direction: row;\n}\n.st-grid > .bottom > * {\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\n  cursor: default;\n}\n.st-cell {\n  padding: 0.25rem;\n}\n.st-cell.number {\n  text-align: right;\n}\n</style>"]}, media: undefined });
+      inject("data-v-dfb37f64_0", { source: "\n.st-grid {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n}\n.st-grid > .content {\n  flex: 1 1 0%;\n  overflow: auto;\n}\n.st-grid > .header {\n  overflow: hidden;\n  position: relative;\n  text-align: center;\n}\n.st-grid > .header > table {\n  position: relative;\n}\n.st-grid > .content > table,\n.st-grid > .header > table {\n  width: 100%;\n  table-layout: fixed;\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\n.st-grid > .content > table > tbody > tr > td {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\n.st-grid > .content > table > tbody > tr {\n  min-height: 2em;\n}\n.st-grid > .bottom {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n.st-grid > .bottom > * {\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\n  cursor: default;\n}\n.st-cell {\n  padding: 0.25rem;\n}\n.st-cell.number {\n  text-align: right;\n}\n", map: {"version":3,"sources":["/Volumes/macdata/work/simter/simter-vue-components/src/grid.vue"],"names":[],"mappings":";AAuRA;EACA,kBAAA;EACA,aAAA;EACA,sBAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;AACA;AACA;EACA,kBAAA;AACA;AACA;;EAEA,WAAA;EACA,mBAAA;EACA,yBAAA;AACA;AACA;;EAEA,gBAAA;EACA,uBAAA;AACA;AACA;;EAEA,eAAA;AACA;AACA;EACA,aAAA;EACA,mBAAA;EACA,mBAAA;AACA;AACA;EACA,iCAAA;AACA;AACA;EACA,eAAA;AACA;AACA;EACA,gBAAA;AACA;AACA;EACA,iBAAA;AACA","file":"grid.vue","sourcesContent":["<template>\n  <div :class=\"['st-grid', classes.root]\">\n    <div :class=\"['top', classes.top]\" v-if=\"$slots.top && $slots.top.length > 0\">\n      <slot name=\"top\"></slot>\n    </div>\n    <div :class=\"['header', classes.header]\">\n      <table :class=\"classes.headerTable\" :style=\"headerTableStyle\">\n        <st-colgroup :columns=\"columns\"></st-colgroup>\n        <st-thead :columns=\"columns\" :classes=\"classes.headerRow\" :styles=\"styles.headerRow\"\n          @column-select-state-change=\"columnSelectStateChange\"></st-thead>\n      </table>\n    </div>\n    <div\n      :class=\"['content', classes.content]\"\n      @scroll=\"v.scrollLeft = -1 * $event.target.scrollLeft\"\n    >\n      <table :class=\"classes.contentTable\" :style=\"styles.contentTable\">\n        <st-colgroup :columns=\"columns\"></st-colgroup>\n        <tbody>\n          <st-data-row\n            v-for=\"(row, index) in rows\"\n            :key=\"index\"\n            v-bind=\"dataRowProps(row, index)\"\n            v-on=\"dataRowListeners\"\n          ></st-data-row>\n        </tbody>\n      </table>\n    </div>\n    <div :class=\"['bottom', classes.bottom]\" v-if=\"$slots.bottom && $slots.bottom.length > 0\">\n      <slot name=\"bottom\"></slot>\n    </div>\n  </div>\n</template>\n\n<script>\nimport { g, gv, flatten, concatStyles } from \"./utils\";\nimport stDataRow from \"./row/data-row\";\nimport stColgroup from \"./colgroup.vue\";\nimport stThead from \"./thead.vue\";\nimport tableRowVue from \"./row/table-row.vue\";\n\n/**\n * { empty, value }.\n *\n * If column has a pid, then:\n *   1. return `{ empty: false, value: row[column.pid][subRowIndex][column.id] }`\n *      if row[column.pid].length > subRowIndex,\n *   2. or return { empty: true }\n *      if row[column.pid].length <= subRowIndex.\n * Otherwise return `{ empty: false, value: row[column.id] }`.\n */\nfunction getCellConfigInfo(row, column, subRowIndex, mainRowIndex) {\n  return column.pid\n    ? row[column.pid] && row[column.pid].length > subRowIndex\n      ? { empty: false, value: row[column.pid][subRowIndex][column.id] } // nested cell\n      : { empty: true } // empty cell\n    : { empty: false, value: row[column.id] }; // top cell\n}\n\nexport default {\n  components: { stColgroup, stThead, stDataRow },\n  props: {\n    columns: { type: Array, required: true },\n    rows: {\n      type: Array,\n      required: false,\n      default() {\n        return [];\n      }\n    },\n    // All dom element class\n    classes: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.grid.classes\", {})\n    },\n    // All dom element style\n    styles: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.grid.styles\", {})\n    }\n  },\n  data: function() {\n    return {\n      // some params use in ui\n      v: {\n        scrollLeft: 0,\n        scrollBarWidth: 0,\n        timer: null,\n        contentEl: null,\n        lastColumnIsAutoWidth: false\n      }\n    };\n  },\n  computed: {\n    // all selected rows\n    selection() {\n      return this.rows.filter(row => row.selected === true);\n    },\n    flattenColumns() {\n      return flatten(this.columns);\n    },\n    subColumns() {\n      return this.flattenColumns.filter(c => c.pid);\n    },\n    headerTableStyle() {\n      return concatStyles(this.styles.headerTable, {\n        left: this.v.scrollLeft + \"px\",\n        width: \"calc(100% - \" + this.v.scrollBarWidth + \"px)\"\n      });\n    },\n    /** DataRow listeners to transfer */\n    dataRowListeners() {\n      const events = {};\n      Object.keys(this.$listeners)\n        .filter(key => key.startsWith(\"row-\") || key.startsWith(\"cell-\"))\n        .forEach(key => (events[key] = this.$listeners[key]));\n\n      // deal row-selection-change event\n      let old = events[\"row-selection-change\"]; // user define listener\n      if (old) {\n        events[\"row-selection-change\"] = data => {\n          this.selectRow(data.index, data.selected);\n          old.call(this, data);\n        }\n      } else events[\"row-selection-change\"] = data => this.selectRow(data.index, data.selected);\n\n      return events;\n    },\n    // [[tableRows], ...], index follow rows\n    tableRows() {\n      // DataRow OneToMany TableRow\n      let all = [];\n      let preTableRowCount = 0;\n      this.rows.forEach((dataRow, dataRowIndex) => {\n        let subTableRows = this.dataRowToTableRow(\n          dataRow,\n          dataRowIndex,\n          preTableRowCount\n        );\n        all.push(subTableRows);\n        preTableRowCount += subTableRows.length;\n      });\n      return all;\n    },\n    // Calculate each row's rowspan by Column.pid config\n    rowspans() {\n      let rowspans = {};\n\n      // find pid from columns config\n      let pids = this.subColumns\n        .map(c => c.pid)\n        .filter((v, i, a) => a.indexOf(v) === i); // distinct pid\n\n      // calculate rowspan value\n      this.rows.forEach((row, index) => {\n        if (typeof row.rowspan === \"number\") {\n          // custom rowspan value\n          rowspans[index] = row.rowspan;\n        } else {\n          // auto calculate rowspan value\n          let maxSize = Math.max(\n            ...pids.map(pid => (row[pid] ? row[pid].length : 1))\n          );\n          if (maxSize > 1) rowspans[index] = maxSize;\n        }\n      });\n\n      return rowspans;\n    }\n  },\n  created() {\n    // auto judge the last column width config\n    this.v.lastColumnIsAutoWidth = !this.flattenColumns[\n      this.flattenColumns.length - 1\n    ].width;\n  },\n  mounted() {\n    if (!this.v.lastColumnIsAutoWidth) {\n      // watch horizon scrollbar size\n      this.v.contentEl = this.$el.querySelector(\".content\"); // cache content el\n      this.$_watchHorizonScrollBarSize();\n    }\n  },\n  destroyed() {\n    if (!this.v.lastColumnIsAutoWidth) g.clearInterval(this.v.timer);\n  },\n  methods: {\n    columnSelectStateChange(selected, index, column) {\n      if (index === 0) { // add full selection to the first column\n        this.rows.forEach(row => this.$set(row, \"selected\", selected));\n      }\n      // emit column-select-state-change event\n      this.$emit('column-select-state-change', selected, index, column);\n    },\n    // DataRow OneToMany TableRow\n    // TableRow: {index, cells, classes, styles}\n    // TableCell: {rowspan, colspan, value, classes, styles}\n    dataRowToTableRow(dataRow, dataRowIndex, preTableRowCount) {\n      let tableRows = [];\n\n      // main TableRow\n      let nestedIndex = 0;\n      tableRows.push({\n        tableRowIndex: preTableRowCount,\n        dataRowIndex: dataRowIndex,\n        index: nestedIndex++,\n        row: dataRow,\n        classes: this.classes.contentRow,\n        styles: this.styles.contentRow,\n        selected: dataRow.selected === true,\n        cells: this.flattenColumns.map((column, i) => {\n          let { empty, value } = getCellConfigInfo(\n            dataRow,\n            column,\n            0,\n            dataRowIndex\n          );\n          let c = { column: column, empty: empty };\n          if (!empty) c.value = value;\n          let rowspan = column.pid ? 1 : this.rowspans[dataRowIndex];\n          if (rowspan > 1) c.rowspan = rowspan;\n          return c;\n        })\n      });\n\n      // sub TableRows\n      let len = this.rowspans[dataRowIndex] || 1;\n      for (let i = 1; i < len; i++) {\n        tableRows.push({\n          tableRowIndex: preTableRowCount + nestedIndex,\n          dataRowIndex: dataRowIndex,\n          index: nestedIndex++,\n          row: dataRow,\n          classes: this.classes.contentRow,\n          styles: this.styles.contentRow,\n          cells: this.subColumns.map(column => {\n            let { empty, value } = getCellConfigInfo(dataRow, column, i);\n            let c = { column: column, empty: empty };\n            if (!empty) c.value = value;\n            return c;\n          })\n        });\n      }\n      return tableRows;\n    },\n    /** DataRow props to transfer */\n    dataRowProps(row, index) {\n      let props = {\n        tableRows: this.tableRows[index]\n      };\n      return props;\n    },\n    $_watchHorizonScrollBarSize() {\n      let t;\n      this.v.timer = g.setInterval(() => {\n        t = this.v.contentEl.offsetWidth - this.v.contentEl.clientWidth;\n        if (t != this.v.scrollBarWidth) {\n          // console.log(\"scrollBarWidth: %s > %s\", this.v.scrollBarWidth, t);\n          this.v.scrollBarWidth = t;\n        }\n      }, 100);\n    },\n    selectRow(index, selected) {\n      let row = this.rows[index];\n      if (row) this.$set(row, \"selected\", selected);\n    },\n    clearSelection() {\n      this.selection.forEach(row => this.$set(row, \"selected\", false));\n    },\n    deleteSelection() {\n      this.selection.forEach(row => this.rows.splice(this.rows.indexOf(row), 1));\n    }\n  }\n};\n</script>\n\n<style>\n.st-grid {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n}\n.st-grid > .content {\n  flex: 1 1 0%;\n  overflow: auto;\n}\n.st-grid > .header {\n  overflow: hidden;\n  position: relative;\n  text-align: center;\n}\n.st-grid > .header > table {\n  position: relative;\n}\n.st-grid > .content > table,\n.st-grid > .header > table {\n  width: 100%;\n  table-layout: fixed;\n  border-collapse: collapse;\n}\n.st-grid > .header > table > thead > tr > td,\n.st-grid > .content > table > tbody > tr > td {\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.st-grid > .header > table > thead > tr,\n.st-grid > .content > table > tbody > tr {\n  min-height: 2em;\n}\n.st-grid > .bottom {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n.st-grid > .bottom > * {\n  margin: 0.25rem 0 0.25rem 0.25rem;\n}\n.st-row {\n  cursor: default;\n}\n.st-cell {\n  padding: 0.25rem;\n}\n.st-cell.number {\n  text-align: right;\n}\n</style>"]}, media: undefined });
 
     };
     /* scoped */
@@ -4735,6 +4735,217 @@
       undefined
     );
 
+  //
+
+  /** 递归计算节点的深度：顶层节点的深度为 0 */
+  function caculateDepth(node) {
+    if (node.$parent && node.$parent.isNode) return 1 + caculateDepth(node.$parent);else return 0;
+  }
+
+  /** 获取节点所在树的根节点 */
+  function getRoot(node) {
+    var p = node.$parent;
+    if (p && p.isNode) return getRoot(p);else return node;
+  }
+
+  // node-structure: {id, label, leaf, collapsed, selected, children: [node1, node2, ..., nodeN]}
+  var script$h = {
+    name: 'st-tree',
+    props: {
+      node: {
+        type: Object,
+        required: true
+      },
+      defaultCollapsed: {
+        type: Boolean,
+        "default": true
+      },
+      childrenKey: {
+        type: String,
+        "default": 'children'
+      },
+      // All dom element class
+      classes: {
+        type: Object,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.tree.classes", {});
+        }
+      },
+      // All dom element style
+      styles: {
+        type: Object,
+        required: false,
+        "default": function _default() {
+          return getGlobalVariable("simter.tree.styles", {});
+        }
+      }
+    },
+    data: function data() {
+      return {
+        hover: false,
+        // 节点是否处于鼠标悬停状态
+        isNode: true,
+        isRootNode: false,
+        selectedNode: null
+      };
+    },
+    created: function created() {
+      // 标记自身是否是根节点
+      this.isRootNode = !this.$parent || this.$parent && !this.$parent.isNode;
+
+      // 如果设置为选中，则在树根上记录此节点
+      var root = getRoot(this);
+      if (this.node.selected) this.$set(root, 'selectedNode', this.node);
+    },
+    computed: {
+      /** 是否是叶子节点 */leaf: function leaf() {
+        return Object.hasOwn(this.node, 'leaf') ? this.node.leaf : !Array.isArray(this.node[this.childrenKey]);
+      },
+      /** 是否展开节点 */collapsed: function collapsed() {
+        return Object.hasOwn(this.node, 'collapsed') ? this.node.collapsed : this.defaultCollapsed;
+      },
+      /** 节点图标  */icon: function icon() {
+        return this.node.icon ? this.node.icon : this.leaf ? "ui-icon-document" : this.collapsed ? "ui-icon-folder-collapsed" : "ui-icon-folder-open";
+      },
+      /** 节点所在的深度：顶层节点的深度为 0 */depth: function depth() {
+        return caculateDepth(this);
+      }
+    },
+    methods: {
+      /** 折叠展开节点 */toggle: function toggle() {
+        this.$set(this.node, 'collapsed', !this.collapsed);
+      },
+      /** 用户点击节点的处理：选中节点并触发 change 事件 */clickMe: function clickMe($event) {
+        // 避免重复触发 change 事件
+        if (this.node.selected) return;
+
+        // 设置当前节点选中
+        this.$set(this.node, 'selected', true);
+
+        // 解除前一选中节点的选择
+        var treeRoot = getRoot(this);
+        var preSelectedNode = treeRoot.selectedNode;
+        if (preSelectedNode) this.$set(preSelectedNode, 'selected', false);
+        if (this !== treeRoot && treeRoot.node.selected) treeRoot.$set(treeRoot.node, 'selected', false);
+
+        // 记录当前节点为新的选择节点
+        treeRoot.selectedNode = this.node;
+
+        // 在跟节点触发 change 事件
+        treeRoot.$emit("change", this.node, preSelectedNode);
+      }
+    }
+  };
+
+  /* script */
+  const __vue_script__$j = script$h;
+
+  /* template */
+  var __vue_render__$i = function() {
+    var _vm = this;
+    var _h = _vm.$createElement;
+    var _c = _vm._self._c || _h;
+    return _c("div", { class: ["st-tree", _vm.classes.root] }, [
+      _c(
+        "div",
+        {
+          class: {
+            self: true,
+            "ui-state-hover": _vm.hover,
+            "ui-state-focus": _vm.node.selected
+          },
+          on: {
+            mouseenter: function($event) {
+              _vm.hover = true;
+            },
+            mouseleave: function($event) {
+              _vm.hover = false;
+            },
+            click: function($event) {
+              $event.stopPropagation();
+              $event.preventDefault();
+              return _vm.clickMe($event)
+            }
+          }
+        },
+        [
+          _c("span", {
+            staticClass: "indent",
+            style: { width: _vm.depth * 16 + "px" }
+          }),
+          _vm._v(" "),
+          _c("span", {
+            staticClass: "toggle ui-icon",
+            class: _vm.collapsed
+              ? "ui-icon-triangle-1-e"
+              : "ui-icon-triangle-1-se",
+            style: { visibility: _vm.leaf ? "hidden" : "visible" },
+            on: {
+              click: function($event) {
+                $event.stopPropagation();
+                return _vm.toggle.apply(null, arguments)
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("span", { class: ["icon", "ui-icon", _vm.icon] }),
+          _vm._v(" "),
+          _c("span", { staticClass: "label" }, [
+            _vm._v(_vm._s(_vm.node.label || _vm.node.id))
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      !_vm.leaf && !_vm.collapsed
+        ? _c(
+            "div",
+            { staticClass: "children" },
+            _vm._l(_vm.node[_vm.childrenKey], function(child) {
+              return _c("st-tree", {
+                key: child.id || child.label,
+                attrs: { node: child }
+              })
+            }),
+            1
+          )
+        : _vm._e()
+    ])
+  };
+  var __vue_staticRenderFns__$i = [];
+  __vue_render__$i._withStripped = true;
+
+    /* style */
+    const __vue_inject_styles__$j = function (inject) {
+      if (!inject) return
+      inject("data-v-4f8d605f_0", { source: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/** 树节点样式 */\n.st-tree {\n  min-width: 8em;\n  overflow: auto;\n}\n.st-tree > div.self {\n\tposition: relative;\n\tdisplay: flex;\n\tflex-direction: row;\n\tborder-width: 0;\n\tcursor: default;\n\tline-height: 1.8em;\n}\n.st-tree > .self > span {\n\tdisplay: inline-block;\n\tflex: none;\n}\n.st-tree > .self > span:last-child {\n\tflex: 1 1 0%;\n\tpadding-right: 0.25em;\n}\n.st-tree > .self > span.ui-icon {\n\tmargin: calc((1.8em - 16px) / 2) 0;\n}\n\n/** 带树视图的样式 */\n.st-tree-view {\n  display: flex;\n  flex-direction: column;\n  width: 100%;\n  height: 100%;\n  border: none;\n  font-weight: normal;\n}\n.st-tree-view > .content {\n  overflow: hidden;\n  flex: 1 1 0%;\n  display: flex;\n  flex-direction: row;\n}\n.st-tree-view > .content > .st-tree {\n  flex: none;\n  overflow: auto;\n}\n.st-tree-view > .content > .st-grid {\n  flex: 1 1 0%;\n  overflow: auto;\n}\n.st-tree-view > .st-toolbar.ui-widget-content {\n  border-width: 0 0 1px 0;\n}\n.st-tree-view > .content > .st-tree.ui-widget-content {\n  border-width: 0 1px 0 0;\n}\n", map: {"version":3,"sources":["/Volumes/macdata/work/simter/simter-vue-components/src/tree.vue"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAwHA,WAAA;AACA;EACA,cAAA;EACA,cAAA;AACA;AACA;CACA,kBAAA;CACA,aAAA;CACA,mBAAA;CACA,eAAA;CACA,eAAA;CACA,kBAAA;AACA;AACA;CACA,qBAAA;CACA,UAAA;AACA;AACA;CACA,YAAA;CACA,qBAAA;AACA;AACA;CACA,kCAAA;AACA;;AAEA,aAAA;AACA;EACA,aAAA;EACA,sBAAA;EACA,WAAA;EACA,YAAA;EACA,YAAA;EACA,mBAAA;AACA;AACA;EACA,gBAAA;EACA,YAAA;EACA,aAAA;EACA,mBAAA;AACA;AACA;EACA,UAAA;EACA,cAAA;AACA;AACA;EACA,YAAA;EACA,cAAA;AACA;AACA;EACA,uBAAA;AACA;AACA;EACA,uBAAA;AACA","file":"tree.vue","sourcesContent":["<template>\n  <div :class=\"['st-tree', classes.root]\">\n    <div :class=\"{self: true, 'ui-state-hover': hover, 'ui-state-focus': node.selected}\"\n      @mouseenter=\"hover = true\" @mouseleave=\"hover = false\" @click.stop.prevent=\"clickMe($event)\">\n\t  \t<span class=\"indent\" :style=\"{width: (depth * 16) + 'px'}\"></span>\n      <span @click.stop=\"toggle\" class=\"toggle ui-icon\"\n        :class=\"collapsed ? 'ui-icon-triangle-1-e' : 'ui-icon-triangle-1-se'\"\n        :style=\"{visibility: leaf ? 'hidden' : 'visible'}\">\n      </span>\n      <span :class=\"['icon', 'ui-icon', icon]\"></span>\n      <span class=\"label\">{{node.label || node.id}}</span>\n    </div>\n    <div v-if=\"!leaf && !collapsed\" class=\"children\">\n      <st-tree v-for=\"child in node[childrenKey]\" :key=\"child.id || child.label\" :node=\"child\"></st-tree>\n    </div>\n  </div>\n</template>\n\n<script>\nimport { gv, concatClasses, concatStyles } from \"./utils\";\n\n/** 递归计算节点的深度：顶层节点的深度为 0 */\nfunction caculateDepth(node) {\n  if (node.$parent && node.$parent.isNode)\n    return 1 + caculateDepth(node.$parent);\n  else return 0;\n}\n\n/** 获取节点所在树的根节点 */\nfunction getRoot(node) {\n  const p = node.$parent;\n  if (p && p.isNode) return getRoot(p);\n  else return node;\n}\n\n// node-structure: {id, label, leaf, collapsed, selected, children: [node1, node2, ..., nodeN]}\nexport default {\n  name: 'st-tree',\n  props: {\n    node: { type: Object, required: true },\n    defaultCollapsed: { type: Boolean, default: true },\n    childrenKey: { type: String, default: 'children' },\n    // All dom element class\n    classes: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.tree.classes\", {})\n    },\n    // All dom element style\n    styles: {\n      type: Object,\n      required: false,\n      default: () => gv(\"simter.tree.styles\", {})\n    }\n  },\n  data: function() {\n    return {\n      hover: false, // 节点是否处于鼠标悬停状态\n      isNode: true,\n      isRootNode: false,\n      selectedNode: null\n    };\n  },\n  created(){\n    // 标记自身是否是根节点\n    this.isRootNode = !this.$parent || (this.$parent && !this.$parent.isNode);\n\n    // 如果设置为选中，则在树根上记录此节点\n    const root = getRoot(this);\n    if (this.node.selected) this.$set(root, 'selectedNode', this.node);\n  },\n  computed: {\n    /** 是否是叶子节点 */\n    leaf() {\n      return Object.hasOwn(this.node, 'leaf') ? this.node.leaf : !Array.isArray(this.node[this.childrenKey]);\n    },\n    /** 是否展开节点 */\n    collapsed() {\n      return Object.hasOwn(this.node, 'collapsed') ? this.node.collapsed : this.defaultCollapsed;\n    },\n    /** 节点图标  */\n    icon() {\n      return this.node.icon ? this.node.icon : this.leaf ? \"ui-icon-document\" \n      : this.collapsed ? \"ui-icon-folder-collapsed\" : \"ui-icon-folder-open\";\n    },\n    /** 节点所在的深度：顶层节点的深度为 0 */\n    depth() {\n      return caculateDepth(this);\n    }\n  },\n  methods: {\t\t\t\n    /** 折叠展开节点 */\n    toggle() {\n      this.$set(this.node, 'collapsed', !this.collapsed);\n    },\n    /** 用户点击节点的处理：选中节点并触发 change 事件 */\n    clickMe($event) {\n      // 避免重复触发 change 事件\n      if (this.node.selected) return; \n\n      // 设置当前节点选中\n      this.$set(this.node, 'selected', true);\n\n      // 解除前一选中节点的选择\n      const treeRoot = getRoot(this);\n      const preSelectedNode = treeRoot.selectedNode;\n      if (preSelectedNode) this.$set(preSelectedNode, 'selected', false);\n      if (this !== treeRoot && treeRoot.node.selected) treeRoot.$set(treeRoot.node, 'selected', false);\n\n      // 记录当前节点为新的选择节点\n      treeRoot.selectedNode = this.node;\n\n      // 在跟节点触发 change 事件\n      treeRoot.$emit(\"change\", this.node, preSelectedNode);\n    }\n  }\n};\n</script>\n\n<style>\n/** 树节点样式 */\n.st-tree {\n  min-width: 8em;\n  overflow: auto;\n}\n.st-tree > div.self {\n\tposition: relative;\n\tdisplay: flex;\n\tflex-direction: row;\n\tborder-width: 0;\n\tcursor: default;\n\tline-height: 1.8em;\n}\n.st-tree > .self > span {\n\tdisplay: inline-block;\n\tflex: none;\n}\n.st-tree > .self > span:last-child {\n\tflex: 1 1 0%;\n\tpadding-right: 0.25em;\n}\n.st-tree > .self > span.ui-icon {\n\tmargin: calc((1.8em - 16px) / 2) 0;\n}\n\n/** 带树视图的样式 */\n.st-tree-view {\n  display: flex;\n  flex-direction: column;\n  width: 100%;\n  height: 100%;\n  border: none;\n  font-weight: normal;\n}\n.st-tree-view > .content {\n  overflow: hidden;\n  flex: 1 1 0%;\n  display: flex;\n  flex-direction: row;\n}\n.st-tree-view > .content > .st-tree {\n  flex: none;\n  overflow: auto;\n}\n.st-tree-view > .content > .st-grid {\n  flex: 1 1 0%;\n  overflow: auto;\n}\n.st-tree-view > .st-toolbar.ui-widget-content {\n  border-width: 0 0 1px 0;\n}\n.st-tree-view > .content > .st-tree.ui-widget-content {\n  border-width: 0 1px 0 0;\n}\n</style>\n"]}, media: undefined });
+
+    };
+    /* scoped */
+    const __vue_scope_id__$j = undefined;
+    /* module identifier */
+    const __vue_module_identifier__$j = undefined;
+    /* functional template */
+    const __vue_is_functional_template__$j = false;
+    /* style inject SSR */
+    
+    /* style inject shadow dom */
+    
+
+    
+    const __vue_component__$j = /*#__PURE__*/normalizeComponent_1(
+      { render: __vue_render__$i, staticRenderFns: __vue_staticRenderFns__$i },
+      __vue_inject_styles__$j,
+      __vue_script__$j,
+      __vue_scope_id__$j,
+      __vue_is_functional_template__$j,
+      __vue_module_identifier__$j,
+      false,
+      browser,
+      undefined,
+      undefined
+    );
+
   // global register all components
   var components = {
     "st-loader": [version, __vue_component__],
@@ -4756,7 +4967,8 @@
     "st-button-menu": [version, __vue_component__$f],
     "st-search": [version, __vue_component__$g],
     "st-upload": [version, __vue_component__$i],
-    "st-progress-bar": [version, __vue_component__$h]
+    "st-progress-bar": [version, __vue_component__$h],
+    "st-tree": [version, __vue_component__$j]
   };
   var keyVersions = {};
   var value;
