@@ -312,6 +312,7 @@ export default {
 .st-grid > .bottom {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 .st-grid > .bottom > * {
   margin: 0.25rem 0 0.25rem 0.25rem;
