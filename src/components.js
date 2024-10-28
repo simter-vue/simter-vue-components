@@ -2,7 +2,6 @@
 import Vue from 'vue'
 import { version } from '../package.json'
 
-
 // loader
 import stLoader from "./loader.vue";
 
@@ -31,6 +30,7 @@ import stButtonMenu from "./button-menu.vue"
 import stSearch from "./search.vue";
 import stUpload from "./upload.vue";
 import stProgressbar from "./progressbar.vue";
+import stTree from "./tree.vue";
 
 // global register all components
 const components = {
@@ -58,7 +58,8 @@ const components = {
   "st-button-menu": [version, stButtonMenu],
   "st-search": [version, stSearch],
   "st-upload": [version, stUpload],
-  "st-progress-bar": [version, stProgressbar]
+  "st-progress-bar": [version, stProgressbar],
+  "st-tree": [version, stTree]
 }
 const keyVersions = {}
 let value
