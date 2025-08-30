@@ -35,7 +35,7 @@
         <div v-for="c of advanceConfig.conditions" class="condition">
           <div class="label">{{c.label}}</div>
           <!-- single value：string, number, date, time, ... -->
-          <template v-if="!c.operator || ['=', '>', '>=', '<', '<=', '!=', '<>'].includes(c.operator)">
+          <template v-if="!c.operator || ['=', '>', '>=', '<', '<=', '!=', '<>', 'ilike', 'like'].includes(c.operator)">
             <label v-if="'checkbox' == c.ui">
               <input :type="c.ui" :name="c.id + '_' + instanceId" v-model="c.value" :class="['value', classes.value]"
                 :value="c.options.value || c.options"/>
